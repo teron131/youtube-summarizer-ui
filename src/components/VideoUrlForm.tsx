@@ -51,25 +51,25 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
   const isFormValid = url.trim() && !validationError;
 
   return (
-    <Card className="p-8 bg-gradient-card border border-muted shadow-card backdrop-blur-sm">
+    <Card className="p-8 bg-gradient-card border border-muted shadow-card backdrop-blur-sm hover-lift fade-in-up">
       <div className="space-y-6">
         <div className="text-center space-y-2">
-          <h2 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+          <h2 className="text-2xl font-bold text-primary animate-glow stagger-1">
             Summarize Any YouTube Video
           </h2>
-          <p className="text-muted-foreground">
-            Paste a YouTube URL and get an AI-powered summary with transcript in seconds
+          <p className="text-muted-foreground fade-in-up stagger-2">
+            Paste a YouTube URL and get an <span className="text-primary font-semibold">AI-powered summary</span> with transcript in seconds
           </p>
         </div>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 fade-in-up stagger-3">
           <div className="space-y-2">
             <Input
               type="url"
               placeholder="https://youtube.com/watch?v=..."
               value={url}
               onChange={handleUrlChange}
-              className={`h-12 text-lg border-muted focus:ring-primary ${
+              className={`h-12 text-lg border-primary/30 focus:ring-primary focus:border-primary transition-all duration-300 hover:border-primary/50 ${
                 validationError ? 'border-destructive focus:ring-destructive' : ''
               }`}
               disabled={isLoading}
@@ -86,17 +86,17 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
           <Button
             type="submit"
             disabled={isLoading || !isFormValid}
-            className="w-full h-12 text-lg bg-gradient-primary hover:shadow-glow transition-all duration-300"
+            className="w-full h-12 text-lg bg-gradient-button text-white font-semibold hover:shadow-button transition-all duration-300 hover:scale-[1.02] hover:bg-gradient-to-r hover:from-primary hover:to-primary/90 disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none"
           >
             {isLoading ? (
               <>
                 <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Processing Video...
+                <span className="font-semibold">Processing Video...</span>
               </>
             ) : (
               <>
                 <Play className="w-5 h-5 mr-2" />
-                Summarize Video
+                <span className="font-semibold">Summarize Video</span>
               </>
             )}
           </Button>

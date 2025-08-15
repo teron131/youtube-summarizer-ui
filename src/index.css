@@ -37,13 +37,16 @@ All colors MUST be HSL.
     --ring: 0 65% 60%;
 
     /* Neon red design tokens */
-    --neon-red: 0 65% 60%;
-    --gradient-primary: linear-gradient(135deg, hsl(0 65% 60%), hsl(10 70% 55%));
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 10%), hsl(0 0% 12%));
-    --gradient-hero: linear-gradient(135deg, hsl(0 0% 7%) 0%, hsl(0 0% 12%) 100%);
-    --shadow-glow: 0 0 20px hsl(0 65% 60% / 0.25);
-    --shadow-card: 0 2px 24px hsl(0 0% 0% / 0.3);
+    --neon-red: 0 75% 65%;
+    --gradient-primary: linear-gradient(135deg, hsl(0 75% 65%), hsl(5 80% 60%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 8%), hsl(0 5% 12%));
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 5%) 0%, hsl(0 10% 15%) 100%);
+    --gradient-button: linear-gradient(135deg, hsl(0 75% 65%), hsl(5 80% 60%));
+    --shadow-glow: 0 0 30px hsl(0 75% 65% / 0.4);
+    --shadow-card: 0 8px 32px hsl(0 0% 0% / 0.4);
+    --shadow-button: 0 4px 20px hsl(0 75% 65% / 0.3);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-glow: all 0.2s ease-out;
 
     --radius: 0.5rem;
 
@@ -167,3 +170,43 @@ All colors MUST be HSL.
 .markdown-content blockquote {
   @apply border-l-4 border-primary pl-4 italic text-muted-foreground mb-4;
 }
+
+/* Custom animations and effects */
+.animate-glow {
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 10px hsl(var(--primary) / 0.5);
+  }
+  to {
+    text-shadow: 0 0 20px hsl(var(--primary) / 0.8), 0 0 30px hsl(var(--primary) / 0.6);
+  }
+}
+
+.hover-lift {
+  transition: var(--transition-smooth);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }

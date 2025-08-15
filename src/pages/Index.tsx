@@ -106,12 +106,12 @@ const Index = () => {
         
         <div className="relative container mx-auto px-4 py-16">
           <div className="text-center space-y-4 mb-12">
-            <h1 className="text-5xl font-bold text-foreground">
-              YouTube Video <span className="text-primary">Summarizer</span>
+            <h1 className="text-5xl font-bold text-foreground fade-in-up">
+              YouTube Video <span className="text-primary animate-glow">Summarizer</span>
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Transform any YouTube video into concise, AI-powered summaries. 
-              Perfect for learning, research, and content discovery.
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto fade-in-up stagger-1">
+              Transform any YouTube video into concise, <span className="text-primary font-semibold">AI-powered summaries</span> with 
+              <span className="text-primary font-semibold"> advanced transcription</span> and <span className="text-primary font-semibold">intelligent analysis</span>. Perfect for learning, research, and content discovery.
             </p>
           </div>
           
