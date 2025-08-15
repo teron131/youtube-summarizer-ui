@@ -14,9 +14,8 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (url.trim()) {
-      onSubmit(url.trim());
-    }
+    // Submit with either the URL or empty string to trigger test data
+    onSubmit(url.trim());
   };
 
   return (
@@ -45,7 +44,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
           
           <Button
             type="submit"
-            disabled={!url.trim() || isLoading}
+            disabled={isLoading}
             className="w-full h-12 text-lg bg-gradient-primary hover:shadow-glow transition-all duration-300"
           >
             {isLoading ? (

@@ -21,7 +21,7 @@ const Index = () => {
   const handleVideoSubmit = async (url: string) => {
     setIsLoading(true);
     
-    // Simulate API call - replace with your actual backend integration
+    // Show test data if no URL provided, otherwise simulate API call
     setTimeout(() => {
       setVideoData({
         title: "How AI Will Transform Software Development in 2024",
