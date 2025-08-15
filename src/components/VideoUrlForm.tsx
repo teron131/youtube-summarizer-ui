@@ -51,32 +51,33 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
   const isFormValid = url.trim() && !validationError;
 
   return (
-    <Card className="p-8 bg-gradient-card border border-muted shadow-card backdrop-blur-sm hover-lift fade-in-up">
-      <div className="space-y-6">
-        <div className="text-center space-y-2">
-          <h2 className="text-2xl font-bold text-primary animate-glow stagger-1">
-            Summarize Any YouTube Video
-          </h2>
-          <p className="text-muted-foreground fade-in-up stagger-2">
-            Paste a YouTube URL and get an <span className="text-primary font-semibold">AI-powered summary</span> with transcript in seconds
+    <Card className="p-10 modern-blur shadow-glass hover-lift">
+      <div className="space-y-8">
+        <div className="text-center space-y-4">
+          <div className="inline-flex items-center gap-3 px-6 py-3 bg-primary/10 border border-primary/30 rounded-full">
+            <Play className="w-5 h-5 text-primary" />
+            <span className="text-primary font-semibold text-lg">Start Processing</span>
+          </div>
+          <p className="text-muted-foreground text-lg leading-relaxed max-w-lg mx-auto">
+            Paste any YouTube URL below and let our AI create intelligent summaries with full transcripts
           </p>
         </div>
         
-        <form onSubmit={handleSubmit} className="space-y-4 fade-in-up stagger-3">
-          <div className="space-y-2">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-3">
             <Input
               type="url"
-              placeholder="https://youtube.com/watch?v=..."
+              placeholder="https://youtube.com/watch?v=dQw4w9WgXcQ"
               value={url}
               onChange={handleUrlChange}
-              className={`h-12 text-lg border-primary/30 focus:ring-primary focus:border-primary transition-all duration-300 hover:border-primary/50 ${
+              className={`h-16 text-lg px-6 bg-background/50 border-2 border-primary/20 focus:ring-primary focus:border-primary transition-all duration-500 hover:border-primary/40 rounded-2xl ${
                 validationError ? 'border-destructive focus:ring-destructive' : ''
               }`}
               disabled={isLoading}
             />
             
             {validationError && (
-              <Alert variant="destructive">
+              <Alert variant="destructive" className="border-destructive/50 bg-destructive/10">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>{validationError}</AlertDescription>
               </Alert>
@@ -86,17 +87,17 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
           <Button
             type="submit"
             disabled={isLoading || !isFormValid}
-            className="w-full h-12 text-lg bg-gradient-button text-white font-semibold hover:shadow-button transition-all duration-300 hover:scale-[1.02] hover:bg-gradient-to-r hover:from-primary hover:to-primary/90 disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none"
+            className="w-full h-16 text-lg bg-gradient-button text-white font-bold hover:shadow-button transition-all duration-500 hover:scale-[1.02] youtube-pulse rounded-2xl disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none border border-primary/30"
           >
             {isLoading ? (
               <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                <span className="font-semibold">Processing Video...</span>
+                <Loader2 className="w-6 h-6 mr-3 animate-spin" />
+                <span className="font-bold">Processing Video...</span>
               </>
             ) : (
               <>
-                <Play className="w-5 h-5 mr-2" />
-                <span className="font-semibold">Summarize Video</span>
+                <Play className="w-6 h-6 mr-3" />
+                <span className="font-bold">Summarize Video</span>
               </>
             )}
           </Button>

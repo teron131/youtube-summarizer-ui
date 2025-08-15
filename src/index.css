@@ -8,45 +8,56 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 7%;
-    --foreground: 0 0% 95%;
+    --background: 0 0% 3%;
+    --foreground: 0 0% 98%;
 
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 95%;
+    --card: 0 0% 6%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 0 65% 60%;
+    --primary: 0 100% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 15%;
+    --secondary: 0 0% 12%;
     --secondary-foreground: 0 0% 95%;
 
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 70%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 0 0% 15%;
-    --accent-foreground: 0 0% 95%;
+    --accent: 0 20% 18%;
+    --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 15%;
-    --ring: 0 65% 60%;
+    --border: 0 0% 18%;
+    --input: 0 0% 12%;
+    --ring: 0 100% 50%;
 
-    /* Neon red design tokens */
-    --neon-red: 0 75% 65%;
-    --gradient-primary: linear-gradient(135deg, hsl(0 75% 65%), hsl(5 80% 60%));
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 8%), hsl(0 5% 12%));
-    --gradient-hero: linear-gradient(135deg, hsl(0 0% 5%) 0%, hsl(0 10% 15%) 100%);
-    --gradient-button: linear-gradient(135deg, hsl(0 75% 65%), hsl(5 80% 60%));
-    --shadow-glow: 0 0 30px hsl(0 75% 65% / 0.4);
-    --shadow-card: 0 8px 32px hsl(0 0% 0% / 0.4);
-    --shadow-button: 0 4px 20px hsl(0 75% 65% / 0.3);
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-glow: all 0.2s ease-out;
+    /* YouTube Pure Red Design System */
+    --youtube-red: 0 100% 50%;
+    --youtube-red-light: 0 100% 60%;
+    --youtube-red-dark: 0 100% 40%;
+    
+    /* Modern Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(0 100% 50%), hsl(350 100% 55%));
+    --gradient-card: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,15,15,0.9));
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 2%) 0%, hsl(0 5% 8%) 50%, hsl(0 10% 12%) 100%);
+    --gradient-button: linear-gradient(135deg, hsl(0 100% 50%), hsl(15 100% 55%));
+    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    
+    /* Modern Shadows & Effects */
+    --shadow-glow: 0 0 40px hsl(0 100% 50% / 0.3);
+    --shadow-card: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,0,0,0.1);
+    --shadow-button: 0 4px 24px hsl(0 100% 50% / 0.4);
+    --shadow-glass: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+    
+    /* Modern Transitions */
+    --transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --transition-glow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --radius: 0.5rem;
 
@@ -68,33 +79,33 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 0 0% 7%;
-    --foreground: 0 0% 95%;
+    --background: 0 0% 3%;
+    --foreground: 0 0% 98%;
 
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 95%;
+    --card: 0 0% 6%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 0 65% 60%;
+    --primary: 0 100% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 15%;
+    --secondary: 0 0% 12%;
     --secondary-foreground: 0 0% 95%;
 
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 70%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 0 0% 15%;
-    --accent-foreground: 0 0% 95%;
+    --accent: 0 20% 18%;
+    --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 15%;
-    --ring: 0 65% 60%;
+    --border: 0 0% 18%;
+    --input: 0 0% 12%;
+    --ring: 0 100% 50%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -171,17 +182,17 @@ All colors MUST be HSL.
   @apply border-l-4 border-primary pl-4 italic text-muted-foreground mb-4;
 }
 
-/* Custom animations and effects */
+/* Modern animations and effects */
 .animate-glow {
-  animation: glow 2s ease-in-out infinite alternate;
+  animation: glow 3s ease-in-out infinite alternate;
 }
 
 @keyframes glow {
   from {
-    text-shadow: 0 0 10px hsl(var(--primary) / 0.5);
+    text-shadow: 0 0 20px hsl(var(--primary) / 0.6);
   }
   to {
-    text-shadow: 0 0 20px hsl(var(--primary) / 0.8), 0 0 30px hsl(var(--primary) / 0.6);
+    text-shadow: 0 0 40px hsl(var(--primary) / 1), 0 0 60px hsl(var(--primary) / 0.8);
   }
 }
 
@@ -190,14 +201,14 @@ All colors MUST be HSL.
 }
 
 .hover-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-glow);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow-glass);
 }
 
 .fade-in-up {
-  animation: fadeInUp 0.6s ease-out forwards;
+  animation: fadeInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(30px);
 }
 
 @keyframes fadeInUp {
@@ -207,6 +218,32 @@ All colors MUST be HSL.
   }
 }
 
-.stagger-1 { animation-delay: 0.1s; }
-.stagger-2 { animation-delay: 0.2s; }
-.stagger-3 { animation-delay: 0.3s; }
+.glass-effect {
+  background: var(--gradient-glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.youtube-pulse {
+  animation: youtubePulse 2s infinite;
+}
+
+@keyframes youtubePulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 20px hsl(var(--primary) / 0);
+  }
+}
+
+.modern-blur {
+  backdrop-filter: blur(24px) saturate(180%);
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 0, 0, 0.2);
+}
+
+.stagger-1 { animation-delay: 0.2s; }
+.stagger-2 { animation-delay: 0.4s; }
+.stagger-3 { animation-delay: 0.6s; }
+.stagger-4 { animation-delay: 0.8s; }

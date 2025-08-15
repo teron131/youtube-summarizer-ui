@@ -29,26 +29,31 @@ export const SummaryPanel = ({ summary }: SummaryPanelProps) => {
   };
 
   return (
-    <Card className="p-6 bg-gradient-card border border-muted shadow-card backdrop-blur-sm">
-      <div className="space-y-4">
+    <Card className="p-8 modern-blur shadow-glass hover-lift">
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Sparkles className="w-5 h-5 text-primary" />
-            <h3 className="text-lg font-semibold">AI Summary</h3>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center">
+              <Sparkles className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold text-foreground">AI Summary</h3>
+              <p className="text-muted-foreground">Intelligent analysis powered by advanced AI</p>
+            </div>
           </div>
           
           <Button
             variant="outline"
-            size="sm"
+            size="lg"
             onClick={copyToClipboard}
-            className="gap-2"
+            className="gap-3 h-12 px-6 border-primary/30 hover:bg-primary/10 hover:border-primary transition-all duration-300"
           >
-            <Copy className="w-4 h-4" />
+            <Copy className="w-5 h-5" />
             Copy Summary
           </Button>
         </div>
         
-        <div className="bg-muted/30 rounded-lg p-4">
+        <div className="glass-effect rounded-2xl p-6 border border-primary/10">
           <div className="markdown-content">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {summary}

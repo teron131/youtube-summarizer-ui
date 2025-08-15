@@ -96,49 +96,95 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
+      {/* Modern Hero Section */}
+      <div className="relative overflow-hidden min-h-screen flex items-center">
         <div 
-          className="absolute inset-0 bg-cover bg-center opacity-20"
+          className="absolute inset-0 bg-cover bg-center opacity-10"
           style={{ backgroundImage: `url(${heroBackground})` }}
         />
-        <div className="absolute inset-0 bg-gradient-hero opacity-80" />
+        <div className="absolute inset-0 bg-gradient-hero" />
         
-        <div className="relative container mx-auto px-4 py-16">
-          <div className="text-center space-y-4 mb-12">
-            <h1 className="text-5xl font-bold text-foreground fade-in-up">
-              YouTube Video <span className="text-primary animate-glow">Summarizer</span>
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+        </div>
+        
+        <div className="relative container mx-auto px-4 py-20">
+          <div className="text-center space-y-8 mb-16">
+            <div className="fade-in-up">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full mb-6">
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                <span className="text-primary text-sm font-medium">Powered by Advanced AI</span>
+              </div>
+            </div>
+            
+            <h1 className="text-7xl md:text-8xl font-black text-foreground fade-in-up stagger-1">
+              YouTube
+              <br />
+              <span className="text-primary animate-glow bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+                Summarizer
+              </span>
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto fade-in-up stagger-1">
-              Transform any YouTube video into concise, <span className="text-primary font-semibold">AI-powered summaries</span> with 
-              <span className="text-primary font-semibold"> advanced transcription</span> and <span className="text-primary font-semibold">intelligent analysis</span>. Perfect for learning, research, and content discovery.
+            
+            <p className="text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed fade-in-up stagger-2">
+              Transform any YouTube video into concise, intelligent summaries. 
+              <br />
+              <span className="text-primary font-semibold">Advanced AI transcription</span> meets 
+              <span className="text-primary font-semibold"> smart analysis</span> for instant insights.
             </p>
+            
+            <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground fade-in-up stagger-3">
+              <div className="flex items-center gap-2">
+                <div className="w-1 h-1 bg-primary rounded-full"></div>
+                <span>Real-time Processing</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-1 h-1 bg-primary rounded-full"></div>
+                <span>High Accuracy</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-1 h-1 bg-primary rounded-full"></div>
+                <span>Multiple Formats</span>
+              </div>
+            </div>
           </div>
           
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-3xl mx-auto fade-in-up stagger-4">
             <VideoUrlForm onSubmit={handleVideoSubmit} isLoading={isLoading} />
           </div>
         </div>
       </div>
 
-      {/* Processing Status */}
+      {/* Modern Processing Status */}
       {isLoading && (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-12">
           <div className="max-w-4xl mx-auto">
-            <Card className="p-6 bg-gradient-card border border-muted shadow-card backdrop-blur-sm">
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <Clock className="w-5 h-5 text-primary animate-spin" />
-                  <h3 className="text-lg font-semibold">Processing Video</h3>
-                  <span className="text-sm text-muted-foreground">({currentStage})</span>
+            <Card className="p-10 modern-blur shadow-glass">
+              <div className="space-y-8">
+                <div className="flex items-center justify-center">
+                  <div className="relative">
+                    <div className="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center">
+                      <Clock className="w-10 h-10 text-white animate-spin" />
+                    </div>
+                    <div className="absolute inset-0 w-20 h-20 bg-primary/30 rounded-full animate-ping"></div>
+                  </div>
+                </div>
+                
+                <div className="text-center space-y-2">
+                  <h3 className="text-3xl font-bold text-foreground">Processing Video</h3>
+                  <p className="text-xl text-muted-foreground">({currentStage})</p>
+                  <div className="w-full bg-muted/30 rounded-full h-2 mt-4">
+                    <div className="bg-gradient-primary h-2 rounded-full animate-pulse" style={{width: '60%'}}></div>
+                  </div>
                 </div>
                 
                 {processingLogs.length > 0 && (
-                  <div className="bg-muted/30 rounded-lg p-4 max-h-48 overflow-y-auto">
-                    <div className="space-y-1">
+                  <div className="glass-effect rounded-2xl p-6 max-h-64 overflow-y-auto border border-primary/10">
+                    <div className="space-y-2">
                       {processingLogs.map((log, index) => (
-                        <div key={index} className="text-sm text-foreground font-mono">
-                          {log}
+                        <div key={index} className="text-sm text-foreground font-mono opacity-80">
+                          → {log}
                         </div>
                       ))}
                     </div>
