@@ -2,7 +2,7 @@
 # This is a full-stack app with Python backend and React frontend
 
 [phases.setup]
-nixPkgs = ["python311", "nodejs_18", "ffmpeg"]
+nixPkgs = ["python311", "nodejs_18", "npm-9_x", "ffmpeg"]
 
 [phases.install]
 dependsOn = ["setup"]
