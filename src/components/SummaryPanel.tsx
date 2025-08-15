@@ -2,6 +2,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Copy, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface SummaryPanelProps {
   summary: string;
@@ -47,9 +49,11 @@ export const SummaryPanel = ({ summary }: SummaryPanelProps) => {
         </div>
         
         <div className="bg-muted/30 rounded-lg p-4">
-          <p className="text-foreground leading-relaxed whitespace-pre-wrap">
-            {summary}
-          </p>
+          <div className="markdown-content">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {summary}
+            </ReactMarkdown>
+          </div>
         </div>
       </div>
     </Card>

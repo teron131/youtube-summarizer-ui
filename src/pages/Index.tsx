@@ -3,7 +3,7 @@ import { VideoUrlForm } from "@/components/VideoUrlForm";
 import { VideoInfo } from "@/components/VideoInfo";
 import { TranscriptPanel } from "@/components/TranscriptPanel";
 import { SummaryPanel } from "@/components/SummaryPanel";
-import heroBackground from "@/assets/hero-background.jpg";
+import heroBackground from "@/assets/youtube-hero-background.jpg";
 
 interface VideoData {
   title: string;
@@ -29,7 +29,33 @@ const Index = () => {
         author: "Tech Insights",
         duration: "12:34",
         transcript: "Welcome to today's discussion about artificial intelligence and its impact on software development. In this video, we'll explore how AI tools are revolutionizing the way developers write code, debug applications, and optimize performance.\n\nFirst, let's talk about AI-powered code completion. Tools like GitHub Copilot and Tabnine are helping developers write code faster and with fewer errors. These tools use machine learning models trained on billions of lines of code to suggest contextually relevant completions.\n\nNext, we'll discuss automated testing. AI can now generate test cases, identify edge cases that human testers might miss, and even predict which parts of the codebase are most likely to contain bugs.\n\nFinally, we'll look at the future of AI in software development, including autonomous coding systems and AI-powered architecture design.",
-        summary: "This video explores the transformative impact of AI on software development in 2024. Key topics include:\n\n• **AI-Powered Code Completion**: Tools like GitHub Copilot and Tabnine are accelerating development by providing intelligent code suggestions based on machine learning models trained on extensive codebases.\n\n• **Automated Testing Revolution**: AI systems can now generate comprehensive test cases, identify overlooked edge cases, and predict bug-prone areas in code, significantly improving software quality.\n\n• **Future Developments**: The discussion covers emerging trends like autonomous coding systems and AI-driven architecture design, suggesting a future where AI becomes an integral part of the entire development lifecycle.\n\nThe overall message emphasizes that AI is not replacing developers but rather augmenting their capabilities, making them more productive and enabling them to focus on higher-level problem-solving and creative aspects of software development."
+        summary: `# AI Transforming Software Development in 2024
+
+This video explores the **revolutionary impact** of artificial intelligence on modern software development practices.
+
+## Key Topics Covered
+
+### 🤖 AI-Powered Code Completion
+- **GitHub Copilot** and **Tabnine** are accelerating development
+- Intelligent code suggestions based on ML models
+- Trained on billions of lines of code for contextual relevance
+
+### 🧪 Automated Testing Revolution
+- AI systems generate comprehensive test cases
+- Identify overlooked edge cases that humans miss
+- **Predictive bug detection** in codebases
+- Significant improvement in software quality
+
+### 🚀 Future Developments
+- **Autonomous coding systems** on the horizon
+- AI-driven architecture design
+- Complete integration into development lifecycle
+
+## Key Takeaway
+
+> AI is not replacing developers but **augmenting their capabilities**, making them more productive and enabling focus on higher-level problem-solving and creative aspects of software development.
+
+*The future of coding is collaborative intelligence between humans and AI.*`
       });
       setIsLoading(false);
     }, 3000);
