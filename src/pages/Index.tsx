@@ -3,6 +3,10 @@ import { VideoUrlForm } from "@/components/VideoUrlForm";
 import { VideoInfo } from "@/components/VideoInfo";
 import { TranscriptPanel } from "@/components/TranscriptPanel";
 import { SummaryPanel } from "@/components/SummaryPanel";
+import { useToast } from "@/hooks/use-toast";
+import { processVideo, isValidYouTubeUrl, handleApiError, ProcessingData } from "@/services/api";
+import { Card } from "@/components/ui/card";
+import { AlertCircle, Clock, CheckCircle } from "lucide-react";
 import heroBackground from "@/assets/youtube-subtle-background.jpg";
 
 interface VideoData {
@@ -17,48 +21,77 @@ interface VideoData {
 const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [videoData, setVideoData] = useState<VideoData | null>(null);
+  const [processingLogs, setProcessingLogs] = useState<string[]>([]);
+  const [currentStage, setCurrentStage] = useState<string>("");
+  const { toast } = useToast();
 
   const handleVideoSubmit = async (url: string) => {
-    setIsLoading(true);
-    
-    // Show test data if no URL provided, otherwise simulate API call
-    setTimeout(() => {
-      setVideoData({
-        title: "How AI Will Transform Software Development in 2024",
-        thumbnail: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=320&h=240&fit=crop",
-        author: "Tech Insights",
-        duration: "12:34",
-        transcript: "Welcome to today's discussion about artificial intelligence and its impact on software development. In this video, we'll explore how AI tools are revolutionizing the way developers write code, debug applications, and optimize performance.\n\nFirst, let's talk about AI-powered code completion. Tools like GitHub Copilot and Tabnine are helping developers write code faster and with fewer errors. These tools use machine learning models trained on billions of lines of code to suggest contextually relevant completions.\n\nNext, we'll discuss automated testing. AI can now generate test cases, identify edge cases that human testers might miss, and even predict which parts of the codebase are most likely to contain bugs.\n\nFinally, we'll look at the future of AI in software development, including autonomous coding systems and AI-powered architecture design.",
-        summary: `# AI Transforming Software Development in 2024
-
-This video explores the **revolutionary impact** of artificial intelligence on modern software development practices.
-
-## Key Topics Covered
-
-### 🤖 AI-Powered Code Completion
-- **GitHub Copilot** and **Tabnine** are accelerating development
-- Intelligent code suggestions based on ML models
-- Trained on billions of lines of code for contextual relevance
-
-### 🧪 Automated Testing Revolution
-- AI systems generate comprehensive test cases
-- Identify overlooked edge cases that humans miss
-- **Predictive bug detection** in codebases
-- Significant improvement in software quality
-
-### 🚀 Future Developments
-- **Autonomous coding systems** on the horizon
-- AI-driven architecture design
-- Complete integration into development lifecycle
-
-## Key Takeaway
-
-> AI is not replacing developers but **augmenting their capabilities**, making them more productive and enabling focus on higher-level problem-solving and creative aspects of software development.
-
-*The future of coding is collaborative intelligence between humans and AI.*`
+    // If no URL provided, return early
+    if (!url.trim()) {
+      toast({
+        title: "URL Required",
+        description: "Please enter a YouTube URL to process",
+        variant: "destructive",
       });
+      return;
+    }
+
+    // Validate YouTube URL format
+    if (!isValidYouTubeUrl(url)) {
+      toast({
+        title: "Invalid URL",
+        description: "Please enter a valid YouTube URL",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    setVideoData(null);
+    setProcessingLogs([]);
+    setCurrentStage("Starting...");
+
+    try {
+      const response = await processVideo(url, true);
+      
+      if (response.status === 'success' && response.data) {
+        const data = response.data;
+        
+        // Transform API response to match component interface
+        setVideoData({
+          title: data.title,
+          thumbnail: data.thumbnail || "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=320&h=240&fit=crop",
+          author: data.author,
+          duration: data.duration || "Unknown",
+          transcript: data.transcript,
+          summary: data.summary || "Summary not available",
+        });
+
+        setProcessingLogs(response.logs);
+        setCurrentStage("Completed");
+
+        toast({
+          title: "Processing Complete!",
+          description: `Video processed successfully in ${data.processing_time}`,
+        });
+      } else {
+        throw new Error(response.message || 'Processing failed');
+      }
+    } catch (error) {
+      const apiError = handleApiError(error);
+      
+      toast({
+        title: "Processing Failed",
+        description: apiError.message,
+        variant: "destructive",
+      });
+
+      setCurrentStage("Failed");
+      // Improved error logging for better debugging
+      console.error('Processing error:', apiError.message, 'Details:', apiError.details);
+    } finally {
       setIsLoading(false);
-    }, 3000);
+    }
   };
 
   return (
@@ -88,10 +121,70 @@ This video explores the **revolutionary impact** of artificial intelligence on m
         </div>
       </div>
 
+      {/* Processing Status */}
+      {isLoading && (
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            <Card className="p-6 bg-gradient-card border border-muted shadow-card backdrop-blur-sm">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <Clock className="w-5 h-5 text-primary animate-spin" />
+                  <h3 className="text-lg font-semibold">Processing Video</h3>
+                  <span className="text-sm text-muted-foreground">({currentStage})</span>
+                </div>
+                
+                {processingLogs.length > 0 && (
+                  <div className="bg-muted/30 rounded-lg p-4 max-h-48 overflow-y-auto">
+                    <div className="space-y-1">
+                      {processingLogs.map((log, index) => (
+                        <div key={index} className="text-sm text-foreground font-mono">
+                          {log}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </Card>
+          </div>
+        </div>
+      )}
+
+      {/* Error State */}
+      {currentStage === "Failed" && !isLoading && (
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            <Card className="p-6 bg-gradient-card border border-destructive shadow-card backdrop-blur-sm">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 text-destructive" />
+                <h3 className="text-lg font-semibold text-destructive">Processing Failed</h3>
+              </div>
+              
+              {processingLogs.length > 0 && (
+                <div className="mt-4 bg-muted/30 rounded-lg p-4 max-h-48 overflow-y-auto">
+                  <div className="space-y-1">
+                    {processingLogs.map((log, index) => (
+                      <div key={index} className="text-sm text-foreground font-mono">
+                        {log}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </Card>
+          </div>
+        </div>
+      )}
+
       {/* Results Section */}
-      {videoData && (
+      {videoData && currentStage === "Completed" && (
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-4xl mx-auto space-y-8">
+            <div className="flex items-center gap-2 text-green-600">
+              <CheckCircle className="w-5 h-5" />
+              <span className="font-medium">Processing completed successfully!</span>
+            </div>
+            
             <VideoInfo
               title={videoData.title}
               thumbnail={videoData.thumbnail}
@@ -102,6 +195,24 @@ This video explores the **revolutionary impact** of artificial intelligence on m
             <SummaryPanel summary={videoData.summary} />
             
             <TranscriptPanel transcript={videoData.transcript} />
+
+            {/* Processing Logs */}
+            {processingLogs.length > 0 && (
+              <Card className="bg-gradient-card border border-muted shadow-card backdrop-blur-sm">
+                <div className="p-6">
+                  <h3 className="text-lg font-semibold mb-4">Processing Log</h3>
+                  <div className="bg-muted/30 rounded-lg p-4 max-h-48 overflow-y-auto">
+                    <div className="space-y-1">
+                      {processingLogs.map((log, index) => (
+                        <div key={index} className="text-sm text-muted-foreground font-mono">
+                          {log}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            )}
           </div>
         </div>
       )}
