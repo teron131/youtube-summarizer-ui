@@ -1,5 +1,5 @@
 # Working nixpacks configuration for YouTube Summarizer
-# Single service deployment - backend + frontend (no UV issues)
+# Single service deployment - backend + frontend (fixed pip issue)
 
 [phases.setup]
 nixPkgs = ["python311", "nodejs_18", "npm-9_x", "ffmpeg"]
@@ -7,7 +7,7 @@ nixPkgs = ["python311", "nodejs_18", "npm-9_x", "ffmpeg"]
 [phases.install]
 dependsOn = ["setup"]
 cmds = [
-    "pip install -r requirements.txt",
+    "python3 -m pip install -r requirements.txt",
     "npm ci",
     "npm run build"
 ]
@@ -16,4 +16,4 @@ cmds = [
 dependsOn = ["install"]
 
 [start]
-cmd = "python -m uvicorn app:app --host 0.0.0.0 --port $PORT"
+cmd = "python3 -m uvicorn app:app --host 0.0.0.0 --port $PORT"
