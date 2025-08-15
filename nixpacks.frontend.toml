@@ -1,0 +1,22 @@
+# Frontend-only deployment configuration for YouTube Summarizer UI
+# This deploys only the React frontend and connects to separate backend API
+
+[phases.setup]
+nixPkgs = ["nodejs_18", "npm-9_x"]
+
+[phases.install]
+cmds = [
+    "npm ci"
+]
+
+[phases.build] 
+dependsOn = ["install"]
+cmds = [
+    "npm run build"
+]
+
+[staticAssets]
+"dist" = "/"
+
+[start]
+cmd = "npx serve -s dist -l $PORT"

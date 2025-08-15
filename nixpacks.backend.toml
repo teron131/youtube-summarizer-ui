@@ -1,0 +1,16 @@
+# Backend-only deployment configuration for YouTube Summarizer API
+# This deploys only the Python FastAPI backend
+
+[phases.setup]
+nixPkgs = ["python312", "ffmpeg"]
+
+[phases.install]
+cmds = [
+    "curl -LsSf https://astral.sh/uv/install.sh | sh && source ~/.cargo/env && uv sync"
+]
+
+[phases.build]
+dependsOn = ["install"]
+
+[start]
+cmd = "source ~/.cargo/env && uv run python -m uvicorn app:app --host 0.0.0.0 --port $PORT"

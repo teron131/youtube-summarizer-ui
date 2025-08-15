@@ -1,0 +1,17 @@
+# Backend Service - Ignore frontend files
+node_modules/
+package.json
+package-lock.json
+bun.lockb
+src/
+public/
+index.html
+vite.config.ts
+tsconfig*.json
+tailwind.config.ts
+postcss.config.js
+eslint.config.js
+components.json
+.env.example
+dist/
+nixpacks.toml

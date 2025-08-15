@@ -52,6 +52,19 @@ if allowed_origins_env.strip() == "*":
 else:
     allowed_origins = [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip()]
 
+# Add Railway and Vercel frontend URLs for production
+frontend_url = os.getenv("FRONTEND_URL")
+if frontend_url:
+    allowed_origins.append(frontend_url)
+
+# Add common deployment domains
+deployment_domains = [
+    "https://*.railway.app",
+    "https://*.vercel.app", 
+    "https://*.netlify.app",
+]
+allowed_origins.extend(deployment_domains)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
