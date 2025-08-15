@@ -46,7 +46,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
           <Button
             type="submit"
             disabled={!url.trim() || isLoading}
-            className="w-full h-12 text-lg bg-primary hover:bg-primary/90 hover:shadow-glow transition-all duration-300"
+            className="w-full h-12 text-lg bg-gradient-primary hover:shadow-glow transition-all duration-300"
           >
             {isLoading ? (
               <>
