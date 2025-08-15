@@ -9,25 +9,25 @@ All colors MUST be HSL.
 @layer base {
   :root {
     --background: 0 0% 7%;
-    --foreground: 0 0% 98%;
+    --foreground: 0 0% 95%;
 
-    --card: 0 0% 9%;
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 0 0% 9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 95%;
 
     --primary: 0 100% 50%;
-    --primary-foreground: 0 0% 98%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary-foreground: 0 0% 95%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 64.9%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 70%;
 
     --accent: 0 0% 15%;
-    --accent-foreground: 0 0% 98%;
+    --accent-foreground: 0 0% 95%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
@@ -36,14 +36,13 @@ All colors MUST be HSL.
     --input: 0 0% 15%;
     --ring: 0 100% 50%;
 
-    /* YouTube theme design tokens */
+    /* Subtle YouTube-inspired design tokens */
     --youtube-red: 0 100% 50%;
-    --youtube-dark-red: 0 85% 45%;
     --gradient-primary: linear-gradient(135deg, hsl(0 100% 50%), hsl(0 85% 45%));
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 9%), hsl(0 0% 15%));
-    --gradient-hero: linear-gradient(135deg, hsl(0 0% 7%) 0%, hsl(0 100% 50%) 100%);
-    --shadow-glow: 0 0 40px hsl(0 100% 50% / 0.3);
-    --shadow-card: 0 4px 32px hsl(0 0% 5% / 0.8);
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 10%), hsl(0 0% 12%));
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 7%) 0%, hsl(0 0% 12%) 100%);
+    --shadow-glow: 0 0 20px hsl(0 100% 50% / 0.15);
+    --shadow-card: 0 2px 24px hsl(0 0% 0% / 0.3);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --radius: 0.5rem;
@@ -67,25 +66,25 @@ All colors MUST be HSL.
 
   .dark {
     --background: 0 0% 7%;
-    --foreground: 0 0% 98%;
+    --foreground: 0 0% 95%;
 
-    --card: 0 0% 9%;
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 0 0% 9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 95%;
 
     --primary: 0 100% 50%;
-    --primary-foreground: 0 0% 98%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary-foreground: 0 0% 95%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 64.9%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 70%;
 
     --accent: 0 0% 15%;
-    --accent-foreground: 0 0% 98%;
+    --accent-foreground: 0 0% 95%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;

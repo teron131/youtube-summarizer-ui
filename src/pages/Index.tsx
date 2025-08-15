@@ -3,7 +3,7 @@ import { VideoUrlForm } from "@/components/VideoUrlForm";
 import { VideoInfo } from "@/components/VideoInfo";
 import { TranscriptPanel } from "@/components/TranscriptPanel";
 import { SummaryPanel } from "@/components/SummaryPanel";
-import heroBackground from "@/assets/youtube-hero-background.jpg";
+import heroBackground from "@/assets/youtube-subtle-background.jpg";
 
 interface VideoData {
   title: string;
@@ -73,8 +73,8 @@ This video explores the **revolutionary impact** of artificial intelligence on m
         
         <div className="relative container mx-auto px-4 py-16">
           <div className="text-center space-y-4 mb-12">
-            <h1 className="text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              YouTube Video Summarizer
+            <h1 className="text-5xl font-bold text-foreground">
+              YouTube Video <span className="text-primary">Summarizer</span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Transform any YouTube video into concise, AI-powered summaries. 
