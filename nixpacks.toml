@@ -1,14 +1,13 @@
-# Railway deployment configuration for YouTube Summarizer
-# This is a full-stack app with Python backend and React frontend
+# Working nixpacks configuration for YouTube Summarizer
+# Single service deployment - backend + frontend (no UV issues)
 
 [phases.setup]
-nixPkgs = ["nodejs_18", "npm-9_x", "ffmpeg"]
+nixPkgs = ["python311", "nodejs_18", "npm-9_x", "ffmpeg"]
 
 [phases.install]
+dependsOn = ["setup"]
 cmds = [
-    "curl -LsSf https://astral.sh/uv/install.sh | sh",
-    "source ~/.cargo/env", 
-    "uv sync",
+    "pip install -r requirements.txt",
     "npm ci",
     "npm run build"
 ]
@@ -17,4 +16,4 @@ cmds = [
 dependsOn = ["install"]
 
 [start]
-cmd = "python3 -m uvicorn app:app --host 0.0.0.0 --port $PORT"
+cmd = "python -m uvicorn app:app --host 0.0.0.0 --port $PORT"
