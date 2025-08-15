@@ -10,6 +10,7 @@
     "backend:test": "python -c \"import requests; print('Testing backend...'); r = requests.get('http://localhost:8080/api/health'); print(f'Health check: {r.json()}')\"",
     "build": "vite build",
     "build:dev": "vite build --mode development",
+    "start": "./start-production.sh",
     "lint": "eslint .",
     "preview": "vite preview"
   },

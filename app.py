@@ -15,6 +15,8 @@ from typing import Any, Dict, List, Optional
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from backend.summarizer import quick_summary, simple_format_subtitle
@@ -58,6 +60,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Serve static files in production
+dist_path = os.path.join(os.path.dirname(__file__), "dist")
+if os.path.exists(dist_path):
+    app.mount("/assets", StaticFiles(directory=os.path.join(dist_path, "assets")), name="assets")
+
+    @app.get("/", include_in_schema=False)
+    async def serve_frontend():
+        """Serve the React frontend."""
+        return FileResponse(os.path.join(dist_path, "index.html"))
+
+    @app.get("/{path:path}", include_in_schema=False)
+    async def serve_frontend_routes(path: str):
+        """Catch-all route to serve React Router routes."""
+        # Don't serve frontend for API routes
+        if path.startswith("api/"):
+            raise HTTPException(status_code=404, detail="API endpoint not found")
+
+        # Serve static files if they exist
+        file_path = os.path.join(dist_path, path)
+        if os.path.isfile(file_path):
+            return FileResponse(file_path)
+
+        # For all other routes, serve index.html (React Router will handle routing)
+        return FileResponse(os.path.join(dist_path, "index.html"))
+
 
 # Pydantic Models
 class YouTubeRequest(BaseModel):
@@ -96,7 +123,7 @@ def extract_video_metadata(info: Dict[str, Any]) -> VideoInfoResponse:
         duration_str = f"{int(minutes):02d}:{int(seconds):02d}"
     else:
         duration_str = None
-    
+
     return VideoInfoResponse(
         title=info.get("title", "Unknown Title"),
         author=info.get("uploader", "Unknown Author"),
@@ -148,7 +175,7 @@ async def process_youtube_video(request: YouTubeRequest):
         log_and_print("📋 Step 1: Extracting video info...")
         logs.append("📋 Step 1: Extracting video info...")
         info = extract_video_info(request.url)
-        
+
         video_metadata = extract_video_metadata(info)
         log_and_print(f"✅ Video found: {video_metadata.title} by {video_metadata.author}")
         logs.append(f"✅ Video found: {video_metadata.title} by {video_metadata.author}")
@@ -164,7 +191,7 @@ async def process_youtube_video(request: YouTubeRequest):
         else:
             log_and_print("🎯 No captions found - proceeding with transcription")
             logs.append("🎯 No captions found - proceeding with transcription")
-            
+
             try:
                 log_and_print("📋 Step 3: Downloading audio...")
                 logs.append("📋 Step 3: Downloading audio...")
@@ -183,7 +210,7 @@ async def process_youtube_video(request: YouTubeRequest):
                     formatted_subtitle = simple_format_subtitle(subtitle)
                     log_and_print("✅ Transcription completed")
                     logs.append("✅ Transcription completed")
-                    
+
             except Exception as audio_error:
                 error_msg = f"❌ Audio processing failed: {str(audio_error)}"
                 log_and_print(error_msg)
@@ -195,7 +222,7 @@ async def process_youtube_video(request: YouTubeRequest):
         if request.generate_summary and not formatted_subtitle.startswith("["):
             log_and_print("📋 Step 5: Generating summary...")
             logs.append("📋 Step 5: Generating summary...")
-            
+
             if not os.getenv("GEMINI_API_KEY"):
                 log_and_print("❌ GEMINI_API_KEY not configured")
                 logs.append("❌ GEMINI_API_KEY not configured")
@@ -246,11 +273,7 @@ async def process_youtube_video(request: YouTubeRequest):
         logs.append(f"❌ {error_message}")
         logs.append(failure_msg)
 
-        return ProcessingResponse(
-            status="error", 
-            message=error_message, 
-            logs=logs
-        )
+        return ProcessingResponse(status="error", message=error_message, logs=logs)
 
 
 if __name__ == "__main__":
@@ -258,6 +281,6 @@ if __name__ == "__main__":
 
     port = int(os.environ.get("PORT", 8080))
     host = os.environ.get("HOST", "0.0.0.0")
-    
+
     log_and_print(f"🚀 Starting YouTube Summarizer API on {host}:{port}")
     uvicorn.run(app, host=host, port=port, reload=True)

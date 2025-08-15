@@ -115,88 +115,14 @@ npm run frontend:dev
 3. Keep `VITE_API_BASE_URL=http://localhost:8080`
 4. Run: `npm run dev`
 
-### Railway Backend Deployment
+### Railway Single-Service Deployment
 1. Set environment variables in Railway dashboard:
    - `GEMINI_API_KEY=your_actual_key`
    - `FAL_KEY=your_actual_key`  
-   - `ALLOWED_ORIGINS=https://your-frontend-domain.up.railway.app,https://your-backend-domain.up.railway.app`
-2. Railway will automatically set `PORT`
-3. Deploy from main directory with [`app.py`](app.py)
-
-### Frontend Deployment (Railway/Vercel/Netlify)
-1. Set build environment variable:
-   - `VITE_API_BASE_URL=https://your-backend-domain.up.railway.app`
-2. Update `ALLOWED_ORIGINS` in Railway backend to include frontend URL
-
-## 🚀 Railway Deployment
-
-### Deploy Backend on Railway
-
-1. **Create Railway Project**
-   - Go to [Railway.app](https://railway.app)
-   - Create a new project from GitHub repository
-   - Select this repository
-
-2. **Configure Backend Service**
-   - Railway will detect the Python app automatically
-   - Set the following environment variables in Railway dashboard:
-   ```env
-   GEMINI_API_KEY=your_actual_gemini_key
-   FAL_KEY=your_actual_fal_key
-   ALLOWED_ORIGINS=https://your-frontend-domain.up.railway.app
-   ```
-
-3. **Deploy Backend**
-   - Railway will use [`railway.json`](railway.json) configuration
-   - Backend will be available at `https://your-backend-domain.up.railway.app`
-
-### Deploy Frontend on Railway
-
-1. **Create Another Railway Service**
-   - Add a new service to your Railway project
-   - Connect to the same GitHub repository
-
-2. **Configure Frontend Service**
-   - Set build command: `npm run build`
-   - Set start command: `npm run preview`
-   - Add environment variable:
-   ```env
-   VITE_API_BASE_URL=https://your-backend-domain.up.railway.app
-   ```
-
-3. **Update Backend CORS**
-   - Go back to your backend service
-   - Update `ALLOWED_ORIGINS` to include your frontend URL:
-   ```env
-   ALLOWED_ORIGINS=https://your-frontend-domain.up.railway.app,https://your-backend-domain.up.railway.app
-   ```
-
-### Railway Environment Variables Setup
-
-**Backend Service:**
-```env
-GEMINI_API_KEY=your_actual_gemini_key
-FAL_KEY=your_actual_fal_key
-ALLOWED_ORIGINS=https://your-frontend-domain.up.railway.app
-```
-
-**Frontend Service:**
-```env
-VITE_API_BASE_URL=https://your-backend-domain.up.railway.app
-```
-
-### Railway Project Structure
-```
-Railway Project
-├── Backend Service (Python/FastAPI)
-│   ├── Detects app.py automatically
-│   ├── Uses railway.json config
-│   └── Installs from requirements.txt
-└── Frontend Service (Node.js/Vite)
-    ├── Builds React app
-    ├── Serves with Vite preview
-    └── Uses VITE_API_BASE_URL for API calls
-```
+   - `ALLOWED_ORIGINS=*`
+2. Railway automatically sets `PORT`
+3. Deploy from main directory - Railway handles both frontend build and backend
+4. Access your app at the Railway-provided domain
 
 ## 📁 Project Structure
 
@@ -296,30 +222,22 @@ npm run backend:test    # Test backend health
 - Verify FAL_KEY and GEMINI_API_KEY are valid
 - Some videos may have restricted access
 
-### Railway Deployment Issues
+### Deployment Troubleshooting
 
-**Backend deployment fails:**
-- Ensure [`app.py`](app.py) is in the root directory
-- Check Railway logs for startup errors
-- Verify environment variables are set correctly
-- Make sure `requirements.txt` includes all dependencies
+**Build fails:**
+- Check that `nixpacks.toml` has correct package versions
+- Verify `requirements.txt` and `package.json` are valid
+- Review Railway build logs
 
-**Frontend not connecting to backend:**
-- Verify `VITE_API_BASE_URL` points to backend Railway URL
-- Check backend `ALLOWED_ORIGINS` includes frontend Railway URL
-- Ensure both services are in the same Railway project for easy domain management
+**App starts but frontend doesn't load:**
+- Ensure `npm run build` completed successfully
+- Check that `dist/` directory exists
+- Verify static file serving in `app.py`
 
-**CORS errors:**
-- Backend `ALLOWED_ORIGINS` must include frontend Railway domain
-- Update CORS settings after frontend deployment
-- Check Railway logs for CORS-related errors
-
-### Debug Mode
-Enable detailed logging by setting environment variables in Railway:
-```env
-DEBUG=true
-LOG_LEVEL=DEBUG
-```
+**API not working:**
+- Check Railway environment variables are set
+- Verify backend health at `https://your-domain.railway.app/api/health`
+- Review Railway deployment logs
 
 ## 📝 License
 
