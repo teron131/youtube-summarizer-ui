@@ -7,7 +7,7 @@ nixPkgs = ["python311", "nodejs_18", "npm-9_x", "ffmpeg", "python311Packages.pip
 [phases.install]
 dependsOn = ["setup"]
 cmds = [
-    "python3 -m pip install -r requirements.txt",
+    "python3 -m pip3 install -r requirements.txt",
     "npm ci",
     "npm run build"
 ]
