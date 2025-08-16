@@ -26,12 +26,77 @@ const Index = () => {
   const { toast } = useToast();
 
   const handleVideoSubmit = async (url: string) => {
-    // If no URL provided, return early
+    // If no URL provided, show example output
     if (!url.trim()) {
+      setVideoData({
+        title: "How to Build React Apps with TypeScript - Complete Tutorial",
+        thumbnail: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=480&h=360&fit=crop",
+        author: "Tech Tutorial Channel",
+        duration: "25:42",
+        transcript: `Welcome to this comprehensive tutorial on building React applications with TypeScript. 
+
+In this video, we'll cover:
+
+1. Setting up a React TypeScript project
+   - Installing dependencies
+   - Configuring TypeScript
+   - Setting up development environment
+
+2. Creating Components with TypeScript
+   - Defining prop types
+   - Using interfaces and type definitions
+   - Component state management
+
+3. Advanced TypeScript Features
+   - Generic components
+   - Custom hooks with types
+   - Error handling patterns
+
+4. Best Practices
+   - Code organization
+   - Testing strategies
+   - Performance optimization
+
+Let's start by creating our first TypeScript React component. We'll begin with a simple counter component that demonstrates basic type safety...
+
+[Additional transcript content continues with detailed explanations of React TypeScript concepts, code examples, and practical implementation tips.]`,
+        summary: `This comprehensive tutorial covers building React applications with TypeScript from setup to deployment.
+
+**Key Topics Covered:**
+
+🔧 **Project Setup**
+- Installing React with TypeScript template
+- Configuring development environment
+- Essential dependencies and tools
+
+💻 **Component Development**
+- Creating type-safe React components
+- Defining interfaces for props and state
+- Using TypeScript generics effectively
+
+🎯 **Advanced Patterns**
+- Custom hooks with proper typing
+- Context API with TypeScript
+- Error boundaries and error handling
+
+🚀 **Best Practices**
+- Code organization strategies
+- Testing TypeScript React components
+- Performance optimization techniques
+
+**Main Benefits Highlighted:**
+- Enhanced developer experience with autocomplete
+- Compile-time error detection
+- Better code maintainability and refactoring
+- Improved team collaboration
+
+The tutorial provides practical examples and real-world scenarios, making it ideal for developers transitioning from JavaScript to TypeScript in React projects.`
+      });
+      setCurrentStage("Completed");
+      
       toast({
-        title: "URL Required",
-        description: "Please enter a YouTube URL to process",
-        variant: "destructive",
+        title: "Example Output",
+        description: "This is a sample output. Enter a YouTube URL to process real videos.",
       });
       return;
     }
@@ -267,7 +332,7 @@ const Index = () => {
       <footer className="border-t border-muted py-8 mt-16">
         <div className="container mx-auto px-4 text-center">
           <p className="text-muted-foreground">
-            Powered by advanced AI transcription and summarization technology
+            Powered by Whisper and Gemini
           </p>
         </div>
       </footer>
