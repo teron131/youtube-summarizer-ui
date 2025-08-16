@@ -332,7 +332,7 @@ The tutorial provides practical examples and real-world scenarios, making it ide
       <footer className="border-t border-muted py-8 mt-16">
         <div className="container mx-auto px-4 text-center">
           <p className="text-muted-foreground">
-            Powered by OpenAI Whisper on Fal and Google Gemini
+            Powered by Whisper and Gemini
           </p>
         </div>
       </footer>
