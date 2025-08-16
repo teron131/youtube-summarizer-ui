@@ -46,12 +46,12 @@ git clone <repository-url>
 cd youtube-summarizer-ui
 
 # Install frontend dependencies
-npm install
+bun install
 
 # Install Python dependencies
-pip install -r requirements.txt
-# OR using uv (recommended)
+cd youtube-summarizer
 uv sync
+cd ..
 ```
 
 ### 2. Environment Configuration
@@ -59,19 +59,15 @@ uv sync
 Copy the example environment file and add your API keys:
 
 ```bash
-cp .env.example .env
+cp youtube-summarizer/.env_example youtube-summarizer/.env
 ```
 
-Edit `.env` with your API keys:
+Edit `youtube-summarizer/.env` with your API keys:
 
 ```env
 # API Keys
 GEMINI_API_KEY=your_gemini_api_key_here
 FAL_KEY=your_fal_api_key_here
-
-# Local Development
-VITE_API_BASE_URL=http://localhost:8080
-ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
 ```
 
 ### 3. Run the Application
@@ -80,12 +76,33 @@ ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
 Run both frontend and backend simultaneously:
 
 ```bash
-npm run dev
+./start.sh
 ```
 
 This starts:
-- Backend API at `http://localhost:8080`
+- Backend API at `http://localhost:8001`
 - Frontend UI at `http://localhost:5173`
+- API Docs at `http://localhost:8001/docs`
+
+#### Option B: Individual Services
+
+**Backend only:**
+```bash
+cd youtube-summarizer
+uv run python -m uvicorn app:app --host 0.0.0.0 --port 8001 --reload
+```
+
+**Frontend only:**
+```bash
+bun run dev
+```
+
+#### Option C: Stop All Services
+```bash
+./stop.sh
+```
+
+
 
 #### Option B: Individual Services
 
@@ -107,41 +124,61 @@ npm run frontend:dev
 4. Watch real-time processing logs
 5. Review the generated transcript and AI summary
 
-## 📋 Deployment Quick Reference
+## 🚀 Railway Deployment
 
-### Local Development Setup
-1. Copy `.env.example` to `.env`
-2. Fill in your API keys (`GEMINI_API_KEY`, `FAL_KEY`)
-3. Keep `VITE_API_BASE_URL=http://localhost:8080`
-4. Run: `npm run dev`
+### Frontend Service
+- **Location**: Root directory (`railway.toml`)
+- **Builder**: Nixpacks (auto-detects React/Vite)
+- **Start Command**: `npx serve -s dist -l $PORT`
+- **Health Check**: `/` (root path)
 
-### Railway Single-Service Deployment
-1. Set environment variables in Railway dashboard:
+### Backend Service  
+- **Location**: `youtube-summarizer/railway.toml`
+- **Builder**: Nixpacks (auto-detects Python/FastAPI)
+- **Start Command**: `uvicorn app:app --host 0.0.0.0 --port $PORT`
+- **Health Check**: `/docs` (FastAPI docs)
+
+### Deployment Steps
+1. **Frontend**: Deploy from root directory (auto-detects React/Vite)
+2. **Backend**: Deploy from `youtube-summarizer/` directory (auto-detects Python/FastAPI)
+3. **Environment Variables**: Set in Railway dashboard:
    - `GEMINI_API_KEY=your_actual_key`
-   - `FAL_KEY=your_actual_key`  
-   - `ALLOWED_ORIGINS=*`
-2. Railway automatically sets `PORT`
-3. Deploy from main directory - Railway handles both frontend build and backend
-4. Access your app at the Railway-provided domain
+   - `FAL_KEY=your_actual_key`
+4. **Access**: Your app will be available at the Railway-provided domain
+
+## 🔧 Dependencies
+
+### Required Tools
+- **Bun**: Node.js package manager for frontend
+- **UV**: Python package manager for backend
+
+### Installation
+```bash
+# Install Bun
+curl -fsSL https://bun.sh/install | bash
+
+# Install UV
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
 ## 📁 Project Structure
 
 ```
 youtube-summarizer-ui/
-├── app.py                  # Main FastAPI application (for Railway)
-├── backend/                # Python backend modules
-│   ├── youtube_loader.py   # YouTube video processing
-│   ├── transcriber.py      # Audio transcription service
-│   ├── summarizer.py       # AI summarization service
-│   └── utils.py            # Utility functions
-├── src/                    # React frontend
-│   ├── components/         # UI components
-│   ├── services/           # API service layer
-│   ├── pages/              # Page components
-│   └── hooks/              # Custom React hooks
-├── public/                 # Static assets
-├── railway.json           # Railway deployment config
-└── package.json           # Frontend dependencies
+├── railway.toml              # Frontend Railway config
+├── start.sh                  # Local development start script
+├── stop.sh                   # Local development stop script
+├── package.json              # Frontend dependencies
+├── bun.lock                  # Frontend lockfile
+├── src/                      # Frontend source code
+├── dist/                     # Frontend build output
+├── vite.config.ts            # Vite configuration
+└── youtube-summarizer/       # Backend service
+    ├── railway.toml          # Backend Railway config
+    ├── pyproject.toml        # Backend dependencies
+    ├── uv.lock               # Backend lockfile
+    ├── app.py                # FastAPI application
+    └── youtube_summarizer/   # Backend source code
 ```
 
 ## 🔌 API Endpoints
@@ -176,16 +213,16 @@ Content-Type: application/json
 
 ### Frontend Development
 ```bash
-npm run frontend:dev    # Start frontend only
-npm run build          # Build for production
-npm run preview        # Preview production build
-npm run lint           # Lint code
+bun run dev            # Start frontend development server
+bun run build          # Build for production
+bun run preview        # Preview production build
+bun run lint           # Lint code
 ```
 
 ### Backend Development
 ```bash
-npm run backend:dev     # Start backend with auto-reload
-npm run backend:test    # Test backend health
+cd youtube-summarizer
+uv run python -m uvicorn app:app --host 0.0.0.0 --port 8001 --reload
 ```
 
 ## ⚙️ Configuration
@@ -208,13 +245,13 @@ npm run backend:test    # Test backend health
 ### Local Development Issues
 
 **Backend not starting:**
-- Ensure Python dependencies are installed: `pip install -r requirements.txt`
-- Check if port 8080 is available
-- Verify API keys in `.env` file
+- Ensure Python dependencies are installed: `cd youtube-summarizer && uv sync`
+- Check if port 8001 is available
+- Verify API keys in `youtube-summarizer/.env` file
 
 **Frontend not connecting to backend:**
-- Ensure backend is running on port 8080
-- Check `VITE_API_BASE_URL` in `.env`
+- Ensure backend is running on port 8001
+- Check Vite proxy configuration in `vite.config.ts`
 - Verify CORS settings in backend
 
 **Video processing fails:**
@@ -225,18 +262,18 @@ npm run backend:test    # Test backend health
 ### Deployment Troubleshooting
 
 **Build fails:**
-- Check that `nixpacks.toml` has correct package versions
-- Verify `requirements.txt` and `package.json` are valid
+- Check that Railway configs are correct
+- Verify `pyproject.toml` and `package.json` are valid
 - Review Railway build logs
 
 **App starts but frontend doesn't load:**
-- Ensure `npm run build` completed successfully
+- Ensure `bun run build` completed successfully
 - Check that `dist/` directory exists
-- Verify static file serving in `app.py`
+- Verify static file serving configuration
 
 **API not working:**
 - Check Railway environment variables are set
-- Verify backend health at `https://your-domain.railway.app/api/health`
+- Verify backend health at `https://your-domain.railway.app/docs`
 - Review Railway deployment logs
 
 ## 📝 License
