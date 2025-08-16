@@ -6,6 +6,11 @@
 // For local dev, Vite proxy will handle this. For production, it's set at build time.
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
+// Log the API base URL for debugging (only in development)
+if (import.meta.env.DEV) {
+  console.log('API Base URL:', API_BASE_URL || 'Using Vite proxy (localhost:8080)');
+}
+
 // Types
 export interface VideoInfo {
   title: string;
