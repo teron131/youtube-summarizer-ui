@@ -180,7 +180,7 @@ The tutorial provides practical examples and real-world scenarios, making it ide
             <div className="fade-in-up">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full mb-6">
                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                <span className="text-primary text-sm font-medium">Powered by Advanced AI</span>
+                <span className="text-primary text-sm font-medium">Powered by Whisper and Gemini</span>
               </div>
             </div>
             
