@@ -1,30 +1,30 @@
-import { useState } from "react";
-import { VideoUrlForm } from "@/components/VideoUrlForm";
-import { VideoInfo } from "@/components/VideoInfo";
-import { TranscriptPanel } from "@/components/TranscriptPanel";
+import heroBackground from "@/assets/youtube-subtle-background.jpg";
+import { AnalysisPanel } from "@/components/AnalysisPanel";
 import { SummaryPanel } from "@/components/SummaryPanel";
+import { TranscriptPanel } from "@/components/TranscriptPanel";
+import { Card } from "@/components/ui/card";
+import { VideoInfo } from "@/components/VideoInfo";
+import { VideoUrlForm } from "@/components/VideoUrlForm";
 import { useToast } from "@/hooks/use-toast";
 import {
-  getVideoInfo,
-  processVideo,
-  isValidYouTubeUrl,
-  handleApiError,
-  VideoInfoResponse,
-  ProcessingResultData,
-  ProcessingResponse,
   ApiError,
+  generateComprehensiveAnalysis,
+  GenerateResponse,
+  handleApiError,
+  isValidYouTubeUrl,
 } from "@/services/api";
-import { Card } from "@/components/ui/card";
-import { AlertCircle, Clock, CheckCircle } from "lucide-react";
-import heroBackground from "@/assets/youtube-subtle-background.jpg";
+import { AlertCircle, CheckCircle, Clock } from "lucide-react";
+import { useState } from "react";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [videoInfo, setVideoInfo] = useState<VideoInfoResponse | null>(null);
-  const [processingResult, setProcessingResult] = useState<ProcessingResultData | null>(null);
-  const [processingLogs, setProcessingLogs] = useState<string[]>([]);
   const [error, setError] = useState<ApiError | null>(null);
   const [currentStage, setCurrentStage] = useState<string>("");
+  const [processingLogs, setProcessingLogs] = useState<string[]>([]);
+
+  // Consolidated state for the response data
+  const [analysisResult, setAnalysisResult] = useState<GenerateResponse | null>(null);
+
   const { toast } = useToast();
 
   const handleVideoSubmit = async (url: string) => {
@@ -40,29 +40,30 @@ const Index = () => {
 
     // Reset state
     setIsLoading(true);
-    setVideoInfo(null);
-    setProcessingResult(null);
-    setProcessingLogs([]);
     setError(null);
-    setCurrentStage("Starting workflow...");
+    setAnalysisResult(null);
+    setProcessingLogs(["🚀 Starting comprehensive analysis..."]);
+    setCurrentStage("Initializing...");
 
     try {
-      // Step 1: Get Video Info
-      setCurrentStage("Fetching video information...");
-      const info = await getVideoInfo(url);
-      setVideoInfo(info);
+      // Single API call to the new master endpoint
+      setCurrentStage("Processing video... (this may take a moment)");
+      const response = await generateComprehensiveAnalysis({
+        url,
+        include_metadata: true,
+        include_transcript: true,
+        include_summary: true,
+        include_analysis: true,
+      });
 
-      // Step 2: Process Video
-      setCurrentStage("Processing video (transcription & summary)...");
-      const response = await processVideo(url, true);
-      setProcessingLogs(response.logs);
+      setProcessingLogs(response.logs || []);
 
-      if (response.status === 'success' && response.data) {
-        setProcessingResult(response.data);
+      if (response.status === 'success') {
+        setAnalysisResult(response);
         setCurrentStage("Completed");
         toast({
           title: "Processing Complete!",
-          description: `Video processed successfully in ${response.data.processing_time}`,
+          description: `Analysis finished in ${response.metadata?.total_processing_time || 'a few moments'}.`,
         });
       } else {
         throw new Error(response.message || 'An unknown processing error occurred');
@@ -206,7 +207,7 @@ const Index = () => {
           )}
 
           {/* Success State */}
-          {!isLoading && !error && (processingResult || videoInfo) && (
+          {!isLoading && !error && analysisResult && (
             <>
               {currentStage === "Completed" && (
                 <div className="flex items-center gap-2 text-green-600">
@@ -215,22 +216,28 @@ const Index = () => {
                 </div>
               )}
               
-              {(videoInfo || processingResult) && (
+              {analysisResult.video_info && (
                  <VideoInfo
-                    title={processingResult?.title || videoInfo?.title || "Loading..."}
-                    author={processingResult?.author || videoInfo?.author || "Loading..."}
-                    thumbnail={processingResult?.thumbnail || videoInfo?.thumbnail}
-                    duration={processingResult?.duration || videoInfo?.duration}
-                    view_count={processingResult?.view_count || videoInfo?.view_count}
-                    upload_date={processingResult?.upload_date || videoInfo?.upload_date}
+                    title={analysisResult.video_info.title}
+                    author={analysisResult.video_info.author}
+                    thumbnail={analysisResult.video_info.thumbnail}
+                    duration={analysisResult.video_info.duration}
+                    duration_seconds={analysisResult.video_info.duration_seconds}
+                    view_count={analysisResult.video_info.view_count}
+                    upload_date={analysisResult.video_info.upload_date}
                  />
               )}
             
-              {processingResult && (
-                <>
-                  <SummaryPanel summary={processingResult.summary || "Summary generation was skipped or failed."} />
-                  <TranscriptPanel transcript={processingResult.transcript} />
-                </>
+              {analysisResult.summary && (
+                <SummaryPanel summary={analysisResult.summary} />
+              )}
+              
+              {analysisResult.analysis && (
+                <AnalysisPanel analysis={analysisResult.analysis} />
+              )}
+
+              {analysisResult.transcript && (
+                <TranscriptPanel transcript={analysisResult.transcript} />
               )}
 
               {/* Processing Logs for successful runs */}

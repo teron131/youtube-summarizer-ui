@@ -6,11 +6,28 @@ interface VideoInfoProps {
   thumbnail?: string;
   author: string;
   duration?: string;
+  duration_seconds?: number;
   view_count?: number;
   upload_date?: string;
 }
 
-export const VideoInfo = ({ title, thumbnail, author, duration, view_count, upload_date }: VideoInfoProps) => {
+const formatDuration = (seconds?: number): string | null => {
+  if (seconds === undefined || seconds === null) return null;
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor(seconds % 60);
+
+  const parts: string[] = [];
+  if (h > 0) parts.push(h.toString().padStart(2, '0'));
+  parts.push(m.toString().padStart(2, '0'));
+  parts.push(s.toString().padStart(2, '0'));
+  
+  return parts.join(':');
+}
+
+export const VideoInfo = ({ title, thumbnail, author, duration, duration_seconds, view_count, upload_date }: VideoInfoProps) => {
+  const displayDuration = duration_seconds ? formatDuration(duration_seconds) : duration;
+  
   return (
     <Card className="p-8 modern-blur shadow-glass hover-lift overflow-hidden">
       <div className="flex flex-col sm:flex-row gap-6">
@@ -36,12 +53,12 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, uplo
               <span className="font-medium">{author}</span>
             </div>
             
-            {duration && (
+            {displayDuration && (
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
                   <Clock className="w-4 h-4 text-primary" />
                 </div>
-                <span className="font-medium">{duration}</span>
+                <span className="font-medium">{displayDuration}</span>
               </div>
             )}
             
