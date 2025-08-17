@@ -53,15 +53,6 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
   return (
     <Card className="p-10 modern-blur shadow-glass hover-lift">
       <div className="space-y-8">
-        <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-3 px-6 py-3 bg-primary/10 border border-primary/30 rounded-full">
-            <Play className="w-5 h-5 text-primary" />
-            <span className="text-primary font-semibold text-lg">Start Processing</span>
-          </div>
-          <p className="text-muted-foreground text-lg leading-relaxed max-w-lg mx-auto">
-            Paste any YouTube URL below and let our AI create intelligent summaries with full transcripts
-          </p>
-        </div>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-3">
@@ -127,16 +118,6 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
           </div>
         </div>
 
-        {/* Processing info */}
-        {!isLoading && (
-          <Alert>
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription className="text-sm">
-              <strong>Processing includes:</strong> Video info extraction, audio transcription, 
-              and AI-powered summarization. This may take 1-3 minutes depending on video length.
-            </AlertDescription>
-          </Alert>
-        )}
       </div>
     </Card>
   );
