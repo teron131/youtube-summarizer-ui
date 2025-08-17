@@ -12,7 +12,7 @@ if (import.meta.env.DEV) {
 }
 
 // Types
-export interface VideoInfo {
+export interface VideoInfoResponse {
   title: string;
   author: string;
   duration?: string;
@@ -21,11 +21,13 @@ export interface VideoInfo {
   upload_date?: string;
 }
 
-export interface ProcessingData {
+export interface ProcessingResultData {
   title: string;
   author: string;
   duration?: string;
   thumbnail?: string;
+  view_count?: number;
+  upload_date?: string;
   transcript: string;
   summary?: string;
   processing_time: string;
@@ -35,7 +37,7 @@ export interface ProcessingData {
 export interface ProcessingResponse {
   status: 'success' | 'error';
   message: string;
-  data?: ProcessingData;
+  data?: ProcessingResultData;
   logs: string[];
 }
 
@@ -98,7 +100,7 @@ class YouTubeApiClient {
   /**
    * Extract basic video information without processing
    */
-  async getVideoInfo(url: string): Promise<VideoInfo> {
+  async getVideoInfo(url: string): Promise<VideoInfoResponse> {
     return this.makeRequest('/api/video-info', {
       method: 'POST',
       body: JSON.stringify({ url }),
@@ -156,7 +158,7 @@ export const apiClient = new YouTubeApiClient();
 
 // Convenience functions - properly bound to maintain context
 export const healthCheck = () => apiClient.healthCheck();
-export const getVideoInfo = (url: string) => apiClient.getVideoInfo(url);
+export const getVideoInfo = (url: string): Promise<VideoInfoResponse> => apiClient.getVideoInfo(url);
 export const processVideo = (url: string, generateSummary: boolean = true) => 
   apiClient.processVideo(url, generateSummary);
 export const isValidYouTubeUrl = (url: string) => apiClient.isValidYouTubeUrl(url);

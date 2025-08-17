@@ -4,103 +4,30 @@ import { VideoInfo } from "@/components/VideoInfo";
 import { TranscriptPanel } from "@/components/TranscriptPanel";
 import { SummaryPanel } from "@/components/SummaryPanel";
 import { useToast } from "@/hooks/use-toast";
-import { processVideo, isValidYouTubeUrl, handleApiError, ProcessingData } from "@/services/api";
+import {
+  getVideoInfo,
+  processVideo,
+  isValidYouTubeUrl,
+  handleApiError,
+  VideoInfoResponse,
+  ProcessingResultData,
+  ProcessingResponse,
+  ApiError,
+} from "@/services/api";
 import { Card } from "@/components/ui/card";
 import { AlertCircle, Clock, CheckCircle } from "lucide-react";
 import heroBackground from "@/assets/youtube-subtle-background.jpg";
 
-interface VideoData {
-  title: string;
-  thumbnail: string;
-  author: string;
-  duration: string;
-  transcript: string;
-  summary: string;
-}
-
 const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [videoData, setVideoData] = useState<VideoData | null>(null);
+  const [videoInfo, setVideoInfo] = useState<VideoInfoResponse | null>(null);
+  const [processingResult, setProcessingResult] = useState<ProcessingResultData | null>(null);
   const [processingLogs, setProcessingLogs] = useState<string[]>([]);
+  const [error, setError] = useState<ApiError | null>(null);
   const [currentStage, setCurrentStage] = useState<string>("");
   const { toast } = useToast();
 
   const handleVideoSubmit = async (url: string) => {
-    // If no URL provided, show example output
-    if (!url.trim()) {
-      setVideoData({
-        title: "How to Build React Apps with TypeScript - Complete Tutorial",
-        thumbnail: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=480&h=360&fit=crop",
-        author: "Tech Tutorial Channel",
-        duration: "25:42",
-        transcript: `Welcome to this comprehensive tutorial on building React applications with TypeScript. 
-
-In this video, we'll cover:
-
-1. Setting up a React TypeScript project
-   - Installing dependencies
-   - Configuring TypeScript
-   - Setting up development environment
-
-2. Creating Components with TypeScript
-   - Defining prop types
-   - Using interfaces and type definitions
-   - Component state management
-
-3. Advanced TypeScript Features
-   - Generic components
-   - Custom hooks with types
-   - Error handling patterns
-
-4. Best Practices
-   - Code organization
-   - Testing strategies
-   - Performance optimization
-
-Let's start by creating our first TypeScript React component. We'll begin with a simple counter component that demonstrates basic type safety...
-
-[Additional transcript content continues with detailed explanations of React TypeScript concepts, code examples, and practical implementation tips.]`,
-        summary: `This comprehensive tutorial covers building React applications with TypeScript from setup to deployment.
-
-**Key Topics Covered:**
-
-🔧 **Project Setup**
-- Installing React with TypeScript template
-- Configuring development environment
-- Essential dependencies and tools
-
-💻 **Component Development**
-- Creating type-safe React components
-- Defining interfaces for props and state
-- Using TypeScript generics effectively
-
-🎯 **Advanced Patterns**
-- Custom hooks with proper typing
-- Context API with TypeScript
-- Error boundaries and error handling
-
-🚀 **Best Practices**
-- Code organization strategies
-- Testing TypeScript React components
-- Performance optimization techniques
-
-**Main Benefits Highlighted:**
-- Enhanced developer experience with autocomplete
-- Compile-time error detection
-- Better code maintainability and refactoring
-- Improved team collaboration
-
-The tutorial provides practical examples and real-world scenarios, making it ideal for developers transitioning from JavaScript to TypeScript in React projects.`
-      });
-      setCurrentStage("Completed");
-      
-      toast({
-        title: "Example Output",
-        description: "This is a sample output. Enter a YouTube URL to process real videos.",
-      });
-      return;
-    }
-
     // Validate YouTube URL format
     if (!isValidYouTubeUrl(url)) {
       toast({
@@ -111,48 +38,44 @@ The tutorial provides practical examples and real-world scenarios, making it ide
       return;
     }
 
+    // Reset state
     setIsLoading(true);
-    setVideoData(null);
+    setVideoInfo(null);
+    setProcessingResult(null);
     setProcessingLogs([]);
-    setCurrentStage("Starting...");
+    setError(null);
+    setCurrentStage("Starting workflow...");
 
     try {
+      // Step 1: Get Video Info
+      setCurrentStage("Fetching video information...");
+      const info = await getVideoInfo(url);
+      setVideoInfo(info);
+
+      // Step 2: Process Video
+      setCurrentStage("Processing video (transcription & summary)...");
       const response = await processVideo(url, true);
-      
+      setProcessingLogs(response.logs);
+
       if (response.status === 'success' && response.data) {
-        const data = response.data;
-        
-        // Transform API response to match component interface
-        setVideoData({
-          title: data.title,
-          thumbnail: data.thumbnail || "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=320&h=240&fit=crop",
-          author: data.author,
-          duration: data.duration || "Unknown",
-          transcript: data.transcript,
-          summary: data.summary || "Summary not available",
-        });
-
-        setProcessingLogs(response.logs);
+        setProcessingResult(response.data);
         setCurrentStage("Completed");
-
         toast({
           title: "Processing Complete!",
-          description: `Video processed successfully in ${data.processing_time}`,
+          description: `Video processed successfully in ${response.data.processing_time}`,
         });
       } else {
-        throw new Error(response.message || 'Processing failed');
+        throw new Error(response.message || 'An unknown processing error occurred');
       }
     } catch (error) {
       const apiError = handleApiError(error);
-      
+      setError(apiError);
+      setCurrentStage("Failed");
       toast({
         title: "Processing Failed",
         description: apiError.message,
         variant: "destructive",
       });
-
-      setCurrentStage("Failed");
-      // Improved error logging for better debugging
       console.error('Processing error:', apiError.message, 'Details:', apiError.details);
     } finally {
       setIsLoading(false);
@@ -221,10 +144,11 @@ The tutorial provides practical examples and real-world scenarios, making it ide
         </div>
       </div>
 
-      {/* Modern Processing Status */}
-      {isLoading && (
-        <div className="container mx-auto px-4 py-12">
-          <div className="max-w-4xl mx-auto">
+      {/* Results and Status Section */}
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-4xl mx-auto space-y-8">
+          {/* Loading State */}
+          {isLoading && (
             <Card className="p-10 modern-blur shadow-glass">
               <div className="space-y-8">
                 <div className="flex items-center justify-center">
@@ -257,18 +181,14 @@ The tutorial provides practical examples and real-world scenarios, making it ide
                 )}
               </div>
             </Card>
-          </div>
-        </div>
-      )}
+          )}
 
-      {/* Error State */}
-      {currentStage === "Failed" && !isLoading && (
-        <div className="container mx-auto px-4 py-8">
-          <div className="max-w-4xl mx-auto">
+          {/* Error State */}
+          {error && !isLoading && (
             <Card className="p-6 bg-gradient-card border border-destructive shadow-card backdrop-blur-sm">
               <div className="flex items-center gap-3">
                 <AlertCircle className="w-5 h-5 text-destructive" />
-                <h3 className="text-lg font-semibold text-destructive">Processing Failed</h3>
+                <h3 className="text-lg font-semibold text-destructive">{error.message}</h3>
               </div>
               
               {processingLogs.length > 0 && (
@@ -283,50 +203,57 @@ The tutorial provides practical examples and real-world scenarios, making it ide
                 </div>
               )}
             </Card>
-          </div>
-        </div>
-      )}
+          )}
 
-      {/* Results Section */}
-      {videoData && currentStage === "Completed" && (
-        <div className="container mx-auto px-4 py-12">
-          <div className="max-w-4xl mx-auto space-y-8">
-            <div className="flex items-center gap-2 text-green-600">
-              <CheckCircle className="w-5 h-5" />
-              <span className="font-medium">Processing completed successfully!</span>
-            </div>
+          {/* Success State */}
+          {!isLoading && !error && (processingResult || videoInfo) && (
+            <>
+              {currentStage === "Completed" && (
+                <div className="flex items-center gap-2 text-green-600">
+                  <CheckCircle className="w-5 h-5" />
+                  <span className="font-medium">Processing completed successfully!</span>
+                </div>
+              )}
+              
+              {(videoInfo || processingResult) && (
+                 <VideoInfo
+                    title={processingResult?.title || videoInfo?.title || "Loading..."}
+                    author={processingResult?.author || videoInfo?.author || "Loading..."}
+                    thumbnail={processingResult?.thumbnail || videoInfo?.thumbnail}
+                    duration={processingResult?.duration || videoInfo?.duration}
+                    view_count={processingResult?.view_count || videoInfo?.view_count}
+                    upload_date={processingResult?.upload_date || videoInfo?.upload_date}
+                 />
+              )}
             
-            <VideoInfo
-              title={videoData.title}
-              thumbnail={videoData.thumbnail}
-              author={videoData.author}
-              duration={videoData.duration}
-            />
-            
-            <SummaryPanel summary={videoData.summary} />
-            
-            <TranscriptPanel transcript={videoData.transcript} />
+              {processingResult && (
+                <>
+                  <SummaryPanel summary={processingResult.summary || "Summary generation was skipped or failed."} />
+                  <TranscriptPanel transcript={processingResult.transcript} />
+                </>
+              )}
 
-            {/* Processing Logs */}
-            {processingLogs.length > 0 && (
-              <Card className="bg-gradient-card border border-muted shadow-card backdrop-blur-sm">
-                <div className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">Processing Log</h3>
-                  <div className="bg-muted/30 rounded-lg p-4 max-h-48 overflow-y-auto">
-                    <div className="space-y-1">
-                      {processingLogs.map((log, index) => (
-                        <div key={index} className="text-sm text-muted-foreground font-mono">
-                          {log}
-                        </div>
-                      ))}
+              {/* Processing Logs for successful runs */}
+              {processingLogs.length > 0 && currentStage === "Completed" && (
+                <Card className="bg-gradient-card border border-muted shadow-card backdrop-blur-sm">
+                  <div className="p-6">
+                    <h3 className="text-lg font-semibold mb-4">Processing Log</h3>
+                    <div className="bg-muted/30 rounded-lg p-4 max-h-48 overflow-y-auto">
+                      <div className="space-y-1">
+                        {processingLogs.map((log, index) => (
+                          <div key={index} className="text-sm text-muted-foreground font-mono">
+                            {log}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Card>
-            )}
-          </div>
+                </Card>
+              )}
+            </>
+          )}
         </div>
-      )}
+      </div>
       
       {/* Footer */}
       <footer className="border-t border-muted py-8 mt-16">
