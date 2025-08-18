@@ -111,10 +111,6 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
               <ExternalLink className="w-3 h-3" />
               <code>https://youtu.be/VIDEO_ID</code>
             </div>
-            <div className="flex items-center gap-2">
-              <ExternalLink className="w-3 h-3" />
-              <code>https://youtube.com/embed/VIDEO_ID</code>
-            </div>
           </div>
         </div>
 
