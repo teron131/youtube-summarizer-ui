@@ -44,7 +44,7 @@ echo -e "${GREEN}✅ Dependencies check passed${NC}"
 
 # Check ports
 FRONTEND_PORT=5173
-BACKEND_PORT=8001
+BACKEND_PORT=8080
 
 if port_in_use $FRONTEND_PORT; then
     echo -e "${YELLOW}⚠️  Port $FRONTEND_PORT is already in use${NC}"
