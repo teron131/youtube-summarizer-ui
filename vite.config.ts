@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => ({
     proxy: {
       // Proxy API requests to the backend server (development only)
       '/api': {
-        target: 'http://localhost:8001',
+        target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
       },
