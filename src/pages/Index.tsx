@@ -28,25 +28,26 @@ const Index = () => {
   const { toast } = useToast();
 
   const handleVideoSubmit = async (url: string) => {
-    // Validate YouTube URL format
-    const validation = await validateUrl(url);
-    if (!validation.is_valid) {
-      toast({
-        title: "Invalid URL",
-        description: "Please enter a valid and accessible YouTube URL.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Reset state
+    // Set loading state immediately
     setIsLoading(true);
     setError(null);
     setAnalysisResult(null);
     setProcessingLogs(["🚀 Starting comprehensive analysis..."]);
-    setCurrentStage("Initializing...");
+    setCurrentStage("Validating URL...");
 
     try {
+      // Validate YouTube URL format
+      const validation = await validateUrl(url);
+      if (!validation.is_valid) {
+        toast({
+          title: "Invalid URL",
+          description: "Please enter a valid and accessible YouTube URL.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
       // Single API call to the new master endpoint
       setCurrentStage("Processing video... (this may take a moment)");
       const response = await generateComprehensiveAnalysis({
