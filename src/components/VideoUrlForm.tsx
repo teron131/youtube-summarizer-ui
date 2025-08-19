@@ -24,17 +24,21 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
     const trimmedUrl = url.trim();
     if (!trimmedUrl) {
       setValidationError("URL cannot be empty.");
       return;
     }
+    // Basic check for "youtube.com" or "youtu.be" before submitting
+    if (!trimmedUrl.includes("youtube.com") && !trimmedUrl.includes("youtu.be")) {
+        setValidationError("Please enter a valid YouTube URL.");
+        return;
+    }
     setValidationError("");
     onSubmit(trimmedUrl);
   };
  
-  const isFormValid = url.trim().length > 0;
+  const isFormValid = url.trim().length > 10 && (url.includes("youtube.com") || url.includes("youtu.be"));
  
   return (
     <Card className="p-10 modern-blur shadow-glass hover-lift">
