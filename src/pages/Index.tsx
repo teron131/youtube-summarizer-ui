@@ -112,7 +112,7 @@ const Index = () => {
               </div>
             </div>
             
-            <h1 className="text-7xl md:text-8xl font-black text-foreground fade-in-up stagger-1">
+            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-foreground fade-in-up stagger-1">
               YouTube
               <br />
               <span className="text-primary animate-glow bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
@@ -120,9 +120,9 @@ const Index = () => {
               </span>
             </h1>
             
-            <p className="text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed fade-in-up stagger-2">
+            <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed fade-in-up stagger-2">
               Transform any YouTube video into concise, intelligent summaries. 
-              <br />
+              <br className="hidden sm:block" />
               <span className="text-primary font-semibold">Advanced AI transcription</span> meets 
               <span className="text-primary font-semibold"> smart analysis</span> for instant insights.
             </p>
