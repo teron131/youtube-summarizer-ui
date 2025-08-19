@@ -150,8 +150,8 @@ const Index = () => {
       </div>
 
       {/* Results and Status Section */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto space-y-8">
+      <div className="container mx-auto px-4 py-12 bg-background">
+        <div className="max-w-4xl mx-auto space-y-8 bg-background">
           {/* Loading State */}
           {isLoading && (
             <Card className="p-10 modern-blur shadow-glass">
@@ -267,7 +267,7 @@ const Index = () => {
       </div>
       
       {/* Limitations Section */}
-      <div className="bg-muted/20 border-t border-muted py-12 mt-16">
+      <div className="bg-background border-t border-muted py-12 mt-16">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="text-center space-y-6">
             <h3 className="text-2xl font-bold text-foreground">Current Limitations</h3>
