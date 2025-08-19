@@ -1,6 +1,5 @@
 import heroBackground from "@/assets/youtube-subtle-background.jpg";
 import { AnalysisPanel } from "@/components/AnalysisPanel";
-import { SummaryPanel } from "@/components/SummaryPanel";
 import { TranscriptPanel } from "@/components/TranscriptPanel";
 import { Card } from "@/components/ui/card";
 import { VideoInfo } from "@/components/VideoInfo";
@@ -240,10 +239,6 @@ const Index = () => {
                     view_count={analysisResult.video_info.view_count}
                     upload_date={analysisResult.video_info.upload_date}
                  />
-              )}
-            
-              {analysisResult.summary && (
-                <SummaryPanel summary={analysisResult.summary} />
               )}
               
               {analysisResult.analysis && (
