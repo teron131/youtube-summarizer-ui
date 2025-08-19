@@ -121,7 +121,7 @@ const Index = () => {
             </h1>
             
             <p className="text-xl sm:text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed fade-in-up stagger-2">
-              Transform any YouTube video into concise, intelligent summaries. 
+              Transform any YouTube video into concise, intelligent summaries.{" "}
               <br className="hidden sm:block" />
               <span className="text-primary font-semibold">Advanced AI transcription</span> meets 
               <span className="text-primary font-semibold"> smart analysis</span> for instant insights.
