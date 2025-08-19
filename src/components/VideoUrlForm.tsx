@@ -4,52 +4,38 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Play, AlertCircle, ExternalLink } from "lucide-react";
-import { isValidYouTubeUrl } from "@/services/api";
-
+ 
 interface VideoUrlFormProps {
   onSubmit: (url: string) => void;
   isLoading: boolean;
 }
-
+ 
 export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
   const [url, setUrl] = useState("");
-  const [validationError, setValidationError] = useState<string>("");
-
-  const validateUrl = (inputUrl: string): string => {
-    if (!inputUrl.trim()) {
-      return "";
-    }
-    
-    if (!isValidYouTubeUrl(inputUrl)) {
-      return "Please enter a valid YouTube URL (e.g., https://youtube.com/watch?v=...)";
-    }
-    
-    return "";
-  };
-
+  const [validationError, setValidationError] = useState<string>(""); // Keep for immediate feedback if needed
+ 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newUrl = e.target.value;
     setUrl(newUrl);
-    setValidationError(validateUrl(newUrl));
+    if (validationError) {
+      setValidationError(""); // Clear error on new input
+    }
   };
-
+ 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     const trimmedUrl = url.trim();
-    const error = validateUrl(trimmedUrl);
-    
-    if (error) {
-      setValidationError(error);
+    if (!trimmedUrl) {
+      setValidationError("URL cannot be empty.");
       return;
     }
-    
     setValidationError("");
     onSubmit(trimmedUrl);
   };
-
-  const isFormValid = url.trim() && !validationError;
-
+ 
+  const isFormValid = url.trim().length > 0;
+ 
   return (
     <Card className="p-10 modern-blur shadow-glass hover-lift">
       <div className="space-y-8">
