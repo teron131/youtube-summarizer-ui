@@ -46,10 +46,10 @@ export interface GenerateRequest {
 export interface GenerateResponse {
   status: 'success' | 'error';
   message: string;
-  video_info?: VideoInfoResponse;
+  video_info?: VideoInfoResponse | null;
   transcript?: string;
   summary?: string;
-  analysis?: AnalysisData;
+  analysis?: AnalysisData | null;
   metadata?: Record<string, unknown>;
   processing_details?: Record<string, string>;
   logs?: string[];
@@ -160,36 +160,6 @@ class YouTubeApiClient {
   }
 
   /**
-   * @deprecated This method is deprecated and will be removed in a future version.
-   * Use generateComprehensiveAnalysis for a more comprehensive workflow.
-   */
-  async getVideoInfo(url: string): Promise<VideoInfoResponse> {
-    console.warn("`getVideoInfo` is deprecated. Use `generateComprehensiveAnalysis` instead.");
-    return this.makeRequest('/api/video-info', {
-      method: 'POST',
-      body: JSON.stringify({ url }),
-    });
-  }
-
-  /**
-   * @deprecated This method is deprecated and will be removed in a future version.
-   * Use generateComprehensiveAnalysis for a more comprehensive workflow.
-   */
-  async processVideo(
-    url: string,
-    generateSummary: boolean = true
-  ): Promise<ProcessingResponse> {
-    console.warn("`processVideo` is deprecated. Use `generateComprehensiveAnalysis` instead.");
-    return this.makeRequest('/api/process', {
-      method: 'POST',
-      body: JSON.stringify({
-        url, 
-        generate_summary: generateSummary 
-      }),
-    });
-  }
-
-  /**
    * Validate YouTube URL format
    */
   isValidYouTubeUrl(url: string): boolean {
@@ -200,6 +170,20 @@ class YouTubeApiClient {
     ];
     
     return patterns.some(pattern => pattern.test(url));
+  }
+
+  /**
+   * Validates and cleans a YouTube URL via the backend.
+   */
+  async validateUrl(url: string): Promise<{
+    is_valid: boolean;
+    cleaned_url: string | null;
+    original_url: string;
+  }> {
+    return this.makeRequest('/api/validate-url', {
+      method: 'POST',
+      body: JSON.stringify({ url }),
+    });
   }
 
   /**
@@ -226,13 +210,8 @@ export const apiClient = new YouTubeApiClient();
 export const healthCheck = () => apiClient.healthCheck();
 export const generateComprehensiveAnalysis = (request: GenerateRequest) =>
   apiClient.generateComprehensiveAnalysis(request);
-
-/** @deprecated */
-export const getVideoInfo = (url: string): Promise<VideoInfoResponse> => apiClient.getVideoInfo(url);
-/** @deprecated */
-export const processVideo = (url: string, generateSummary: boolean = true) =>
-  apiClient.processVideo(url, generateSummary);
 export const isValidYouTubeUrl = (url: string) => apiClient.isValidYouTubeUrl(url);
+export const validateUrl = (url: string) => apiClient.validateUrl(url);
 export const extractVideoId = (url: string) => apiClient.extractVideoId(url);
 
 // Error handling utilities

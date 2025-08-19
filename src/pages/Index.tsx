@@ -11,7 +11,7 @@ import {
   generateComprehensiveAnalysis,
   GenerateResponse,
   handleApiError,
-  isValidYouTubeUrl,
+  validateUrl,
 } from "@/services/api";
 import { AlertCircle, CheckCircle, Clock } from "lucide-react";
 import { useState } from "react";
@@ -29,10 +29,11 @@ const Index = () => {
 
   const handleVideoSubmit = async (url: string) => {
     // Validate YouTube URL format
-    if (!isValidYouTubeUrl(url)) {
+    const validation = await validateUrl(url);
+    if (!validation.is_valid) {
       toast({
         title: "Invalid URL",
-        description: "Please enter a valid YouTube URL",
+        description: "Please enter a valid and accessible YouTube URL.",
         variant: "destructive",
       });
       return;
@@ -49,7 +50,7 @@ const Index = () => {
       // Single API call to the new master endpoint
       setCurrentStage("Processing video... (this may take a moment)");
       const response = await generateComprehensiveAnalysis({
-        url,
+        url: validation.cleaned_url || url, // Use cleaned URL if available
         include_metadata: true,
         include_transcript: true,
         include_summary: true,
@@ -63,7 +64,9 @@ const Index = () => {
         setCurrentStage("Completed");
         toast({
           title: "Processing Complete!",
-          description: `Analysis finished in ${response.metadata?.total_processing_time || 'a few moments'}.`,
+          description: `Analysis finished in ${
+            (response.metadata?.total_processing_time as string) || 'a few moments'
+          }.`,
         });
       } else {
         throw new Error(response.message || 'An unknown processing error occurred');

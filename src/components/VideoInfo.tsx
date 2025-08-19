@@ -25,6 +25,35 @@ const formatDuration = (seconds?: number): string | null => {
   return parts.join(':');
 }
 
+const formatDate = (dateStr?: string): string | null => {
+  if (!dateStr) return null;
+  // Handle YYYYMMDD format
+  if (/^\d{8}$/.test(dateStr)) {
+    const year = dateStr.substring(0, 4);
+    const month = dateStr.substring(4, 6);
+    const day = dateStr.substring(6, 8);
+    try {
+      return new Date(`${year}-${month}-${day}`).toLocaleDateString(undefined, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    } catch (e) {
+      return dateStr; // Fallback to original string if date is invalid
+    }
+  }
+  // Handle ISO 8601 or other standard date strings
+  try {
+    return new Date(dateStr).toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  } catch (e) {
+    return dateStr; // Fallback to original string for other formats
+  }
+};
+
 export const VideoInfo = ({ title, thumbnail, author, duration, duration_seconds, view_count, upload_date }: VideoInfoProps) => {
   const displayDuration = duration_seconds ? formatDuration(duration_seconds) : duration;
   
@@ -33,7 +62,7 @@ export const VideoInfo = ({ title, thumbnail, author, duration, duration_seconds
       <div className="flex flex-col sm:flex-row gap-6">
         <div className="flex-shrink-0 relative">
           <img
-            src={thumbnail || "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=320&h=240&fit=crop"}
+            src={thumbnail || "/placeholder.svg"}
             alt={title}
             className="w-full sm:w-40 h-auto sm:h-28 object-cover rounded-xl shadow-lg border border-primary/20"
           />
@@ -76,7 +105,7 @@ export const VideoInfo = ({ title, thumbnail, author, duration, duration_seconds
                     <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
                         <CalendarDays className="w-4 h-4 text-primary" />
                     </div>
-                    <span className="font-medium">{new Date(upload_date).toLocaleDateString()}</span>
+                    <span className="font-medium">{formatDate(upload_date)}</span>
                 </div>
             )}
           </div>
