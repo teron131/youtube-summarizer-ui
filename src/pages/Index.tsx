@@ -33,25 +33,35 @@ const Index = () => {
     setError(null);
     setAnalysisResult(null);
     setProcessingLogs(["🚀 Starting comprehensive analysis..."]);
-    setCurrentStage("Validating URL...");
-
+    
     try {
-      // Validate YouTube URL format
-      const validation = await validateUrl(url);
-      if (!validation.is_valid) {
-        toast({
-          title: "Invalid URL",
-          description: "Please enter a valid and accessible YouTube URL.",
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
+      let finalUrl = url;
+      
+      // Skip validation for empty URL (example mode)
+      if (url.trim()) {
+        setCurrentStage("Validating URL...");
+        
+        // Validate YouTube URL format
+        const validation = await validateUrl(url);
+        if (!validation.is_valid) {
+          toast({
+            title: "Invalid URL",
+            description: "Please enter a valid and accessible YouTube URL.",
+            variant: "destructive",
+          });
+          setIsLoading(false);
+          return;
+        }
+        
+        finalUrl = validation.cleaned_url || url; // Use cleaned URL if available
+      } else {
+        setCurrentStage("Loading example...");
       }
 
       // Single API call to the new master endpoint
-      setCurrentStage("Processing video... (this may take a moment)");
+      setCurrentStage(url.trim() ? "Processing video... (this may take a moment)" : "Generating example output...");
       const response = await generateComprehensiveAnalysis({
-        url: validation.cleaned_url || url, // Use cleaned URL if available
+        url: finalUrl,
         include_metadata: true,
         include_transcript: true,
         include_summary: true,
@@ -64,10 +74,10 @@ const Index = () => {
         setAnalysisResult(response);
         setCurrentStage("Completed");
         toast({
-          title: "Processing Complete!",
-          description: `Analysis finished in ${
-            (response.metadata?.total_processing_time as string) || 'a few moments'
-          }.`,
+          title: url.trim() ? "Processing Complete!" : "Example Loaded!",
+          description: url.trim() 
+            ? `Analysis finished in ${(response.metadata?.total_processing_time as string) || 'a few moments'}.`
+            : "Example analysis loaded successfully to demonstrate capabilities.",
         });
       } else {
         throw new Error(response.message || 'An unknown processing error occurred');
@@ -77,7 +87,7 @@ const Index = () => {
       setError(apiError);
       setCurrentStage("Failed");
       toast({
-        title: "Processing Failed",
+        title: url.trim() ? "Processing Failed" : "Example Loading Failed",
         description: apiError.message,
         variant: "destructive",
       });
