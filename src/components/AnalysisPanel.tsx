@@ -1,19 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { FileText, Lightbulb, ListChecks } from "lucide-react";
-
-// This should match the structure from api.ts
-export interface AnalysisData {
-    title: string;
-    overall_summary: string;
-    chapters: {
-        header: string;
-        summary: string;
-        key_points: string[];
-    }[];
-    key_facts: string[];
-    takeaways: string[];
-}
+import { AnalysisData } from "@/services/api";
 
 interface AnalysisPanelProps {
   analysis: AnalysisData;

@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, Play, AlertCircle, ExternalLink } from "lucide-react";
+import { Loader2, Play, AlertCircle, ExternalLink, Youtube } from "lucide-react";
+import { validateUrl, handleApiError } from "@/services/api";
  
 interface VideoUrlFormProps {
   onSubmit: (url: string) => void;
@@ -12,7 +13,8 @@ interface VideoUrlFormProps {
  
 export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
   const [url, setUrl] = useState("");
-  const [validationError, setValidationError] = useState<string>(""); // Keep for immediate feedback if needed
+  const [validationError, setValidationError] = useState<string>("");
+  const [showExamples, setShowExamples] = useState(false);
  
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newUrl = e.target.value;
@@ -20,25 +22,64 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
     if (validationError) {
       setValidationError(""); // Clear error on new input
     }
+    // Show/hide examples based on input
+    setShowExamples(newUrl.trim().length === 0);
   };
- 
-  const handleSubmit = (e: React.FormEvent) => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedUrl = url.trim();
+    
+    // Basic validation first
     if (!trimmedUrl) {
-      setValidationError("URL cannot be empty.");
+      setValidationError("Please enter a YouTube URL to get started.");
+      setShowExamples(true);
       return;
     }
-    // Basic check for "youtube.com" or "youtu.be" before submitting
+
+    // Basic client-side check
     if (!trimmedUrl.includes("youtube.com") && !trimmedUrl.includes("youtu.be")) {
-        setValidationError("Please enter a valid YouTube URL.");
-        return;
+      setValidationError("Please enter a valid YouTube URL (youtube.com or youtu.be).");
+      return;
     }
-    setValidationError("");
-    onSubmit(trimmedUrl);
+
+    try {
+      // Validate URL with backend (seamlessly)
+      const validation = await validateUrl(trimmedUrl);
+      
+      if (!validation.is_valid) {
+        setValidationError("This YouTube URL could not be accessed. Please check the URL and try again.");
+        return;
+      }
+
+      // Clear any validation errors and proceed
+      setValidationError("");
+      
+      // Use cleaned URL if available, otherwise use original
+      const finalUrl = validation.cleaned_url || trimmedUrl;
+      onSubmit(finalUrl);
+      
+    } catch (error) {
+      // Handle validation errors silently in the background
+      const apiError = handleApiError(error);
+      setValidationError(apiError.message);
+    }
   };
  
   const isFormValid = url.trim().length > 10 && (url.includes("youtube.com") || url.includes("youtu.be"));
+
+  // Example URLs for demonstration
+  const exampleUrls = [
+    "https://youtu.be/dQw4w9WgXcQ",
+    "https://youtube.com/watch?v=jNQXAC9IVRw", 
+    "https://youtube.com/watch?v=9bZkp7q19f0"
+  ];
+
+  const handleExampleClick = (exampleUrl: string) => {
+    setUrl(exampleUrl);
+    setShowExamples(false);
+    setValidationError("");
+  };
  
   return (
     <Card className="p-10 modern-blur shadow-glass hover-lift">
@@ -63,6 +104,34 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
                 <AlertDescription>{validationError}</AlertDescription>
               </Alert>
             )}
+
+            {/* Example URLs when empty input */}
+            {showExamples && (
+              <div className="space-y-3">
+                <Alert className="border-primary/50 bg-primary/5">
+                  <Youtube className="h-4 w-4 text-primary" />
+                  <AlertDescription className="text-primary">
+                    Try one of these example URLs to see how it works:
+                  </AlertDescription>
+                </Alert>
+                
+                <div className="grid gap-2">
+                  {exampleUrls.map((exampleUrl, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => handleExampleClick(exampleUrl)}
+                      className="text-left p-3 rounded-lg border border-primary/20 hover:border-primary/40 hover:bg-primary/5 transition-all duration-300"
+                    >
+                      <div className="flex items-center gap-2">
+                        <ExternalLink className="w-3 h-3 text-primary" />
+                        <code className="text-sm text-muted-foreground">{exampleUrl}</code>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           
           <Button
@@ -84,25 +153,27 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
           </Button>
         </form>
 
-        {/* Help text and examples */}
-        <div className="border-t border-muted pt-4 space-y-3">
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground">
-              Supported YouTube URL formats:
-            </p>
-          </div>
-          
-          <div className="grid gap-2 text-xs text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <ExternalLink className="w-3 h-3" />
-              <code>https://youtube.com/watch?v=VIDEO_ID</code>
+        {/* Help text and examples - only show when not showing examples above */}
+        {!showExamples && (
+          <div className="border-t border-muted pt-4 space-y-3">
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">
+                Supported YouTube URL formats:
+              </p>
             </div>
-            <div className="flex items-center gap-2">
-              <ExternalLink className="w-3 h-3" />
-              <code>https://youtu.be/VIDEO_ID</code>
+            
+            <div className="grid gap-2 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <ExternalLink className="w-3 h-3" />
+                <code>https://youtube.com/watch?v=VIDEO_ID</code>
+              </div>
+              <div className="flex items-center gap-2">
+                <ExternalLink className="w-3 h-3" />
+                <code>https://youtu.be/VIDEO_ID</code>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
       </div>
     </Card>
