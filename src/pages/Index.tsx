@@ -90,7 +90,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Modern Hero Section */}
-      <div className="relative overflow-hidden min-h-screen flex items-center">
+      <div className="relative overflow-hidden min-h-screen flex items-center bg-background">
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-10"
           style={{ backgroundImage: `url(${heroBackground})` }}
@@ -266,8 +266,37 @@ const Index = () => {
         </div>
       </div>
       
+      {/* Limitations Section */}
+      <div className="bg-muted/20 border-t border-muted py-12 mt-16">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="text-center space-y-6">
+            <h3 className="text-2xl font-bold text-foreground">Current Limitations</h3>
+            <div className="grid md:grid-cols-3 gap-6 text-left">
+              <div className="bg-background/50 p-4 rounded-lg border border-muted">
+                <h4 className="font-semibold text-foreground mb-2">YouTube Blocking</h4>
+                <p className="text-sm text-muted-foreground">
+                  Transcript extraction and transcription may be blocked by YouTube's anti-bot measures.
+                </p>
+              </div>
+              <div className="bg-background/50 p-4 rounded-lg border border-muted">
+                <h4 className="font-semibold text-foreground mb-2">Video Length</h4>
+                <p className="text-sm text-muted-foreground">
+                  Gemini AI cannot process videos longer than 1 hour at the moment.
+                </p>
+              </div>
+              <div className="bg-background/50 p-4 rounded-lg border border-muted">
+                <h4 className="font-semibold text-foreground mb-2">Limited Controls</h4>
+                <p className="text-sm text-muted-foreground">
+                  Currently, not many processing controls can be changed or customized.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Footer */}
-      <footer className="border-t border-muted py-8 mt-16">
+      <footer className="border-t border-muted py-8 bg-background">
         <div className="container mx-auto px-4 text-center">
           <p className="text-muted-foreground">
             Powered by Whisper and Gemini
