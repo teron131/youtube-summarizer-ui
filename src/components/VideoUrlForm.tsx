@@ -30,14 +30,14 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
     e.preventDefault();
     const trimmedUrl = url.trim();
     
-    // Basic validation first
+    // Allow empty input for example output
     if (!trimmedUrl) {
-      setValidationError("Please enter a YouTube URL to get started.");
-      setShowExamples(true);
+      setValidationError("");
+      onSubmit(""); // Send empty string to trigger example response
       return;
     }
 
-    // Basic client-side check
+    // Basic client-side check for non-empty URLs
     if (!trimmedUrl.includes("youtube.com") && !trimmedUrl.includes("youtu.be")) {
       setValidationError("Please enter a valid YouTube URL (youtube.com or youtu.be).");
       return;
@@ -66,7 +66,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
     }
   };
  
-  const isFormValid = url.trim().length > 10 && (url.includes("youtube.com") || url.includes("youtu.be"));
+  const isFormValid = url.trim().length === 0 || (url.trim().length > 10 && (url.includes("youtube.com") || url.includes("youtu.be")));
 
   // Example URLs for demonstration
   const exampleUrls = [
@@ -147,7 +147,9 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
             ) : (
               <>
                 <Play className="w-6 h-6 mr-3" />
-                <span className="font-bold">Summarize Video</span>
+                <span className="font-bold">
+                  {url.trim().length === 0 ? "See Example" : "Summarize Video"}
+                </span>
               </>
             )}
           </Button>
