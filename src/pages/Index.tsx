@@ -34,26 +34,10 @@ const Index = () => {
     setProcessingLogs(["🚀 Starting comprehensive analysis..."]);
     
     try {
-      let finalUrl = url;
+      const finalUrl = url;
       
       // Skip validation for empty URL (example mode)
-      if (url.trim()) {
-        setCurrentStage("Validating URL...");
-        
-        // Validate YouTube URL format
-        const validation = await validateUrl(url);
-        if (!validation.is_valid) {
-          toast({
-            title: "Invalid URL",
-            description: "Please enter a valid and accessible YouTube URL.",
-            variant: "destructive",
-          });
-          setIsLoading(false);
-          return;
-        }
-        
-        finalUrl = validation.cleaned_url || url; // Use cleaned URL if available
-      } else {
+      if (!url.trim()) {
         setCurrentStage("Loading example...");
       }
 

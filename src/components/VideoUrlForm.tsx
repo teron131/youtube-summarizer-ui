@@ -43,27 +43,8 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
       return;
     }
 
-    try {
-      // Validate URL with backend (seamlessly)
-      const validation = await validateUrl(trimmedUrl);
-      
-      if (!validation.is_valid) {
-        setValidationError("This YouTube URL could not be accessed. Please check the URL and try again.");
-        return;
-      }
-
-      // Clear any validation errors and proceed
-      setValidationError("");
-      
-      // Use cleaned URL if available, otherwise use original
-      const finalUrl = validation.cleaned_url || trimmedUrl;
-      onSubmit(finalUrl);
-      
-    } catch (error) {
-      // Handle validation errors silently in the background
-      const apiError = handleApiError(error);
-      setValidationError(apiError.message);
-    }
+    setValidationError("");
+    onSubmit(trimmedUrl);
   };
  
   const isFormValid = url.trim().length === 0 || (url.trim().length > 10 && (url.includes("youtube.com") || url.includes("youtu.be")));
