@@ -29,7 +29,8 @@ const API_VERSION = "2.0.0";
 
 // Development logging
 if (import.meta.env.DEV) {
-  console.log('🔗 API Base URL:', API_BASE_URL || 'Using Vite proxy (localhost:8080)');
+  const displayUrl = API_BASE_URL || '/api (Vite proxy → localhost:8080)';
+  console.log('🔗 API Base URL:', displayUrl);
   console.log('📊 API Version:', API_VERSION);
 }
 
@@ -193,7 +194,8 @@ class YouTubeApiClient {
   private version: string;
 
   constructor(baseUrl: string = API_BASE_URL, version: string = API_VERSION) {
-    this.baseUrl = baseUrl;
+    // If no base URL is provided (development mode), use '/api' for Vite proxy
+    this.baseUrl = baseUrl || '/api';
     this.version = version;
   }
 
