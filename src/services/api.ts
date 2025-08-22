@@ -285,14 +285,14 @@ class YouTubeApiClient {
    * Health check with environment configuration
    */
   async healthCheck(): Promise<HealthCheckResponse> {
-    return this.makeRequest('/api/health');
+    return this.makeRequest('/health');
   }
 
   /**
    * Validate YouTube URL
    */
   async validateUrl(url: string): Promise<URLValidationResponse> {
-    return this.makeRequest('/api/validate-url', {
+    return this.makeRequest('/validate-url', {
       method: 'POST',
       body: JSON.stringify({ url }),
     });
@@ -302,7 +302,7 @@ class YouTubeApiClient {
    * Extract video metadata only
    */
   async getVideoInfo(url: string): Promise<VideoInfoResponse> {
-    return this.makeRequest('/api/video-info', {
+    return this.makeRequest('/video-info', {
       method: 'POST',
       body: JSON.stringify({ url }),
     });
@@ -312,7 +312,7 @@ class YouTubeApiClient {
    * Extract transcript only
    */
   async getTranscript(url: string): Promise<TranscriptResponse> {
-    return this.makeRequest('/api/transcript', {
+    return this.makeRequest('/transcript', {
       method: 'POST',
       body: JSON.stringify({ url }),
     });
@@ -322,7 +322,7 @@ class YouTubeApiClient {
    * Generate summary from text
    */
   async generateSummary(text: string): Promise<SummaryResponse> {
-    return this.makeRequest('/api/summary', {
+    return this.makeRequest('/summary', {
       method: 'POST',
       body: JSON.stringify({ text }),
     });
@@ -332,7 +332,7 @@ class YouTubeApiClient {
    * Complete video processing with options
    */
   async processVideo(request: YouTubeProcessRequest): Promise<ProcessingResponse> {
-    return this.makeRequest('/api/process', {
+    return this.makeRequest('/process', {
       method: 'POST',
       body: JSON.stringify(request),
     });
@@ -353,7 +353,7 @@ class YouTubeApiClient {
       include_metadata: request.include_metadata ?? true,
     };
 
-    return this.makeRequest('/api/generate', {
+    return this.makeRequest('/generate', {
       method: 'POST',
       body: JSON.stringify(body),
     });

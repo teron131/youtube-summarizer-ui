@@ -107,7 +107,7 @@ export const AnalysisPanel = ({ analysis }: AnalysisPanelProps) => {
               <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
-              <h4 className="text-lg font-bold text-red-600">Overall Summary</h4>
+              <h4 className="text-lg font-bold text-foreground">Overall Summary</h4>
             </div>
             <div className="pl-11">
               <p className="text-foreground leading-relaxed">
@@ -124,7 +124,7 @@ export const AnalysisPanel = ({ analysis }: AnalysisPanelProps) => {
               <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
                 <Lightbulb className="w-5 h-5 text-white" />
               </div>
-              <h4 className="text-lg font-bold text-red-600">Key Takeaways</h4>
+              <h4 className="text-lg font-bold text-foreground">Key Takeaways</h4>
             </div>
             <div className="pl-11">
               <ul className="space-y-3">
@@ -146,7 +146,7 @@ export const AnalysisPanel = ({ analysis }: AnalysisPanelProps) => {
               <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
                 <FileText className="w-5 h-5 text-white" />
               </div>
-              <h4 className="text-lg font-bold text-red-600">Key Facts</h4>
+              <h4 className="text-lg font-bold text-foreground">Key Facts</h4>
             </div>
             <div className="pl-11">
               <ul className="space-y-3">
@@ -168,13 +168,13 @@ export const AnalysisPanel = ({ analysis }: AnalysisPanelProps) => {
               <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
                 <BookOpen className="w-5 h-5 text-white" />
               </div>
-              <h4 className="text-lg font-bold text-red-600">Video Chapters</h4>
+              <h4 className="text-lg font-bold text-foreground">Video Chapters</h4>
             </div>
             
             <div className="pl-11 space-y-6">
               {analysis.chapters.map((chapter, index) => (
                 <div key={index} className="space-y-3">
-                  <h5 className="text-lg font-semibold text-red-600">{chapter.header}</h5>
+                  <h5 className="text-lg font-semibold text-foreground">{chapter.header}</h5>
                   <p className="text-foreground leading-relaxed">{chapter.summary}</p>
                   
                   {chapter.key_points && chapter.key_points.length > 0 && (
