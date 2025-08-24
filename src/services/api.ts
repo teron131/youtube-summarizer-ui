@@ -214,6 +214,7 @@ class YouTubeApiClient {
         'User-Agent': `YouTube-Summarizer-Frontend/${this.version}`,
         ...options.headers,
       },
+      signal: AbortSignal.timeout(300000), // 5 minutes timeout
       ...options,
     };
 

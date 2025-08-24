@@ -14,6 +14,8 @@ export default defineConfig(({ mode }) => ({
         target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
+        timeout: 300000, // 5 minutes
+        proxyTimeout: 300000, // 5 minutes  
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
     }
