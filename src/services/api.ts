@@ -21,18 +21,17 @@
  * - `/api/summary` - Text summarization only
  * - `/api/process` - Complete processing pipeline
  * - `/api/generate` - **Master endpoint** (recommended for frontend)
- */
-
-// API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
-const API_VERSION = "2.0.0";
-
-// Development logging
-if (import.meta.env.DEV) {
-  const displayUrl = API_BASE_URL || '/api (Vite proxy → localhost:8080)';
-  console.log('🔗 API Base URL:', displayUrl);
-  console.log('📊 API Version:', API_VERSION);
-}
+  */
+ 
+ // API Configuration
+ const API_BASE_URL = import.meta.env.DEV ? '/api' : import.meta.env.VITE_API_BASE_URL;
+ const API_VERSION = "2.0.0";
+ 
+ // Development logging
+ if (import.meta.env.DEV) {
+   console.log('🔗 API Base URL: /api (Vite proxy → localhost:8080)');
+   console.log('📊 API Version:', API_VERSION);
+ }
 
 // ================================
 // TYPE DEFINITIONS
