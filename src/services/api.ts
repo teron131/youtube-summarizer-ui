@@ -196,6 +196,14 @@ class YouTubeApiClient {
     // If no base URL is provided (development mode), use '/api' for Vite proxy
     this.baseUrl = baseUrl || '/api';
     this.version = version;
+    
+    // Debug logging in development
+    if (import.meta.env.DEV) {
+      console.log('🔗 YouTubeApiClient constructor called');
+      console.log('🔗 API_BASE_URL:', API_BASE_URL);
+      console.log('🔗 baseUrl parameter:', baseUrl);
+      console.log('🔗 Final this.baseUrl:', this.baseUrl);
+    }
   }
 
   /**
@@ -206,6 +214,13 @@ class YouTubeApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
+    
+    // Debug logging in development
+    if (import.meta.env.DEV) {
+      console.log('🔗 Making request to:', url);
+      console.log('🔗 Base URL:', this.baseUrl);
+      console.log('🔗 Endpoint:', endpoint);
+    }
     
     const defaultOptions: RequestInit = {
       headers: {
