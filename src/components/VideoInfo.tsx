@@ -32,7 +32,7 @@ const formatDate = (dateStr?: string): string | null => {
   try {
     return new Date(dateStr).toLocaleDateString(undefined, {
       year: 'numeric',
-      month: 'long',
+      month: 'short',
       day: 'numeric',
     });
   } catch (e) {
@@ -40,17 +40,24 @@ const formatDate = (dateStr?: string): string | null => {
   }
 };
 
+const formatDuration = (duration?: string): string | null => {
+  if (!duration) return null;
+  // Remove leading 00: if hours are zero
+  return duration.replace(/^0{1,2}:/, "");
+};
+
 export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like_count, upload_date }: VideoInfoProps) => {
-  const displayDuration = duration;
+  const displayDuration = formatDuration(duration || undefined);
+  const hasMetrics = view_count !== undefined || like_count !== undefined;
   
   return (
     <Card className="p-8 modern-blur shadow-glass hover-lift overflow-hidden">
       <div className="flex flex-col sm:flex-row gap-6">
-        <div className="flex-shrink-0 relative">
+        <div className="flex-shrink-0 relative" style={{ aspectRatio: "16 / 9" }}>
           <img
             src={thumbnail || "/placeholder.svg"}
             alt={title}
-            className="w-full sm:w-40 h-auto sm:h-28 object-cover rounded-xl shadow-lg border border-primary/20"
+            className="w-full sm:w-64 md:w-80 h-full object-cover rounded-xl shadow-lg border border-primary/20"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
         </div>
@@ -76,25 +83,7 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
                 <span className="font-medium">{displayDuration}</span>
               </div>
             )}
-            
-            {view_count && (
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                  <Eye className="w-4 h-4 text-primary" />
-                </div>
-                <span className="font-medium">{view_count.toLocaleString()} views</span>
-              </div>
-            )}
 
-            {like_count && (
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                  <ThumbsUp className="w-4 h-4 text-primary" />
-                </div>
-                <span className="font-medium">{like_count.toLocaleString()} likes</span>
-              </div>
-            )}
-            
             {upload_date && (
                 <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
@@ -102,6 +91,26 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
                     </div>
                     <span className="font-medium">{formatDate(upload_date)}</span>
                 </div>
+            )}
+
+            {hasMetrics && <div className="basis-full" />}
+            
+            {view_count !== undefined && (
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+                  <Eye className="w-4 h-4 text-primary" />
+                </div>
+                <span className="font-medium">{view_count.toLocaleString()}</span>
+              </div>
+            )}
+
+            {like_count !== undefined && (
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+                  <ThumbsUp className="w-4 h-4 text-primary" />
+                </div>
+                <span className="font-medium">{like_count.toLocaleString()}</span>
+              </div>
             )}
           </div>
         </div>

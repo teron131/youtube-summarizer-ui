@@ -143,7 +143,7 @@ const Index = () => {
             </div>
           </div>
           
-          <div className="max-w-3xl mx-auto fade-in-up stagger-4">
+          <div className="max-w-4xl mx-auto fade-in-up stagger-4">
             <VideoUrlForm onSubmit={handleVideoSubmit} isLoading={isLoading} />
           </div>
         </div>
