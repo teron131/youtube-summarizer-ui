@@ -40,8 +40,17 @@ const formatDate = (dateStr?: string): string | null => {
   }
 };
 
+const formatDuration = (duration?: string): string | undefined => {
+  if (!duration) return undefined;
+  // Remove leading "00:" if duration is less than 1 hour
+  if (duration.startsWith("00:")) {
+    return duration.substring(3);
+  }
+  return duration;
+};
+
 export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like_count, upload_date }: VideoInfoProps) => {
-  const displayDuration = duration;
+  const displayDuration = formatDuration(duration);
   
   return (
     <Card className="p-8 modern-blur shadow-glass hover-lift overflow-hidden">
