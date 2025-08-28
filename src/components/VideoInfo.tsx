@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { CalendarDays, Clock, Eye, ThumbsUp, User } from "lucide-react";
+import { CalendarDays, Clock, User } from "lucide-react";
 
 interface VideoInfoProps {
   title: string;
@@ -20,8 +20,8 @@ const formatDate = (dateStr?: string): string | null => {
     const day = dateStr.substring(6, 8);
     try {
       return new Date(`${year}-${month}-${day}`).toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'long',
+        year: '2-digit',
+        month: 'short',
         day: 'numeric',
       });
     } catch (e) {
@@ -31,8 +31,8 @@ const formatDate = (dateStr?: string): string | null => {
   // Handle ISO 8601 or other standard date strings
   try {
     return new Date(dateStr).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'long',
+      year: '2-digit',
+      month: 'short',
       day: 'numeric',
     });
   } catch (e) {
@@ -60,48 +60,24 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
             {title}
           </h3>
           
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                <User className="w-4 h-4 text-primary" />
-              </div>
-              <span className="font-medium">{author}</span>
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <div className="flex items-center gap-1.5">
+              <User className="w-4 h-4" />
+              <span>{author}</span>
             </div>
             
             {displayDuration && (
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                  <Clock className="w-4 h-4 text-primary" />
-                </div>
-                <span className="font-medium">{displayDuration}</span>
-              </div>
-            )}
-            
-            {view_count && (
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                  <Eye className="w-4 h-4 text-primary" />
-                </div>
-                <span className="font-medium">{view_count.toLocaleString()} views</span>
-              </div>
-            )}
-
-            {like_count && (
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                  <ThumbsUp className="w-4 h-4 text-primary" />
-                </div>
-                <span className="font-medium">{like_count.toLocaleString()} likes</span>
+              <div className="flex items-center gap-1.5">
+                <Clock className="w-4 h-4" />
+                <span>{displayDuration}</span>
               </div>
             )}
             
             {upload_date && (
-                <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                        <CalendarDays className="w-4 h-4 text-primary" />
-                    </div>
-                    <span className="font-medium">{formatDate(upload_date)}</span>
-                </div>
+              <div className="flex items-center gap-1.5">
+                <CalendarDays className="w-4 h-4" />
+                <span>{formatDate(upload_date)}</span>
+              </div>
             )}
           </div>
         </div>
