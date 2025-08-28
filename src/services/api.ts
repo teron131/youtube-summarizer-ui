@@ -25,7 +25,7 @@
 
 // API Configuration
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
-const API_VERSION = "2.0.0";
+const API_VERSION = "2.1.0";
 
 // Development logging
 if (import.meta.env.DEV) {
@@ -72,9 +72,9 @@ export interface VideoInfoResponse {
   title: string;
   author: string;
   duration?: string;
-  duration_seconds?: number;
   thumbnail?: string;
   view_count?: number;
+  like_count?: number;
   upload_date?: string;
   url: string;
 }
@@ -155,6 +155,7 @@ export interface HealthCheckResponse {
   version: string;
   environment: {
     gemini_configured: boolean;
+    apify_configured: boolean;
     fal_configured: boolean;
   };
 }
@@ -166,11 +167,11 @@ export interface RootResponse {
   description: string;
   docs: string;
   health: string;
+  optimizations: string[];
   endpoints: Record<string, string>;
   workflow: {
     tier_1: string;
     tier_2: string;
-    tier_3: string;
   };
 }
 
@@ -569,9 +570,8 @@ export const PROCESSING_STATUSES = {
 } as const;
 
 export const TIER_DESCRIPTIONS = {
-  TIER_1: 'yt-dlp captions extraction',
-  TIER_2: 'audio transcription via FAL',
-  TIER_3: 'Gemini direct URL processing'
+  TIER_1: 'Apify YouTube Scraper API',
+  TIER_2: 'Gemini direct URL processing',
 } as const;
 
 // Export everything for convenient imports

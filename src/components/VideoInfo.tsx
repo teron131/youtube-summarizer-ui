@@ -1,28 +1,14 @@
 import { Card } from "@/components/ui/card";
-import { CalendarDays, Clock, Eye, User } from "lucide-react";
+import { CalendarDays, Clock, Eye, ThumbsUp, User } from "lucide-react";
 
 interface VideoInfoProps {
   title: string;
   thumbnail?: string;
   author: string;
   duration?: string;
-  duration_seconds?: number;
   view_count?: number;
+  like_count?: number;
   upload_date?: string;
-}
-
-const formatDuration = (seconds?: number): string | null => {
-  if (seconds === undefined || seconds === null) return null;
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = Math.floor(seconds % 60);
-
-  const parts: string[] = [];
-  if (h > 0) parts.push(h.toString().padStart(2, '0'));
-  parts.push(m.toString().padStart(2, '0'));
-  parts.push(s.toString().padStart(2, '0'));
-  
-  return parts.join(':');
 }
 
 const formatDate = (dateStr?: string): string | null => {
@@ -54,8 +40,8 @@ const formatDate = (dateStr?: string): string | null => {
   }
 };
 
-export const VideoInfo = ({ title, thumbnail, author, duration, duration_seconds, view_count, upload_date }: VideoInfoProps) => {
-  const displayDuration = duration_seconds ? formatDuration(duration_seconds) : duration;
+export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like_count, upload_date }: VideoInfoProps) => {
+  const displayDuration = duration;
   
   return (
     <Card className="p-8 modern-blur shadow-glass hover-lift overflow-hidden">
@@ -97,6 +83,15 @@ export const VideoInfo = ({ title, thumbnail, author, duration, duration_seconds
                   <Eye className="w-4 h-4 text-primary" />
                 </div>
                 <span className="font-medium">{view_count.toLocaleString()} views</span>
+              </div>
+            )}
+
+            {like_count && (
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+                  <ThumbsUp className="w-4 h-4 text-primary" />
+                </div>
+                <span className="font-medium">{like_count.toLocaleString()} likes</span>
               </div>
             )}
             

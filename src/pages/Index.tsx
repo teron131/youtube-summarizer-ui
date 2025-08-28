@@ -101,7 +101,7 @@ const Index = () => {
             <div className="fade-in-up">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full mb-6">
                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                <span className="text-primary text-sm font-medium">Powered by Whisper and Gemini</span>
+                <span className="text-primary text-sm font-medium">Powered by Apify and Gemini</span>
               </div>
             </div>
             
@@ -219,8 +219,8 @@ const Index = () => {
                     author={analysisResult.video_info.author}
                     thumbnail={analysisResult.video_info.thumbnail}
                     duration={analysisResult.video_info.duration}
-                    duration_seconds={analysisResult.video_info.duration_seconds}
                     view_count={analysisResult.video_info.view_count}
+                    like_count={analysisResult.video_info.like_count}
                     upload_date={analysisResult.video_info.upload_date}
                  />
               )}
@@ -262,21 +262,21 @@ const Index = () => {
             <h3 className="text-2xl font-bold text-foreground">Current Limitations</h3>
             <div className="grid md:grid-cols-3 gap-6 text-left">
               <div className="bg-background/50 p-4 rounded-lg border border-muted">
-                <h4 className="font-semibold text-foreground mb-2">YouTube Blocking</h4>
+                <h4 className="font-semibold text-foreground mb-2">API Quotas</h4>
                 <p className="text-sm text-muted-foreground">
-                  Transcript extraction and transcription may be blocked by YouTube's anti-bot measures.
+                  The Apify API has usage quotas. If exceeded, the system will fall back to Gemini, which may be slower.
                 </p>
               </div>
               <div className="bg-background/50 p-4 rounded-lg border border-muted">
                 <h4 className="font-semibold text-foreground mb-2">Video Length</h4>
                 <p className="text-sm text-muted-foreground">
-                  Gemini AI cannot process videos longer than 1 hour at the moment.
+                  Processing very long videos may time out or fail, especially with direct Gemini processing.
                 </p>
               </div>
               <div className="bg-background/50 p-4 rounded-lg border border-muted">
-                <h4 className="font-semibold text-foreground mb-2">Limited Controls</h4>
+                <h4 className="font-semibold text-foreground mb-2">Content Accessibility</h4>
                 <p className="text-sm text-muted-foreground">
-                  Currently, not many processing controls can be changed or customized.
+                  Private or region-locked videos cannot be processed. Videos must be publicly accessible.
                 </p>
               </div>
             </div>
@@ -288,7 +288,7 @@ const Index = () => {
       <footer className="border-t border-muted py-8 bg-background">
         <div className="container mx-auto px-4 text-center">
           <p className="text-muted-foreground">
-            Powered by Whisper and Gemini
+            Powered by Apify and Gemini
           </p>
         </div>
       </footer>
