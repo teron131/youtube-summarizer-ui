@@ -24,7 +24,7 @@
  */
 
 // API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+const API_BASE_URL = import.meta.env.BACKEND_URL || '';
 const API_VERSION = "2.1.0";
 
 // Development logging
