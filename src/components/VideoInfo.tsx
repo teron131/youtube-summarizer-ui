@@ -20,23 +20,23 @@ const formatDate = (dateStr?: string): string | null => {
     const day = dateStr.substring(6, 8);
     try {
       return new Date(`${year}-${month}-${day}`).toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'long',
+        year: '2-digit',
+        month: 'short',
         day: 'numeric',
       });
     } catch (e) {
-      return dateStr; // Fallback to original string if date is invalid
+      return dateStr;
     }
   }
   // Handle ISO 8601 or other standard date strings
   try {
     return new Date(dateStr).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'long',
+      year: '2-digit',
+      month: 'short',
       day: 'numeric',
     });
   } catch (e) {
-    return dateStr; // Fallback to original string for other formats
+    return dateStr;
   }
 };
 
@@ -53,7 +53,7 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
               <img
                 src={thumbnail || "/placeholder.svg"}
                 alt={title}
-                className="w-full lg:w-56 h-auto lg:h-32 object-cover transition-transform duration-300 group-hover:scale-105"
+                className="w-full lg:w-80 h-auto lg:h-48 object-cover transition-transform duration-300 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
               {displayDuration && (
@@ -69,73 +69,39 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
               {title}
             </h3>
             
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-full flex items-center justify-center border border-primary/20">
-                <User className="w-5 h-5 text-primary" />
+            <div className="flex items-center gap-6 text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4" />
+                <span className="font-medium">{author}</span>
               </div>
-              <span className="text-lg font-semibold text-foreground">{author}</span>
+              {displayDuration && (
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  <span>{displayDuration}</span>
+                </div>
+              )}
+              {upload_date && (
+                <div className="flex items-center gap-2">
+                  <CalendarDays className="w-4 h-4" />
+                  <span>{formatDate(upload_date)}</span>
+                </div>
+              )}
+              {view_count && (
+                <div className="flex items-center gap-2">
+                  <Eye className="w-4 h-4" />
+                  <span>{view_count.toLocaleString()}</span>
+                </div>
+              )}
+              {like_count && (
+                <div className="flex items-center gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  <span>{like_count.toLocaleString()}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Stats grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {view_count && (
-            <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-4 border border-primary/10 hover:border-primary/20 transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary/30 to-primary/20 rounded-lg flex items-center justify-center">
-                  <Eye className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <div className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Views</div>
-                  <div className="text-lg font-bold text-foreground">{view_count.toLocaleString()}</div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {like_count && (
-            <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-4 border border-primary/10 hover:border-primary/20 transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary/30 to-primary/20 rounded-lg flex items-center justify-center">
-                  <ThumbsUp className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <div className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Likes</div>
-                  <div className="text-lg font-bold text-foreground">{like_count.toLocaleString()}</div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {displayDuration && (
-            <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-4 border border-primary/10 hover:border-primary/20 transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary/30 to-primary/20 rounded-lg flex items-center justify-center">
-                  <Clock className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <div className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Duration</div>
-                  <div className="text-lg font-bold text-foreground">{displayDuration}</div>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {upload_date && (
-            <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-4 border border-primary/10 hover:border-primary/20 transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary/30 to-primary/20 rounded-lg flex items-center justify-center">
-                  <CalendarDays className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <div className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Published</div>
-                  <div className="text-lg font-bold text-foreground">{formatDate(upload_date)}</div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
       </div>
     </Card>
   );
