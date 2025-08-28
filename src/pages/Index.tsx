@@ -9,7 +9,8 @@ import {
   ApiError,
   generateComprehensiveAnalysis,
   GenerateResponse,
-  handleApiError
+  handleApiError,
+  validateUrl,
 } from "@/services/api";
 import { AlertCircle, CheckCircle, Clock } from "lucide-react";
 import { useState } from "react";

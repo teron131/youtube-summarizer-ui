@@ -21,17 +21,18 @@
  * - `/api/summary` - Text summarization only
  * - `/api/process` - Complete processing pipeline
  * - `/api/generate` - **Master endpoint** (recommended for frontend)
-  */
- 
- // API Configuration
- const API_BASE_URL = import.meta.env.DEV ? '/api' : import.meta.env.VITE_API_BASE_URL;
- const API_VERSION = "2.0.0";
- 
- // Development logging
- if (import.meta.env.DEV) {
-   console.log('🔗 API Base URL: /api (Vite proxy → localhost:8080)');
-   console.log('📊 API Version:', API_VERSION);
- }
+ */
+
+// API Configuration
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+const API_VERSION = "2.0.0";
+
+// Development logging
+if (import.meta.env.DEV) {
+  const displayUrl = API_BASE_URL || '/api (Vite proxy → localhost:8080)';
+  console.log('🔗 API Base URL:', displayUrl);
+  console.log('📊 API Version:', API_VERSION);
+}
 
 // ================================
 // TYPE DEFINITIONS
@@ -196,14 +197,6 @@ class YouTubeApiClient {
     // If no base URL is provided (development mode), use '/api' for Vite proxy
     this.baseUrl = baseUrl || '/api';
     this.version = version;
-    
-    // Debug logging in development
-    if (import.meta.env.DEV) {
-      console.log('🔗 YouTubeApiClient constructor called');
-      console.log('🔗 API_BASE_URL:', API_BASE_URL);
-      console.log('🔗 baseUrl parameter:', baseUrl);
-      console.log('🔗 Final this.baseUrl:', this.baseUrl);
-    }
   }
 
   /**
@@ -215,20 +208,12 @@ class YouTubeApiClient {
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
     
-    // Debug logging in development
-    if (import.meta.env.DEV) {
-      console.log('🔗 Making request to:', url);
-      console.log('🔗 Base URL:', this.baseUrl);
-      console.log('🔗 Endpoint:', endpoint);
-    }
-    
     const defaultOptions: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': `YouTube-Summarizer-Frontend/${this.version}`,
         ...options.headers,
       },
-      signal: AbortSignal.timeout(300000), // 5 minutes timeout
       ...options,
     };
 
