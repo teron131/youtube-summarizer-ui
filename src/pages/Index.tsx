@@ -37,27 +37,26 @@ const Index = () => {
       const finalUrl = url;
       
       // Use local example data if URL is empty
-      // if (!url.trim()) {
-      //   setCurrentStage("Loading example...");
-      //   setAnalysisResult(exampleData);
-      //   setIsLoading(false);
-      //   toast({
-      //     title: "Example Loaded!",
-      //     description: "Example analysis loaded successfully to demonstrate capabilities.",
-      //   });
-      //   return;
-      // }
+      if (!url.trim()) {
+        setCurrentStage("Loading example...");
+        setAnalysisResult(exampleData);
+        setIsLoading(false);
+        toast({
+          title: "Example Loaded!",
+          description: "Example analysis loaded successfully to demonstrate capabilities.",
+        });
+        return;
+      }
 
       // Single API call to the new master endpoint
       setCurrentStage("Processing video... (this may take a moment)");
-      const response = exampleData;
-      // const response = await generateComprehensiveAnalysis({
-      //   url: finalUrl,
-      //   include_metadata: true,
-      //   include_transcript: true,
-      //   include_summary: true,
-      //   include_analysis: true,
-      // });
+      const response = await generateComprehensiveAnalysis({
+        url: finalUrl,
+        include_metadata: true,
+        include_transcript: true,
+        include_summary: true,
+        include_analysis: true,
+      });
 
       setProcessingLogs(response.logs || []);
 
