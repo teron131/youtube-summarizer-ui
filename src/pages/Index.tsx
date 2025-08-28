@@ -10,8 +10,8 @@ import {
   generateComprehensiveAnalysis,
   GenerateResponse,
   handleApiError,
-  validateUrl,
 } from "@/services/api";
+import { exampleData } from "@/services/example-data";
 import { AlertCircle, CheckCircle, Clock } from "lucide-react";
 import { useState } from "react";
 
@@ -36,20 +36,28 @@ const Index = () => {
     try {
       const finalUrl = url;
       
-      // Skip validation for empty URL (example mode)
-      if (!url.trim()) {
-        setCurrentStage("Loading example...");
-      }
+      // Use local example data if URL is empty
+      // if (!url.trim()) {
+      //   setCurrentStage("Loading example...");
+      //   setAnalysisResult(exampleData);
+      //   setIsLoading(false);
+      //   toast({
+      //     title: "Example Loaded!",
+      //     description: "Example analysis loaded successfully to demonstrate capabilities.",
+      //   });
+      //   return;
+      // }
 
       // Single API call to the new master endpoint
-      setCurrentStage(url.trim() ? "Processing video... (this may take a moment)" : "Generating example output...");
-      const response = await generateComprehensiveAnalysis({
-        url: finalUrl,
-        include_metadata: true,
-        include_transcript: true,
-        include_summary: true,
-        include_analysis: true,
-      });
+      setCurrentStage("Processing video... (this may take a moment)");
+      const response = exampleData;
+      // const response = await generateComprehensiveAnalysis({
+      //   url: finalUrl,
+      //   include_metadata: true,
+      //   include_transcript: true,
+      //   include_summary: true,
+      //   include_analysis: true,
+      // });
 
       setProcessingLogs(response.logs || []);
 
