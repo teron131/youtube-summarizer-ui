@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { CalendarDays, Clock, User } from "lucide-react";
+import { CalendarDays, Clock, Eye, ThumbsUp, User } from "lucide-react";
 
 interface VideoInfoProps {
   title: string;
@@ -20,8 +20,8 @@ const formatDate = (dateStr?: string): string | null => {
     const day = dateStr.substring(6, 8);
     try {
       return new Date(`${year}-${month}-${day}`).toLocaleDateString(undefined, {
-        year: '2-digit',
-        month: 'short',
+        year: 'numeric',
+        month: 'long',
         day: 'numeric',
       });
     } catch (e) {
@@ -31,8 +31,8 @@ const formatDate = (dateStr?: string): string | null => {
   // Handle ISO 8601 or other standard date strings
   try {
     return new Date(dateStr).toLocaleDateString(undefined, {
-      year: '2-digit',
-      month: 'short',
+      year: 'numeric',
+      month: 'long',
       day: 'numeric',
     });
   } catch (e) {
@@ -44,42 +44,97 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
   const displayDuration = duration;
   
   return (
-    <Card className="p-8 modern-blur shadow-glass hover-lift overflow-hidden">
-      <div className="flex flex-col sm:flex-row gap-6">
-        <div className="flex-shrink-0 relative">
-          <img
-            src={thumbnail || "/placeholder.svg"}
-            alt={title}
-            className="w-full sm:w-40 h-auto sm:h-28 object-cover rounded-xl shadow-lg border border-primary/20"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
-        </div>
-        
-        <div className="flex-1 space-y-4">
-          <h3 className="text-2xl font-bold text-foreground line-clamp-2 leading-tight">
-            {title}
-          </h3>
-          
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1.5">
-              <User className="w-4 h-4" />
-              <span>{author}</span>
+    <Card className="overflow-hidden bg-gradient-to-br from-card/80 to-card/40 border border-primary/10 backdrop-blur-xl">
+      <div className="p-6">
+        {/* Video thumbnail and title section */}
+        <div className="flex flex-col lg:flex-row gap-6 mb-6">
+          <div className="flex-shrink-0 relative group">
+            <div className="relative overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+              <img
+                src={thumbnail || "/placeholder.svg"}
+                alt={title}
+                className="w-full lg:w-56 h-auto lg:h-32 object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+              {displayDuration && (
+                <div className="absolute bottom-2 right-2 bg-black/80 text-white text-sm px-2 py-1 rounded-md font-medium">
+                  {displayDuration}
+                </div>
+              )}
             </div>
-            
-            {displayDuration && (
-              <div className="flex items-center gap-1.5">
-                <Clock className="w-4 h-4" />
-                <span>{displayDuration}</span>
-              </div>
-            )}
-            
-            {upload_date && (
-              <div className="flex items-center gap-1.5">
-                <CalendarDays className="w-4 h-4" />
-                <span>{formatDate(upload_date)}</span>
-              </div>
-            )}
           </div>
+          
+          <div className="flex-1 space-y-3">
+            <h3 className="text-2xl lg:text-3xl font-black text-foreground line-clamp-3 leading-tight tracking-tight">
+              {title}
+            </h3>
+            
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-full flex items-center justify-center border border-primary/20">
+                <User className="w-5 h-5 text-primary" />
+              </div>
+              <span className="text-lg font-semibold text-foreground">{author}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {view_count && (
+            <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-4 border border-primary/10 hover:border-primary/20 transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-primary/30 to-primary/20 rounded-lg flex items-center justify-center">
+                  <Eye className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Views</div>
+                  <div className="text-lg font-bold text-foreground">{view_count.toLocaleString()}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {like_count && (
+            <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-4 border border-primary/10 hover:border-primary/20 transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-primary/30 to-primary/20 rounded-lg flex items-center justify-center">
+                  <ThumbsUp className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Likes</div>
+                  <div className="text-lg font-bold text-foreground">{like_count.toLocaleString()}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {displayDuration && (
+            <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-4 border border-primary/10 hover:border-primary/20 transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-primary/30 to-primary/20 rounded-lg flex items-center justify-center">
+                  <Clock className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Duration</div>
+                  <div className="text-lg font-bold text-foreground">{displayDuration}</div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {upload_date && (
+            <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-4 border border-primary/10 hover:border-primary/20 transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-primary/30 to-primary/20 rounded-lg flex items-center justify-center">
+                  <CalendarDays className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Published</div>
+                  <div className="text-lg font-bold text-foreground">{formatDate(upload_date)}</div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </Card>
