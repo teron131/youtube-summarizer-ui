@@ -75,7 +75,7 @@ export const AnalysisPanel = ({ analysis }: AnalysisPanelProps) => {
   };
 
   return (
-    <Card className="p-4 md:p-6 modern-blur shadow-glass hover-lift">
+    <Card className="w-full p-4 md:p-6 modern-blur shadow-glass hover-lift">
       <div className="space-y-3 md:space-y-4">
         {/* Main Header - now inside the card */}
         <div className="flex items-center justify-between">
@@ -100,68 +100,77 @@ export const AnalysisPanel = ({ analysis }: AnalysisPanelProps) => {
           </Button>
         </div>
 
-        {/* Overall Summary Section */}
-        {analysis.overall_summary && (
-          <div className="space-y-1.5 md:space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-white" />
+        {/* Content Grid for better space utilization */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+          {/* Left Column */}
+          <div className="space-y-3">
+            {/* Overall Summary Section */}
+            {analysis.overall_summary && (
+              <div className="space-y-1.5 md:space-y-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                  </div>
+                  <h4 className="text-base md:text-lg font-bold text-primary">Overall Summary</h4>
+                </div>
+                <div className="pl-9 md:pl-11">
+                  <p className="text-foreground leading-relaxed text-sm md:text-base">
+                    {analysis.overall_summary}
+                  </p>
+                </div>
               </div>
-              <h4 className="text-base md:text-lg font-bold text-primary">Overall Summary</h4>
-            </div>
-            <div className="pl-9 md:pl-11">
-              <p className="text-foreground leading-relaxed text-sm md:text-base">
-                {analysis.overall_summary}
-              </p>
-            </div>
-          </div>
-        )}
+            )}
 
-        {/* Key Takeaways Section */}
-        {analysis.takeaways && analysis.takeaways.length > 0 && (
-          <div className="space-y-1.5 md:space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <Lightbulb className="w-4 h-4 md:w-5 md:h-5 text-white" />
+            {/* Key Takeaways Section */}
+            {analysis.takeaways && analysis.takeaways.length > 0 && (
+              <div className="space-y-1.5 md:space-y-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+                    <Lightbulb className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                  </div>
+                  <h4 className="text-base md:text-lg font-bold text-primary">Key Takeaways</h4>
+                </div>
+                <div className="pl-9 md:pl-11">
+                  <ul className="space-y-1 md:space-y-1.5">
+                    {analysis.takeaways.map((takeaway, index) => (
+                      <li key={index} className="flex items-start gap-2 md:gap-3">
+                        <span className="text-primary font-bold mt-0.5 text-sm md:text-base">•</span>
+                        <span className="text-foreground leading-relaxed text-sm md:text-base">{takeaway}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-              <h4 className="text-base md:text-lg font-bold text-primary">Key Takeaways</h4>
-            </div>
-            <div className="pl-9 md:pl-11">
-              <ul className="space-y-1 md:space-y-1.5">
-                {analysis.takeaways.map((takeaway, index) => (
-                  <li key={index} className="flex items-start gap-2 md:gap-3">
-                    <span className="text-primary font-bold mt-0.5 text-sm md:text-base">•</span>
-                    <span className="text-foreground leading-relaxed text-sm md:text-base">{takeaway}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            )}
           </div>
-        )}
 
-        {/* Key Facts Section */}
-        {analysis.key_facts && analysis.key_facts.length > 0 && (
-          <div className="space-y-1.5 md:space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <FileText className="w-4 h-4 md:w-5 md:h-5 text-white" />
+          {/* Right Column */}
+          <div className="space-y-3">
+            {/* Key Facts Section */}
+            {analysis.key_facts && analysis.key_facts.length > 0 && (
+              <div className="space-y-1.5 md:space-y-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+                    <FileText className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                  </div>
+                  <h4 className="text-base md:text-lg font-bold text-primary">Key Facts</h4>
+                </div>
+                <div className="pl-9 md:pl-11">
+                  <ul className="space-y-1 md:space-y-1.5">
+                    {analysis.key_facts.map((fact, index) => (
+                      <li key={index} className="flex items-start gap-2 md:gap-3">
+                        <span className="text-primary font-bold mt-0.5 text-sm md:text-base">•</span>
+                        <span className="text-foreground leading-relaxed text-sm md:text-base">{fact}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-              <h4 className="text-base md:text-lg font-bold text-primary">Key Facts</h4>
-            </div>
-            <div className="pl-9 md:pl-11">
-              <ul className="space-y-1 md:space-y-1.5">
-                {analysis.key_facts.map((fact, index) => (
-                  <li key={index} className="flex items-start gap-2 md:gap-3">
-                    <span className="text-primary font-bold mt-0.5 text-sm md:text-base">•</span>
-                    <span className="text-foreground leading-relaxed text-sm md:text-base">{fact}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            )}
           </div>
-        )}
+        </div>
 
-        {/* Video Chapters Section */}
+        {/* Video Chapters Section - Full Width */}
         {analysis.chapters && analysis.chapters.length > 0 && (
           <div className="space-y-1.5 md:space-y-2">
             <div className="flex items-center gap-3">
@@ -171,9 +180,9 @@ export const AnalysisPanel = ({ analysis }: AnalysisPanelProps) => {
               <h4 className="text-base md:text-lg font-bold text-primary">Video Chapters</h4>
             </div>
             
-            <div className="pl-9 md:pl-11 space-y-2 md:space-y-3">
+            <div className="pl-9 md:pl-11 grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
               {analysis.chapters.map((chapter, index) => (
-                <div key={index} className="space-y-1 md:space-y-1.5">
+                <div key={index} className="space-y-1 md:space-y-1.5 p-3 rounded-lg bg-card/30 border border-border/50">
                   <h5 className="text-base md:text-lg font-semibold text-primary">{chapter.header}</h5>
                   <p className="text-foreground leading-relaxed text-sm md:text-base">{chapter.summary}</p>
                   
