@@ -8,6 +8,8 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    hmr: true,
+    force: true,
     proxy: {
       // Proxy API requests to the backend server (development only)
       '/api': {
