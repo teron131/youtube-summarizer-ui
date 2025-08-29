@@ -7,11 +7,11 @@ import { defineConfig } from "vite";
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 5173,
+    port: 8080,
     proxy: {
       // Proxy API requests to the backend server (development only)
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'http://localhost:3000',
         changeOrigin: true,
         secure: false,
         // Remove the rewrite - we want to keep the /api prefix

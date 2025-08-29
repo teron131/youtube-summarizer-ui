@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Play, AlertCircle, ExternalLink, Youtube } from "lucide-react";
-import { validateUrl, handleApiError } from "@/services/api";
+import { handleApiError } from "@/services/api";
  
 interface VideoUrlFormProps {
   onSubmit: (url: string) => void;
