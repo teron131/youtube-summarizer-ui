@@ -170,7 +170,7 @@ const Index = () => {
             <div className="fade-in-up">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full mb-2">
                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                <span className="text-primary text-sm font-medium">Powered by Gemini, Apify, Fal</span>
+                <span className="text-primary text-base font-medium">Powered by Gemini, Apify, Fal</span>
               </div>
             </div>
             
@@ -188,7 +188,7 @@ const Index = () => {
                video into structured summaries.{" "}
             </p>
             
-            <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground fade-in-up stagger-3">
+            <div className="flex flex-wrap justify-center gap-4 text-base text-muted-foreground fade-in-up stagger-3">
               <div className="flex items-center gap-2">
                 <div className="w-1 h-1 bg-primary rounded-full"></div>
                 <span>Scrap / Transcribe + Summarize</span>
@@ -253,13 +253,13 @@ const Index = () => {
                             ) : isActive ? (
                               <Loader2 className="w-5 h-5 text-white animate-spin" />
                             ) : (
-                              <span className="text-white text-sm font-bold">{step.step}</span>
+                              <span className="text-white text-base font-bold">{step.step}</span>
                             )}
                           </div>
                           
                           <div className="flex-1 text-left">
                             <h4 className="font-semibold text-foreground">{step.name}</h4>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-base text-muted-foreground">
                               {stepState?.message || step.description}
                             </p>
                             {stepState?.processingTime && (
@@ -294,7 +294,7 @@ const Index = () => {
                   <h3 className="text-lg font-semibold text-destructive mb-2">{error.message}</h3>
                   
                   {/* Show error type and status */}
-                  <div className="flex items-center gap-4 mb-3 text-sm">
+                  <div className="flex items-center gap-4 mb-3 text-base">
                     {error.type && (
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                         error.type === 'server' ? 'bg-red-100 text-red-800' :
@@ -315,7 +315,7 @@ const Index = () => {
                   {/* Show error details if available */}
                   {error.details && (
                     <div className="bg-muted/30 rounded-lg p-3 mb-3">
-                      <p className="text-sm text-muted-foreground mb-1">Technical Details:</p>
+                      <p className="text-base text-muted-foreground mb-1">Technical Details:</p>
                       <p className="text-xs font-mono text-foreground break-all">{error.details}</p>
                     </div>
                   )}
@@ -323,10 +323,10 @@ const Index = () => {
                   {/* Show progress details if available */}
                   {progressStates.length > 0 && (
                     <div className="mt-4 space-y-2">
-                      <h4 className="font-semibold text-sm">Progress Details:</h4>
+                      <h4 className="font-semibold text-base">Progress Details:</h4>
                       <div className="bg-muted/30 rounded-lg p-4 max-h-48 overflow-y-auto">
                         {progressStates.map((state, index) => (
-                          <div key={index} className="text-sm text-foreground font-mono mb-2">
+                          <div key={index} className="text-base text-foreground font-mono mb-2">
                             <span className={`inline-block w-2 h-2 rounded-full mr-2 ${
                               state.status === 'completed' ? 'bg-green-500' :
                               state.status === 'error' ? 'bg-red-500' :
@@ -342,7 +342,7 @@ const Index = () => {
                   {/* Show helpful suggestions for common errors */}
                   {error.message.includes('APIFY_API_KEY') && (
                     <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                      <p className="text-sm text-blue-800">
+                      <p className="text-base text-blue-800">
                         <strong>Configuration Issue:</strong> The Apify API key is not configured on the backend server. 
                         Please contact the administrator to configure the required API keys.
                       </p>
@@ -351,7 +351,7 @@ const Index = () => {
                   
                   {error.message.includes('GEMINI_API_KEY') && (
                     <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                      <p className="text-sm text-blue-800">
+                      <p className="text-base text-blue-800">
                         <strong>Configuration Issue:</strong> The Gemini API key is not configured on the backend server. 
                         Please contact the administrator to configure the required API keys.
                       </p>
@@ -410,10 +410,10 @@ const Index = () => {
                   <CheckCircle className="w-5 h-5 text-green-500" />
                   <span className="font-semibold text-foreground">{state.stepName}</span>
                 </div>
-                <p className="text-sm text-muted-foreground mb-2">{state.message}</p>
+                <p className="text-base text-muted-foreground mb-2">{state.message}</p>
                 {state.processingTime && (
                   <div className="flex justify-end">
-                    <span className="text-sm font-medium text-red-500 bg-red-500/10 px-3 py-1 rounded-full">
+                    <span className="text-base font-medium text-red-500 bg-red-500/10 px-3 py-1 rounded-full">
                       {state.processingTime}
                     </span>
                   </div>
@@ -436,19 +436,19 @@ const Index = () => {
             <div className="grid md:grid-cols-3 gap-6 text-left">
               <div className="bg-background/50 p-4 rounded-lg border border-muted">
                 <h4 className="font-semibold text-foreground mb-2">2-Step Process</h4>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-base text-muted-foreground">
                   Just scrap the video data and then generate AI analysis - simple and efficient.
                 </p>
               </div>
               <div className="bg-background/50 p-4 rounded-lg border border-muted">
                 <h4 className="font-semibold text-foreground mb-2">Real-time Feedback</h4>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-base text-muted-foreground">
                   See exactly which step is being processed and get immediate feedback on progress.
                 </p>
               </div>
               <div className="bg-background/50 p-4 rounded-lg border border-muted">
                 <h4 className="font-semibold text-foreground mb-2">Better Reliability</h4>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-base text-muted-foreground">
                   Uses existing proven functions directly - scrap_youtube() and summarize_video().
                 </p>
               </div>
