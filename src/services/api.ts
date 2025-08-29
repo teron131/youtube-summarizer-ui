@@ -178,8 +178,35 @@ class YouTubeApiClient {
           detail: response.statusText
         }));
         
+        // Debug logging
+        console.log('🔍 Error Response Debug:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData,
+          endpoint
+        });
+        
+        // Handle nested error structures from backend
+        let errorMessage = `Request failed with status ${response.status}`;
+        
+        if (errorData.detail) {
+          if (typeof errorData.detail === 'string') {
+            errorMessage = errorData.detail;
+          } else if (typeof errorData.detail === 'object' && errorData.detail.error) {
+            errorMessage = errorData.detail.error;
+          } else if (typeof errorData.detail === 'object' && errorData.detail.message) {
+            errorMessage = errorData.detail.message;
+          }
+        } else if (errorData.message) {
+          errorMessage = errorData.message;
+        } else if (errorData.error) {
+          errorMessage = errorData.error;
+        }
+        
+        console.log('🔍 Extracted Error Message:', errorMessage);
+        
         const apiError: ApiError = {
-          message: errorData.detail || errorData.message || `Request failed with status ${response.status}`,
+          message: errorMessage,
           status: response.status,
           type: this.categorizeError(response.status),
           details: JSON.stringify(errorData)
