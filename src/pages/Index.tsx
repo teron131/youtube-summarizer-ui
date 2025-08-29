@@ -165,12 +165,12 @@ const Index = () => {
           <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
         </div>
         
-        <div className="relative container mx-auto px-4 py-20">
-          <div className="text-center space-y-8 mb-16">
+        <div className="relative container mx-auto px-4 pt-4 pb-20">
+          <div className="text-center space-y-4 mb-8">
             <div className="fade-in-up">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full mb-2">
                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                <span className="text-primary text-sm font-medium">Powered by Apify and Gemini</span>
+                <span className="text-primary text-sm font-medium">Powered by Gemini, Apify, Fal</span>
               </div>
             </div>
             
@@ -183,24 +183,23 @@ const Index = () => {
             </h1>
             
             <p className="text-xl sm:text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed fade-in-up stagger-2">
-              Transform any YouTube video into concise, intelligent summaries.{" "}
-              <br className="hidden sm:block" />
-              <span className="text-primary font-semibold">2-step processing</span> with 
-              <span className="text-primary font-semibold"> real-time feedback</span> for better reliability.
+              Transform any 
+              <span className="text-primary font-semibold"> YouTube </span>
+               video into structured summaries.{" "}
             </p>
             
             <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground fade-in-up stagger-3">
               <div className="flex items-center gap-2">
                 <div className="w-1 h-1 bg-primary rounded-full"></div>
-                <span>Scrap + Summarize</span>
+                <span>Scrap / Transcribe + Summarize</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-1 h-1 bg-primary rounded-full"></div>
-                <span>Real-time Progress</span>
+                <span>Structured Analysis</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-1 h-1 bg-primary rounded-full"></div>
-                <span>Better Reliability</span>
+                <span>Time Saving</span>
               </div>
             </div>
           </div>
@@ -457,15 +456,6 @@ const Index = () => {
           </div>
         </div>
       </div>
-
-      {/* Footer */}
-      <footer className="border-t border-muted py-8 bg-background">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-muted-foreground">
-            Powered by Apify and Gemini
-          </p>
-        </div>
-      </footer>
     </div>
   );
 };
