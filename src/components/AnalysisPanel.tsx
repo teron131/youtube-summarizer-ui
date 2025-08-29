@@ -109,8 +109,8 @@ export const AnalysisPanel = ({ analysis }: AnalysisPanelProps) => {
               </div>
               <h4 className="text-base md:text-lg font-bold text-primary">Overall Summary</h4>
             </div>
-            <div className="pl-9 md:pl-11">
-              <p className="text-foreground leading-relaxed text-sm md:text-base">
+            <div className="pl-2 md:pl-3">
+              <p className="text-foreground leading-7 md:leading-8 text-sm md:text-base">
                 {analysis.overall_summary}
               </p>
             </div>
@@ -126,12 +126,12 @@ export const AnalysisPanel = ({ analysis }: AnalysisPanelProps) => {
               </div>
               <h4 className="text-base md:text-lg font-bold text-primary">Key Takeaways</h4>
             </div>
-            <div className="pl-9 md:pl-11">
+            <div className="pl-2 md:pl-3">
               <ul className="space-y-1 md:space-y-1.5">
                 {analysis.takeaways.map((takeaway, index) => (
                   <li key={index} className="flex items-start gap-2 md:gap-3">
                     <span className="text-primary font-bold mt-0.5 text-sm md:text-base">•</span>
-                    <span className="text-foreground leading-relaxed text-sm md:text-base">{takeaway}</span>
+                    <span className="text-foreground leading-7 md:leading-8 text-sm md:text-base">{takeaway}</span>
                   </li>
                 ))}
               </ul>
@@ -148,12 +148,12 @@ export const AnalysisPanel = ({ analysis }: AnalysisPanelProps) => {
               </div>
               <h4 className="text-base md:text-lg font-bold text-primary">Key Facts</h4>
             </div>
-            <div className="pl-9 md:pl-11">
+            <div className="pl-2 md:pl-3">
               <ul className="space-y-1 md:space-y-1.5">
                 {analysis.key_facts.map((fact, index) => (
                   <li key={index} className="flex items-start gap-2 md:gap-3">
                     <span className="text-primary font-bold mt-0.5 text-sm md:text-base">•</span>
-                    <span className="text-foreground leading-relaxed text-sm md:text-base">{fact}</span>
+                    <span className="text-foreground leading-7 md:leading-8 text-sm md:text-base">{fact}</span>
                   </li>
                 ))}
               </ul>
@@ -171,18 +171,18 @@ export const AnalysisPanel = ({ analysis }: AnalysisPanelProps) => {
               <h4 className="text-base md:text-lg font-bold text-primary">Video Chapters</h4>
             </div>
             
-            <div className="pl-9 md:pl-11 space-y-2 md:space-y-3">
+            <div className="pl-2 md:pl-3 space-y-2 md:space-y-3">
               {analysis.chapters.map((chapter, index) => (
                 <div key={index} className="space-y-1 md:space-y-1.5">
                   <h5 className="text-base md:text-lg font-semibold text-primary">{chapter.header}</h5>
-                  <p className="text-foreground leading-relaxed text-sm md:text-base">{chapter.summary}</p>
+                  <p className="text-foreground leading-7 md:leading-8 text-sm md:text-base">{chapter.summary}</p>
                   
                   {chapter.key_points && chapter.key_points.length > 0 && (
                     <ul className="space-y-0.5 md:space-y-1">
                       {chapter.key_points.map((point, pIndex) => (
                         <li key={pIndex} className="flex items-start gap-2 md:gap-3">
                           <span className="text-primary font-bold mt-0.5 text-sm md:text-base">•</span>
-                          <span className="text-foreground leading-relaxed text-sm md:text-base">{point}</span>
+                          <span className="text-foreground leading-7 md:leading-8 text-sm md:text-base">{point}</span>
                         </li>
                       ))}
                     </ul>
