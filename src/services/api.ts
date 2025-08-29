@@ -2,30 +2,25 @@
  * YouTube Summarizer API Service
  * ===============================
  * 
- * Comprehensive API client for the YouTube Summarizer backend.
- * Matches the optimized FastAPI backend structure with full type safety.
+ * Simple API client for the YouTube Summarizer backend using 2-step processing.
+ * Uses the new /api/scrap and /api/summarize endpoints for better reliability.
  * 
  * ## Processing Workflow
  * 
- * The backend uses a multi-tier fallback approach:
- * - **Tier 1**: yt-dlp captions extraction (fastest)
- * - **Tier 2**: Audio transcription via FAL API
- * - **Tier 3**: Gemini direct URL processing (fallback)
+ * The backend uses a simplified 2-step approach:
+ * - **Step 1**: `/api/scrap` - Extract video info and transcript using Apify
+ * - **Step 2**: `/api/summarize` - Generate AI analysis using Gemini
  * 
  * ## Available Endpoints
  * 
- * - `/api/health` - System health and configuration status
- * - `/api/validate-url` - YouTube URL validation
- * - `/api/video-info` - Video metadata extraction
- * - `/api/transcript` - Transcript extraction only
- * - `/api/summary` - Text summarization only
- * - `/api/process` - Complete processing pipeline
- * - `/api/generate` - **Master endpoint** (recommended for frontend)
+ * - `/api/health` - System health check
+ * - `/api/scrap` - Video data extraction
+ * - `/api/summarize` - AI analysis generation
  */
 
 // API Configuration
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
-const API_VERSION = "2.1.0";
+const API_VERSION = "3.0.0";
 
 // Development logging
 if (import.meta.env.DEV) {
@@ -37,37 +32,8 @@ if (import.meta.env.DEV) {
 // ================================
 // TYPE DEFINITIONS
 // ================================
-// These match the Pydantic models in the backend exactly
 
-// Request Models
-export interface YouTubeRequest {
-  url: string;
-}
-
-export interface YouTubeProcessRequest {
-  url: string;
-  generate_summary?: boolean;
-}
-
-export interface TextSummaryRequest {
-  text: string;
-}
-
-export interface GenerateRequest {
-  url: string;
-  include_transcript?: boolean;
-  include_summary?: boolean;
-  include_analysis?: boolean;
-  include_metadata?: boolean;
-}
-
-// Response Models
-export interface URLValidationResponse {
-  is_valid: boolean;
-  cleaned_url: string | null;
-  original_url: string;
-}
-
+// Basic Video Info
 export interface VideoInfoResponse {
   title: string;
   author: string;
@@ -79,41 +45,54 @@ export interface VideoInfoResponse {
   url: string;
 }
 
-export interface TranscriptResponse {
-  title: string;
-  author: string;
-  transcript: string;
+// 2-Step Processing Types
+export interface ScrapRequest {
   url: string;
+}
+
+export interface ScrapResponse {
+  status: string;
+  message: string;
+  timestamp: string;
+  cleaned_url: string;
+  video_info: VideoInfoResponse;
+  transcript: string;
   processing_time: string;
 }
 
-export interface SummaryResponse {
-  title: string;
-  summary: string;
-  analysis?: AnalysisData;
+export interface SummarizeRequest {
+  content: string;
+  content_type?: 'url' | 'transcript';
+}
+
+export interface SummarizeResponse {
+  status: string;
+  message: string;
+  timestamp: string;
+  analysis: AnalysisData;
   processing_time: string;
 }
 
-export interface ProcessingResponse {
-  status: 'success' | 'error';
+export interface TwoStepProgressState {
+  step: 1 | 2;
+  stepName: string;
+  status: 'pending' | 'processing' | 'completed' | 'error';
   message: string;
-  data?: ProcessingResultData;
-  logs: string[];
+  data?: unknown;
+  error?: ApiError;
+  processingTime?: string;
 }
 
-export interface GenerateResponse {
-  status: 'success' | 'error';
-  message: string;
-  video_info?: VideoInfoResponse;
+export interface TwoStepProcessingResult {
+  success: boolean;
+  videoInfo?: VideoInfoResponse;
   transcript?: string;
-  summary?: string;
   analysis?: AnalysisData;
-  metadata: Record<string, unknown>;
-  processing_details: Record<string, string>;
-  logs: string[];
+  error?: ApiError;
+  totalTime: string;
 }
 
-// Structured Data Models
+// Analysis Data Structure
 export interface AnalysisData {
   title: string;
   overall_summary: string;
@@ -131,22 +110,6 @@ export interface AnalysisChapter {
   key_points: string[];
 }
 
-export interface ProcessingResultData {
-  title: string;
-  author: string;
-  duration?: string;
-  thumbnail?: string;
-  view_count?: number;
-  upload_date?: string;
-  transcript: string;
-  summary?: string;
-  analysis?: AnalysisData;
-  processing_method: string;
-  processing_time: string;
-  url: string;
-  original_url: string;
-}
-
 // Health Check Response
 export interface HealthCheckResponse {
   status: 'healthy';
@@ -160,21 +123,6 @@ export interface HealthCheckResponse {
   };
 }
 
-// Root API Info Response
-export interface RootResponse {
-  name: string;
-  version: string;
-  description: string;
-  docs: string;
-  health: string;
-  optimizations: string[];
-  endpoints: Record<string, string>;
-  workflow: {
-    tier_1: string;
-    tier_2: string;
-  };
-}
-
 // Error Types
 export interface ApiError {
   message: string;
@@ -182,9 +130,6 @@ export interface ApiError {
   details?: string;
   type?: 'network' | 'validation' | 'server' | 'processing' | 'unknown';
 }
-
-// Processing Status Indicators
-export type ProcessingStatus = 'pending' | 'success' | 'failed';
 
 // ================================
 // API CLIENT CLASS
@@ -205,7 +150,8 @@ class YouTubeApiClient {
    */
   private async makeRequest<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
+    timeout: number = 60000 // Default 60 seconds
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
     
@@ -218,9 +164,14 @@ class YouTubeApiClient {
       ...options,
     };
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
     try {
       const response = await fetch(url, defaultOptions);
       
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ 
           message: `HTTP ${response.status}: ${response.statusText}`,
@@ -238,11 +189,22 @@ class YouTubeApiClient {
       }
 
       return await response.json();
-    } catch (error) {
-      if ((error as ApiError).type) {
-        // Already processed as ApiError
-        throw error;
-      }
+          } catch (error) {
+        clearTimeout(timeoutId);
+        
+        if (error instanceof Error && error.name === 'AbortError') {
+          const timeoutError: ApiError = {
+            message: `Request timed out after ${timeout / 1000} seconds. The operation may still be processing on the server.`,
+            type: 'processing',
+            details: `Timeout set to ${timeout}ms for endpoint: ${endpoint}`
+          };
+          throw timeoutError;
+        }
+        
+        if ((error as ApiError).type) {
+          // Already processed as ApiError
+          throw error;
+        }
       
       if (error instanceof TypeError && error.message.includes('fetch')) {
         const networkError: ApiError = {
@@ -278,13 +240,6 @@ class YouTubeApiClient {
   // ================================
 
   /**
-   * Get API root information
-   */
-  async getApiInfo(): Promise<RootResponse> {
-    return this.makeRequest('/');
-  }
-
-  /**
    * Health check with environment configuration
    */
   async healthCheck(): Promise<HealthCheckResponse> {
@@ -292,74 +247,124 @@ class YouTubeApiClient {
   }
 
   /**
-   * Validate YouTube URL
+   * Scrap video info and transcript using Apify
    */
-  async validateUrl(url: string): Promise<URLValidationResponse> {
-    return this.makeRequest('/validate-url', {
-      method: 'POST',
-      body: JSON.stringify({ url }),
-    });
-  }
-
-  /**
-   * Extract video metadata only
-   */
-  async getVideoInfo(url: string): Promise<VideoInfoResponse> {
-    return this.makeRequest('/video-info', {
-      method: 'POST',
-      body: JSON.stringify({ url }),
-    });
-  }
-
-  /**
-   * Extract transcript only
-   */
-  async getTranscript(url: string): Promise<TranscriptResponse> {
-    return this.makeRequest('/transcript', {
-      method: 'POST',
-      body: JSON.stringify({ url }),
-    });
-  }
-
-  /**
-   * Generate summary from text
-   */
-  async generateSummary(text: string): Promise<SummaryResponse> {
-    return this.makeRequest('/summary', {
-      method: 'POST',
-      body: JSON.stringify({ text }),
-    });
-  }
-
-  /**
-   * Complete video processing with options
-   */
-  async processVideo(request: YouTubeProcessRequest): Promise<ProcessingResponse> {
-    return this.makeRequest('/process', {
+  async scrapVideo(request: ScrapRequest): Promise<ScrapResponse> {
+    return this.makeRequest('/scrap', {
       method: 'POST',
       body: JSON.stringify(request),
-    });
+    }, 120000); // 2 minutes for scraping
   }
 
   /**
-   * 🌟 MASTER ENDPOINT - Comprehensive video analysis
-   * 
-   * This is the recommended endpoint for frontend applications.
-   * Provides complete control over what data to include.
+   * Generate AI analysis using Gemini
    */
-  async generateComprehensiveAnalysis(request: GenerateRequest): Promise<GenerateResponse> {
-    const body: GenerateRequest = {
-      url: request.url,
-      include_transcript: request.include_transcript ?? true,
-      include_summary: request.include_summary ?? true,
-      include_analysis: request.include_analysis ?? true,
-      include_metadata: request.include_metadata ?? true,
-    };
-
-    return this.makeRequest('/generate', {
+  async summarizeContent(request: SummarizeRequest): Promise<SummarizeResponse> {
+    return this.makeRequest('/summarize', {
       method: 'POST',
-      body: JSON.stringify(body),
-    });
+      body: JSON.stringify(request),
+    }, 300000); // 5 minutes for AI analysis (matches backend timeout)
+  }
+
+  // ================================
+  // TWO-STEP PROCESSING WORKFLOW
+  // ================================
+
+  /**
+   * Complete two-step processing using /api/scrap and /api/summarize
+   */
+  async twoStepProcessing(
+    url: string,
+    onProgress?: (state: TwoStepProgressState) => void
+  ): Promise<TwoStepProcessingResult> {
+    const startTime = Date.now();
+    let videoInfo: VideoInfoResponse | undefined;
+    let transcript: string | undefined;
+    let analysis: AnalysisData | undefined;
+
+    try {
+      // Step 1: Scrap video info and transcript
+      onProgress?.({
+        step: 1,
+        stepName: 'Scraping Video',
+        status: 'processing',
+        message: 'Extracting video info and transcript using Apify...'
+      });
+
+      const scrapResponse = await this.scrapVideo({ url });
+      
+      if (scrapResponse.status === 'error') {
+        throw new Error(scrapResponse.message);
+      }
+
+      videoInfo = scrapResponse.video_info;
+      transcript = scrapResponse.transcript;
+
+      onProgress?.({
+        step: 1,
+        stepName: 'Scraping Video',
+        status: 'completed',
+        message: `Video scraped: ${videoInfo.title}`,
+        data: { videoInfo, transcript },
+        processingTime: scrapResponse.processing_time
+      });
+
+      // Step 2: Generate AI analysis
+      onProgress?.({
+        step: 2,
+        stepName: 'AI Analysis',
+        status: 'processing',
+        message: 'Generating AI summary and analysis using Gemini...'
+      });
+
+      const summarizeResponse = await this.summarizeContent({
+        content: transcript,
+        content_type: 'transcript'
+      });
+
+      if (summarizeResponse.status === 'error') {
+        throw new Error(summarizeResponse.message);
+      }
+
+      analysis = summarizeResponse.analysis;
+
+      onProgress?.({
+        step: 2,
+        stepName: 'AI Analysis',
+        status: 'completed',
+        message: 'Analysis completed successfully',
+        data: { analysis },
+        processingTime: summarizeResponse.processing_time
+      });
+
+      const totalTime = ((Date.now() - startTime) / 1000).toFixed(1) + 's';
+
+      return {
+        success: true,
+        videoInfo,
+        transcript,
+        analysis,
+        totalTime
+      };
+
+    } catch (error) {
+      const totalTime = ((Date.now() - startTime) / 1000).toFixed(1) + 's';
+      const apiError = handleApiError(error);
+
+      onProgress?.({
+        step: 1,
+        stepName: 'Processing',
+        status: 'error',
+        message: apiError.message,
+        error: apiError
+      });
+
+      return {
+        success: false,
+        error: apiError,
+        totalTime
+      };
+    }
   }
 
   // ================================
@@ -454,15 +459,16 @@ class YouTubeApiClient {
 // Create singleton instance
 export const apiClient = new YouTubeApiClient();
 
-// Convenience functions with proper binding
-export const getApiInfo = () => apiClient.getApiInfo();
+// Main processing function
+export const twoStepProcessing = (
+  url: string,
+  onProgress?: (state: TwoStepProgressState) => void
+) => apiClient.twoStepProcessing(url, onProgress);
+
+// Individual endpoint functions
 export const healthCheck = () => apiClient.healthCheck();
-export const validateUrl = (url: string) => apiClient.validateUrl(url);
-export const getVideoInfo = (url: string) => apiClient.getVideoInfo(url);
-export const getTranscript = (url: string) => apiClient.getTranscript(url);
-export const generateSummary = (text: string) => apiClient.generateSummary(text);
-export const processVideo = (request: YouTubeProcessRequest) => apiClient.processVideo(request);
-export const generateComprehensiveAnalysis = (request: GenerateRequest) => apiClient.generateComprehensiveAnalysis(request);
+export const scrapVideo = (request: ScrapRequest) => apiClient.scrapVideo(request);
+export const summarizeContent = (request: SummarizeRequest) => apiClient.summarizeContent(request);
 
 // Utility functions
 export const isValidYouTubeUrl = (url: string) => apiClient.isValidYouTubeUrl(url);
@@ -561,17 +567,6 @@ export const ERROR_MESSAGES = {
   PROCESSING: 'Video processing failed',
   SERVER: 'Server error occurred',
   UNKNOWN: 'An unexpected error occurred'
-} as const;
-
-export const PROCESSING_STATUSES = {
-  PENDING: 'pending',
-  SUCCESS: 'success', 
-  FAILED: 'failed'
-} as const;
-
-export const TIER_DESCRIPTIONS = {
-  TIER_1: 'Apify YouTube Scraper API',
-  TIER_2: 'Gemini direct URL processing',
 } as const;
 
 // Export everything for convenient imports

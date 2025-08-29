@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronUp, Copy, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ChevronDown, ChevronUp, Copy, FileText } from "lucide-react";
+import { useState } from "react";
 
 interface TranscriptPanelProps {
   transcript: string;
