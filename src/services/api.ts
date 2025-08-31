@@ -614,6 +614,7 @@ class YouTubeApiClient {
                   continue;
                 }
                 
+                // Try to parse the JSON chunk
                 const data = JSON.parse(jsonData) as StreamingChunk;
                 chunksProcessed++;
 
@@ -627,7 +628,7 @@ class YouTubeApiClient {
                 if (data.quality) {
                   quality = data.quality;
                 }
-                if (data.iteration_count) {
+                if (data.iteration_count !== undefined) {
                   iterationCount = data.iteration_count;
                 }
 
@@ -691,17 +692,44 @@ class YouTubeApiClient {
                 // Update logs callback
                 onLogUpdate?.([...streamingLogs]);
               } catch (parseError) {
-                // More detailed error logging but don't crash the stream
+                // Enhanced error handling for large transcript chunks
                 const errorDetails = parseError instanceof Error ? parseError.message : String(parseError);
-                console.warn('⚠️ Skipping malformed streaming chunk:', {
-                  error: errorDetails,
-                  linePreview: line.slice(0, 200) + (line.length > 200 ? '...' : ''),
-                  lineLength: line.length
-                });
+                const isLargeChunk = line.length > 10000;
+                const hasTranscript = line.includes('"transcript_or_url"');
                 
-                // Add a log entry about the parsing issue
-                const timestamp = new Date().toLocaleTimeString();
-                streamingLogs.push(`[${timestamp}] ⚠️ Received malformed data chunk (skipped)`);
+                if (isLargeChunk && hasTranscript) {
+                  // Handle large transcript chunks - try to extract useful info without parsing full JSON
+                  const timestamp = new Date().toLocaleTimeString();
+                  
+                  // Try to extract iteration count from the malformed chunk
+                  const iterationMatch = line.match(/"iteration_count":\s*(\d+)/);
+                  const isCompleteMatch = line.match(/"is_complete":\s*(true|false)/);
+                  
+                  if (iterationMatch) {
+                    const extractedIteration = parseInt(iterationMatch[1]);
+                    iterationCount = extractedIteration;
+                    
+                    if (isCompleteMatch && isCompleteMatch[1] === 'true') {
+                      streamingLogs.push(`[${timestamp}] ✅ Processing completed (extracted from large chunk)`);
+                    } else {
+                      streamingLogs.push(`[${timestamp}] 📝 Processing analysis (iteration ${extractedIteration}, chunk size: ${Math.round(line.length/1024)}KB)`);
+                    }
+                  } else {
+                    streamingLogs.push(`[${timestamp}] 📄 Received large transcript chunk (${Math.round(line.length/1024)}KB)`);
+                  }
+                } else {
+                  // Standard malformed chunk handling
+                  console.warn('⚠️ Skipping malformed streaming chunk:', {
+                    error: errorDetails,
+                    linePreview: line.slice(0, 200) + (line.length > 200 ? '...' : ''),
+                    lineLength: line.length
+                  });
+                  
+                  const timestamp = new Date().toLocaleTimeString();
+                  streamingLogs.push(`[${timestamp}] ⚠️ Received malformed data chunk (skipped)`);
+                }
+                
+                // Update logs callback even for errors
                 onLogUpdate?.([...streamingLogs]);
               }
             }
