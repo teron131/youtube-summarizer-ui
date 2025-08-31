@@ -125,18 +125,18 @@ export interface AnalysisChapter {
 
 // Streaming Analysis Types
 export interface StreamingChunk {
-  // WorkflowState fields from backend
+  // WorkflowState fields from backend (exact match)
   transcript_or_url?: string;
   analysis?: AnalysisData;
   quality?: QualityData;
   iteration_count?: number;
   is_complete?: boolean;
 
-  // Additional streaming metadata
+  // Additional streaming metadata added by backend
+  timestamp?: string;
+  chunk_number?: number;
   type?: 'status' | 'analysis' | 'quality' | 'complete' | 'error';
   message?: string;
-  timestamp: string;
-  chunk_number?: number;
   processing_time?: string;
   total_chunks?: number;
 }
@@ -148,10 +148,11 @@ export interface QualityData {
   timestamp: QualityRate;
   no_garbage: QualityRate;
   language: QualityRate;
-  total_score: number;
-  max_possible_score: number;
-  percentage_score: number;
-  is_acceptable: boolean;
+  // These might not be present if they're computed properties in backend
+  total_score?: number;
+  max_possible_score?: number;
+  percentage_score?: number;
+  is_acceptable?: boolean;
 }
 
 export interface QualityRate {
@@ -302,22 +303,22 @@ class YouTubeApiClient {
       }
 
       return await response.json();
-          } catch (error) {
-        clearTimeout(timeoutId);
+    } catch (error) {
+      clearTimeout(timeoutId);
         
-        if (error instanceof Error && error.name === 'AbortError') {
-          const timeoutError: ApiError = {
-            message: `Request timed out after ${timeout / 1000} seconds. The operation may still be processing on the server.`,
-            type: 'processing',
-            details: `Timeout set to ${timeout}ms for endpoint: ${endpoint}`
-          };
-          throw timeoutError;
-        }
+      if (error instanceof Error && error.name === 'AbortError') {
+        const timeoutError: ApiError = {
+          message: `Request timed out after ${timeout / 1000} seconds. The operation may still be processing on the server.`,
+          type: 'processing',
+          details: `Timeout set to ${timeout}ms for endpoint: ${endpoint}`
+        };
+        throw timeoutError;
+      }
         
-        if ((error as ApiError).type) {
-          // Already processed as ApiError
-          throw error;
-        }
+      if ((error as ApiError).type) {
+        // Already processed as ApiError
+        throw error;
+      }
       
       if (error instanceof TypeError && error.message.includes('fetch')) {
         const networkError: ApiError = {
@@ -631,18 +632,18 @@ class YouTubeApiClient {
                 }
 
                 // Generate user-friendly log messages
-                const timestamp = new Date(data.timestamp).toLocaleTimeString();
+                const timestamp = new Date(data.timestamp || Date.now()).toLocaleTimeString();
                 let logMessage = '';
 
                 if (data.is_complete && data.analysis && data.quality) {
-                  // Final completion message
-                  const qualityScore = data.quality.percentage_score || 0;
+                  // Final completion message - handle missing percentage_score
+                  const qualityScore = data.quality.percentage_score ?? 0;
                   const chaptersCount = data.analysis.chapters?.length || 0;
                   logMessage = `✅ Analysis completed successfully! Generated ${chaptersCount} chapters with ${qualityScore}% quality score`;
                 } else if (data.quality && data.iteration_count !== undefined) {
-                  // Quality check results
-                  const qualityScore = data.quality.percentage_score || 0;
-                  const isAcceptable = data.quality.is_acceptable;
+                  // Quality check results - handle missing computed properties
+                  const qualityScore = data.quality.percentage_score ?? 0;
+                  const isAcceptable = data.quality.is_acceptable ?? (qualityScore >= 90);
                   
                   if (isAcceptable) {
                     logMessage = `🎯 Quality check passed with ${qualityScore}% score - Analysis meets requirements`;
@@ -673,7 +674,7 @@ class YouTubeApiClient {
                     step: 'complete',
                     stepName: 'Analysis Complete',
                     status: 'completed',
-                    message: `Analysis completed successfully with ${data.quality?.percentage_score || 0}% quality score`,
+                    message: `Analysis completed successfully with ${data.quality?.percentage_score ?? 0}% quality score`,
                     iterationCount: data.iteration_count
                   });
                 } else if (chunksProcessed % 2 === 0) { // Update every other chunk to avoid spam
@@ -723,8 +724,9 @@ class YouTubeApiClient {
         }
         
         if (quality) {
-          const qualityEmoji = quality.percentage_score >= 80 ? '🌟' : quality.percentage_score >= 60 ? '⭐' : '🔄';
-          streamingLogs.push(`[${timestamp}] ${qualityEmoji} Final quality score: ${quality.percentage_score}%`);
+          const qualityScore = quality.percentage_score ?? 0;
+          const qualityEmoji = qualityScore >= 80 ? '🌟' : qualityScore >= 60 ? '⭐' : '🔄';
+          streamingLogs.push(`[${timestamp}] ${qualityEmoji} Final quality score: ${qualityScore}%`);
         }
       }
 
@@ -983,3 +985,4 @@ export const ERROR_MESSAGES = {
 
 // Export everything for convenient imports
 export default apiClient;
+
