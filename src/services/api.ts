@@ -5,6 +5,11 @@
  * Optimized API client for the YouTube Summarizer backend.
  * Aligned with youtube-summarizer/app.py v3.0.0 implementation.
  * 
+ * ## URL Configuration
+ * 
+ * **Development**: Uses Vite proxy `/api` → `localhost:8080`
+ * **Production**: Set `VITE_API_BASE_URL=https://youtube-summarizer-teron131.up.railway.app` (no `/api` suffix)
+ * 
  * ## Processing Workflow
  * 
  * The backend uses a simplified 2-step approach:
@@ -28,6 +33,10 @@ const API_VERSION = "3.0.0";
 if (import.meta.env.DEV) {
   const displayUrl = API_BASE_URL || '/api (Vite proxy → localhost:8080)';
   console.log('🔗 API Base URL:', displayUrl);
+  console.log('📊 API Version:', API_VERSION);
+} else {
+  // Production logging
+  console.log('🔗 Production API Base URL:', API_BASE_URL || 'Not configured');
   console.log('📊 API Version:', API_VERSION);
 }
 
@@ -205,7 +214,8 @@ class YouTubeApiClient {
   private version: string;
 
   constructor(baseUrl: string = API_BASE_URL, version: string = API_VERSION) {
-    // If no base URL is provided (development mode), use '/api' for Vite proxy
+    // Development: Use '/api' for Vite proxy → localhost:8080
+    // Production: Use full Railway URL (e.g., https://youtube-summarizer-teron131.up.railway.app)
     this.baseUrl = baseUrl || '/api';
     this.version = version;
   }
@@ -596,7 +606,14 @@ class YouTubeApiClient {
           for (const line of lines) {
             if (line.startsWith('data: ')) {
               try {
-                const data = JSON.parse(line.slice(6)) as StreamingChunk;
+                const jsonData = line.slice(6);
+                
+                // Skip empty or malformed data lines
+                if (!jsonData.trim() || jsonData.trim() === '{}') {
+                  continue;
+                }
+                
+                const data = JSON.parse(jsonData) as StreamingChunk;
                 chunksProcessed++;
 
                 // Store the complete workflow state for final results
@@ -673,7 +690,18 @@ class YouTubeApiClient {
                 // Update logs callback
                 onLogUpdate?.([...streamingLogs]);
               } catch (parseError) {
-                console.warn('Failed to parse streaming chunk:', line, parseError);
+                // More detailed error logging but don't crash the stream
+                const errorDetails = parseError instanceof Error ? parseError.message : String(parseError);
+                console.warn('⚠️ Skipping malformed streaming chunk:', {
+                  error: errorDetails,
+                  linePreview: line.slice(0, 200) + (line.length > 200 ? '...' : ''),
+                  lineLength: line.length
+                });
+                
+                // Add a log entry about the parsing issue
+                const timestamp = new Date().toLocaleTimeString();
+                streamingLogs.push(`[${timestamp}] ⚠️ Received malformed data chunk (skipped)`);
+                onLogUpdate?.([...streamingLogs]);
               }
             }
           }
