@@ -9,30 +9,33 @@ import { useToast } from "@/hooks/use-toast";
 import {
   ApiError,
   handleApiError,
-  twoStepProcessing,
-  TwoStepProcessingResult,
-  TwoStepProgressState,
+  streamingProcessing,
+  StreamingProcessingResult,
+  StreamingProgressState,
 } from "@/services/api";
 import { exampleData } from "@/services/example-data";
-import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
+import { AlertCircle, CheckCircle, ChevronDown, ChevronUp, FileText, Loader2 } from "lucide-react";
 import { useState } from "react";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
-  const [currentStep, setCurrentStep] = useState<number>(0);
+    const [currentStep, setCurrentStep] = useState<number>(0);
   const [currentStage, setCurrentStage] = useState<string>("");
-  const [progressStates, setProgressStates] = useState<TwoStepProgressState[]>([]);
-  
+  const [progressStates, setProgressStates] = useState<StreamingProgressState[]>([]);
+  const [streamingLogs, setStreamingLogs] = useState<string[]>([]);
+  const [showLogs, setShowLogs] = useState(false);
+
   // Consolidated state for the response data
-  const [analysisResult, setAnalysisResult] = useState<TwoStepProcessingResult | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<StreamingProcessingResult | null>(null);
 
   const { toast } = useToast();
 
-  // Progress steps configuration (2 steps)
+  // Progress steps configuration (simple workflow)
   const progressSteps = [
-    { step: 1, name: "Scraping Video", description: "Extracting video info and transcript using Apify" },
-    { step: 2, name: "AI Analysis", description: "Generating AI summary and analysis using Gemini" },
+    { step: 'scraping', name: "Scraping Video", description: "Extracting video info and transcript using Apify" },
+    { step: 'analyzing', name: "AI Analysis", description: "Generating AI summary and analysis using Gemini" },
+    { step: 'complete', name: "Complete", description: "Analysis completed successfully" },
   ];
 
   const handleVideoSubmit = async (url: string) => {
@@ -43,6 +46,8 @@ const Index = () => {
     setCurrentStep(0);
     setCurrentStage("Initializing...");
     setProgressStates([]);
+    setStreamingLogs([]);
+    setShowLogs(false);
     
     try {
       const finalUrl = url;
@@ -52,38 +57,75 @@ const Index = () => {
         setCurrentStage("Loading example...");
         
         // Create example progress states to show the Process Logs card
-        const exampleProgressStates: TwoStepProgressState[] = [
+        const exampleProgressStates: StreamingProgressState[] = [
           {
-            step: 1,
+            step: 'scraping',
             stepName: "Scraping Video",
             status: "completed",
             message: "Video scraped: The Trillion Dollar Equation",
             processingTime: "0.1s"
           },
           {
-            step: 2,
+            step: 'analyzing',
             stepName: "AI Analysis",
             status: "completed",
             message: "Analysis completed successfully",
-            processingTime: "0.1s"
+            processingTime: "0.1s",
+            iterationCount: 1,
+            qualityScore: 95
+          },
+          {
+            step: 'complete',
+            stepName: "Analysis Complete",
+            status: "completed",
+            message: "Analysis completed successfully",
+            processingTime: "0.2s",
+            chunkCount: 5,
+            iterationCount: 1
           }
         ];
         
         setProgressStates(exampleProgressStates);
         
         // Simulate loading for example
-        const exampleResult: TwoStepProcessingResult = {
+        const exampleResult: StreamingProcessingResult = {
           success: true,
           videoInfo: exampleData.videoInfo,
           transcript: exampleData.transcript || '',
           analysis: exampleData.analysis || {
             title: 'Example Analysis',
-            overall_summary: 'This is example analysis data for demonstration purposes.',
+            summary: 'This is example analysis data for demonstration purposes.',
             chapters: [],
             key_facts: [],
-            takeaways: []
+            takeaways: [],
+            keywords: ['example', 'demo']
           },
-          totalTime: '0.2s'
+          quality: {
+            completeness: { rate: 'Pass', reason: 'Complete analysis provided' },
+            structure: { rate: 'Pass', reason: 'Well structured' },
+            grammar: { rate: 'Pass', reason: 'Good grammar' },
+            timestamp: { rate: 'Pass', reason: 'Timestamps included' },
+            no_garbage: { rate: 'Pass', reason: 'No promotional content' },
+            language: { rate: 'Pass', reason: 'Appropriate language' },
+            total_score: 12,
+            max_possible_score: 12,
+            percentage_score: 100,
+            is_acceptable: true
+          },
+          totalTime: '0.2s',
+          iterationCount: 1,
+          chunksProcessed: 5,
+          logs: [
+            '[10:00:00] 🚀 Starting AI analysis with Gemini LLM...',
+            '[10:00:00] 📄 Processing 15k characters of transcript',
+            '[10:00:01] 📝 Generated analysis with 3 chapters (iteration 1)',
+            '[10:00:01] 🎯 Quality check passed with 100% score - Analysis meets requirements',
+            '[10:00:02] ✅ Analysis completed successfully! Generated 3 chapters with 100% quality score',
+            '[10:00:02] 🏁 Workflow completed successfully in 0.2s',
+            '[10:00:02] 📊 Summary: 1 iterations processed',
+            '[10:00:02] 📚 Generated 3 video chapters',
+            '[10:00:02] 🌟 Final quality score: 100%'
+          ]
         };
         
         setAnalysisResult(exampleResult);
@@ -95,31 +137,39 @@ const Index = () => {
         return;
       }
 
-      // Two-step progressive processing workflow
+            // Streaming processing workflow (logs collected internally)
       setCurrentStage("Starting processing...");
-      
-      const result = await twoStepProcessing(
+
+      const result = await streamingProcessing(
         finalUrl,
-        (progressState: TwoStepProgressState) => {
+        (progressState: StreamingProgressState) => {
           console.log('Progress update:', progressState);
-          
+
           // Update current step and stage
-          setCurrentStep(progressState.step);
+          const stepIndex = progressSteps.findIndex(s => s.step === progressState.step);
+          setCurrentStep(stepIndex >= 0 ? stepIndex : 0);
           setCurrentStage(progressState.message);
-          
+
           // Update progress states array
           setProgressStates(prev => {
             const updated = [...prev];
             const existingIndex = updated.findIndex(s => s.step === progressState.step);
-            
+
             if (existingIndex >= 0) {
               updated[existingIndex] = progressState;
             } else {
               updated.push(progressState);
             }
-            
-            return updated.sort((a, b) => a.step - b.step);
+
+            return updated.sort((a, b) => {
+              const order = ['scraping', 'analyzing', 'complete'];
+              return order.indexOf(a.step) - order.indexOf(b.step);
+            });
           });
+        },
+        (logs: string[]) => {
+          // Update streaming logs
+          setStreamingLogs(logs);
         }
       );
 
@@ -230,20 +280,20 @@ const Index = () => {
                   <h3 className="text-2xl font-bold text-foreground">Processing Video</h3>
                   <p className="text-lg text-muted-foreground">{currentStage}</p>
                   
-                  {/* Simplified Steps */}
+                  {/* Streaming Steps */}
                   <div className="space-y-4 mt-8">
                     {progressSteps.map((step, index) => {
                       const stepState = progressStates.find(s => s.step === step.step);
-                      const isActive = currentStep === step.step;
+                      const isActive = index === currentStep;
                       const isCompleted = stepState?.status === 'completed';
                       const isError = stepState?.status === 'error';
-                      
+
                       return (
                         <div key={step.step} className="flex items-center gap-4 p-4 rounded-lg bg-muted/20 border border-muted/30">
                           <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                            isCompleted ? 'bg-green-500' : 
+                            isCompleted ? 'bg-green-500' :
                             isError ? 'bg-red-500' :
-                            isActive ? 'bg-primary animate-pulse' : 
+                            isActive ? 'bg-primary animate-pulse' :
                             'bg-muted'
                           }`}>
                             {isCompleted ? (
@@ -253,19 +303,21 @@ const Index = () => {
                             ) : isActive ? (
                               <Loader2 className="w-5 h-5 text-white animate-spin" />
                             ) : (
-                              <span className="text-white text-base font-bold">{step.step}</span>
+                              <span className="text-white text-base font-bold">{index + 1}</span>
                             )}
                           </div>
-                          
+
                           <div className="flex-1 text-left">
                             <h4 className="font-semibold text-foreground">{step.name}</h4>
                             <p className="text-base text-muted-foreground">
                               {stepState?.message || step.description}
                             </p>
                             {stepState?.processingTime && (
-                              <span className="text-xs text-red-500">
-                                {stepState.processingTime}
-                              </span>
+                              <div className="flex justify-end mt-2">
+                                <span className="text-xs font-medium text-red-500 bg-red-500/10 px-3 py-1 rounded-full">
+                                  {stepState.processingTime}
+                                </span>
+                              </div>
                             )}
                           </div>
                         </div>
@@ -275,7 +327,7 @@ const Index = () => {
                   
                   {/* Overall Progress Bar */}
                   <div className="w-full bg-muted/30 rounded-full h-3 mt-6">
-                    <div 
+                    <div
                       className="bg-gradient-primary h-3 rounded-full transition-all duration-500 ease-out"
                       style={{width: `${(currentStep / 2) * 100}%`}}
                     ></div>
@@ -363,7 +415,7 @@ const Index = () => {
           )}
 
           {/* Success State */}
-          {!isLoading && !error && analysisResult && analysisResult.success && (
+          {!isLoading && !error && analysisResult && analysisResult.success && analysisResult.analysis && (
             <>
               
               {analysisResult.videoInfo && (
@@ -423,6 +475,45 @@ const Index = () => {
           </div>
         </Card>
       )}
+
+      {/* Streaming Logs */}
+      {streamingLogs.length > 0 && (
+        <Card className="bg-gradient-card border border-primary/30 shadow-card backdrop-blur-sm">
+          <Button
+            variant="ghost"
+            className="w-full p-8 h-auto justify-between hover:bg-primary/5 transition-all duration-300"
+            onClick={() => setShowLogs(!showLogs)}
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center">
+                <FileText className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <span className="text-2xl font-bold text-foreground block">Logs</span>
+                <span className="text-muted-foreground">Real-time processing updates and quality checks ({streamingLogs.length} entries)</span>
+              </div>
+            </div>
+            {showLogs ? (
+              <ChevronUp className="w-6 h-6 text-primary" />
+            ) : (
+              <ChevronDown className="w-6 h-6 text-primary" />
+            )}
+          </Button>
+          {showLogs && (
+            <div className="px-6 pb-6 pt-0 space-y-4">
+              <div className="bg-muted/20 rounded-lg p-4 border border-muted/30 max-h-96 overflow-y-auto">
+                <div className="space-y-2 font-mono text-sm">
+                  {streamingLogs.map((log, index) => (
+                    <div key={index} className="text-foreground">
+                      {log}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </Card>
+      )}
             </>
           )}
         </div>
@@ -435,23 +526,23 @@ const Index = () => {
             <h3 className="text-2xl font-bold text-foreground">Processing Benefits</h3>
             <div className="grid md:grid-cols-3 gap-6 text-left">
               <div className="bg-background/50 p-4 rounded-lg border border-muted">
-                <h4 className="font-semibold text-foreground mb-2">2-Step Process</h4>
+                <h4 className="font-semibold text-foreground mb-2">Reliable Processing</h4>
                 <p className="text-base text-muted-foreground">
-                  Just scrap the video data and then generate AI analysis - simple and efficient.
+                  Advanced streaming technology ensures stable processing without timeouts, even for long videos.
                 </p>
               </div>
               <div className="bg-background/50 p-4 rounded-lg border border-muted">
-                <h4 className="font-semibold text-foreground mb-2">Real-time Feedback</h4>
+                <h4 className="font-semibold text-foreground mb-2">Quality Assurance</h4>
                 <p className="text-base text-muted-foreground">
-                  See exactly which step is being processed and get immediate feedback on progress.
+                  Automatic quality checking and refinement ensures the best possible analysis results.
                 </p>
               </div>
               <div className="bg-background/50 p-4 rounded-lg border border-muted">
-                <h4 className="font-semibold text-foreground mb-2">Better Reliability</h4>
-                <p className="text-base text-muted-foreground">
-                  Uses existing proven functions directly - scrap_youtube() and summarize_video().
-                </p>
-              </div>
+                 <h4 className="font-semibold text-foreground mb-2">Real-time Progress</h4>
+                 <p className="text-base text-muted-foreground">
+                   Live updates show AI analysis progress, quality checks, and iterative improvements in human-readable format.
+                 </p>
+               </div>
             </div>
           </div>
         </div>

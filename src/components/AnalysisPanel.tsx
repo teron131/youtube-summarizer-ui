@@ -18,9 +18,9 @@ export const AnalysisPanel = ({ analysis }: AnalysisPanelProps) => {
   const generateMarkdown = () => {
     let markdown = "# AI Analysis\n\n";
 
-    if (analysis.overall_summary) {
-      markdown += "# Overall Summary\n\n";
-      markdown += `${analysis.overall_summary}\n\n`;
+    if (analysis.summary) {
+      markdown += "# Summary\n\n";
+      markdown += `${analysis.summary}\n\n`;
     }
 
     if (analysis.takeaways && analysis.takeaways.length > 0) {
@@ -39,12 +39,20 @@ export const AnalysisPanel = ({ analysis }: AnalysisPanelProps) => {
       markdown += "\n";
     }
 
+    if (analysis.keywords && analysis.keywords.length > 0) {
+      markdown += "# Keywords\n\n";
+      analysis.keywords.forEach(keyword => {
+        markdown += `- ${keyword}\n`;
+      });
+      markdown += "\n";
+    }
+
     if (analysis.chapters && analysis.chapters.length > 0) {
       markdown += "# Video Chapters\n\n";
       analysis.chapters.forEach(chapter => {
         markdown += `## ${chapter.header}\n\n`;
         markdown += `${chapter.summary}\n\n`;
-        
+
         if (chapter.key_points && chapter.key_points.length > 0) {
           chapter.key_points.forEach(point => {
             markdown += `- ${point}\n`;
@@ -100,18 +108,18 @@ export const AnalysisPanel = ({ analysis }: AnalysisPanelProps) => {
           </Button>
         </div>
 
-        {/* Overall Summary Section */}
-        {analysis.overall_summary && (
+        {/* Summary Section */}
+        {analysis.summary && (
           <div className="space-y-1.5 md:space-y-2">
             <div className="flex items-center gap-3">
               <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
                 <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-white" />
               </div>
-              <h4 className="text-base md:text-lg font-bold text-primary">Overall Summary</h4>
+              <h4 className="text-base md:text-lg font-bold text-primary">Summary</h4>
             </div>
             <div className="pl-2 md:pl-3">
               <p className="text-foreground leading-7 md:leading-8 text-sm md:text-base">
-                {analysis.overall_summary}
+                {analysis.summary}
               </p>
             </div>
           </div>
@@ -157,6 +165,30 @@ export const AnalysisPanel = ({ analysis }: AnalysisPanelProps) => {
                   </li>
                 ))}
               </ul>
+            </div>
+          </div>
+        )}
+
+        {/* Keywords Section */}
+        {analysis.keywords && analysis.keywords.length > 0 && (
+          <div className="space-y-1.5 md:space-y-2">
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm md:text-base">#</span>
+              </div>
+              <h4 className="text-base md:text-lg font-bold text-primary">Keywords</h4>
+            </div>
+            <div className="pl-2 md:pl-3">
+              <div className="flex flex-wrap gap-2">
+                {analysis.keywords.map((keyword, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary border border-primary/20"
+                  >
+                    {keyword}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         )}
