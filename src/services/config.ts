@@ -24,7 +24,7 @@ export const DEFAULT_QUALITY_MODEL = "google/gemini-2.5-flash";
 // ================================
 
 export const SUPPORTED_LANGUAGES = {
-  "zh": "Chinese",
+  "zh-TW": "Chinese",
   "en": "English",
   "ja": "Japanese",
   "ko": "Korean",
