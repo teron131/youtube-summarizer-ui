@@ -46,17 +46,16 @@ if (import.meta.env.DEV) {
 
 // Basic Video Info
 export interface VideoInfoResponse {
+  url: string;
   title: string;
+  thumbnail?: string;
   author: string;
   duration?: string;
-  thumbnail?: string;
+  upload_date?: string;
   view_count?: number;
   like_count?: number;
-  upload_date?: string;
-  url: string;
 }
 
-// 2-Step Processing Types
 export interface ScrapRequest {
   url: string;
 }
@@ -82,31 +81,13 @@ export interface SummarizeRequest {
   content_type?: 'url' | 'transcript';
 }
 
+// SummarizeResponse kept for tooling/tests only
 export interface SummarizeResponse {
   status: string;
   message: string;
   timestamp: string;
   analysis: AnalysisData;
   processing_time: string;
-}
-
-export interface TwoStepProgressState {
-  step: 1 | 2;
-  stepName: string;
-  status: 'pending' | 'processing' | 'completed' | 'error';
-  message: string;
-  data?: unknown;
-  error?: ApiError;
-  processingTime?: string;
-}
-
-export interface TwoStepProcessingResult {
-  success: boolean;
-  videoInfo?: VideoInfoResponse;
-  transcript?: string;
-  analysis?: AnalysisData;
-  error?: ApiError;
-  totalTime: string;
 }
 
 // Analysis Data Structure (matches backend Analysis model)
@@ -355,9 +336,7 @@ class YouTubeApiClient {
   // API ENDPOINTS
   // ================================
 
-  /**
-   * Health check with environment configuration
-   */
+  // Health check endpoint (optional for tooling)
   async healthCheck(): Promise<HealthCheckResponse> {
     return this.makeRequest('/health');
   }
@@ -424,106 +403,16 @@ class YouTubeApiClient {
    */
   async twoStepProcessing(
     url: string,
-    onProgress?: (state: TwoStepProgressState) => void
-  ): Promise<TwoStepProcessingResult> {
+  ): Promise<never> {
     const startTime = Date.now();
     let videoInfo: VideoInfoResponse | undefined;
     let transcript: string | undefined;
     let analysis: AnalysisData | undefined;
 
-    try {
-      // Step 1: Scrap video info and transcript
-      onProgress?.({
-        step: 1,
-        stepName: 'Scraping Video',
-        status: 'processing',
-        message: 'Extracting video info and transcript using Apify...'
-      });
-
-      const scrapResponse = await this.scrapVideo({ url });
-      
-      if (scrapResponse.status === 'error') {
-        throw new Error(scrapResponse.message);
-      }
-
-      // Convert flat response to VideoInfoResponse format
-      videoInfo = {
-        title: scrapResponse.title,
-        author: scrapResponse.author,
-        duration: scrapResponse.duration,
-        thumbnail: scrapResponse.thumbnail,
-        view_count: scrapResponse.view_count,
-        like_count: scrapResponse.like_count,
-        upload_date: scrapResponse.upload_date,
-        url: scrapResponse.url
-      };
-      transcript = scrapResponse.transcript;
-
-      onProgress?.({
-        step: 1,
-        stepName: 'Scraping Video',
-        status: 'completed',
-        message: `Video scraped: ${videoInfo.title}`,
-        data: { videoInfo, transcript },
-        processingTime: scrapResponse.processing_time
-      });
-
-      // Step 2: Generate AI analysis
-      onProgress?.({
-        step: 2,
-        stepName: 'AI Analysis',
-        status: 'processing',
-        message: 'Generating AI summary and analysis using Gemini...'
-      });
-
-      const summarizeResponse = await this.summarizeContent({
-        content: transcript,
-        content_type: 'transcript'
-      });
-
-      if (summarizeResponse.status === 'error') {
-        throw new Error(summarizeResponse.message);
-      }
-
-      analysis = summarizeResponse.analysis;
-
-      onProgress?.({
-        step: 2,
-        stepName: 'AI Analysis',
-        status: 'completed',
-        message: 'Analysis completed successfully',
-        data: { analysis },
-        processingTime: summarizeResponse.processing_time
-      });
-
-      const totalTime = ((Date.now() - startTime) / 1000).toFixed(1) + 's';
-
-      return {
-        success: true,
-        videoInfo,
-        transcript,
-        analysis,
-        totalTime
-      };
-
-    } catch (error) {
-      const totalTime = ((Date.now() - startTime) / 1000).toFixed(1) + 's';
-      const apiError = handleApiError(error);
-
-      onProgress?.({
-        step: 1,
-        stepName: 'Processing',
-        status: 'error',
-        message: apiError.message,
-        error: apiError
-      });
-
-      return {
-        success: false,
-        error: apiError,
-        totalTime
-      };
-    }
+    throw {
+      message: 'Deprecated: Use streamingProcessing(url) instead.',
+      type: 'validation',
+    } as ApiError as never;
   }
 
   // ================================
@@ -566,14 +455,14 @@ class YouTubeApiClient {
 
       // Convert flat response to VideoInfoResponse format
       videoInfo = {
+        url: scrapResponse.url,
         title: scrapResponse.title,
+        thumbnail: scrapResponse.thumbnail,
         author: scrapResponse.author,
         duration: scrapResponse.duration,
-        thumbnail: scrapResponse.thumbnail,
+        upload_date: scrapResponse.upload_date,
         view_count: scrapResponse.view_count,
         like_count: scrapResponse.like_count,
-        upload_date: scrapResponse.upload_date,
-        url: scrapResponse.url
       };
       transcript = scrapResponse.transcript;
 
@@ -897,10 +786,10 @@ class YouTubeApiClient {
 export const apiClient = new YouTubeApiClient();
 
 // Main processing function
+// Deprecated export kept for compatibility: will throw if called
 export const twoStepProcessing = (
   url: string,
-  onProgress?: (state: TwoStepProgressState) => void
-) => apiClient.twoStepProcessing(url, onProgress);
+) => apiClient.twoStepProcessing(url);
 
 // Streaming processing function (recommended)
 export const streamingProcessing = (
@@ -912,6 +801,7 @@ export const streamingProcessing = (
 // Individual endpoint functions
 export const healthCheck = () => apiClient.healthCheck();
 export const scrapVideo = (request: ScrapRequest) => apiClient.scrapVideo(request);
+// Not used by UI (streaming is used), but kept for tooling/testing
 export const summarizeContent = (request: SummarizeRequest) => apiClient.summarizeContent(request);
 
 // Utility functions

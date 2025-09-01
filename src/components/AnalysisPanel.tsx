@@ -169,30 +169,6 @@ export const AnalysisPanel = ({ analysis }: AnalysisPanelProps) => {
           </div>
         )}
 
-        {/* Keywords Section */}
-        {analysis.keywords && analysis.keywords.length > 0 && (
-          <div className="space-y-1.5 md:space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm md:text-base">#</span>
-              </div>
-              <h4 className="text-base md:text-lg font-bold text-primary">Keywords</h4>
-            </div>
-            <div className="pl-2 md:pl-3">
-              <div className="flex flex-wrap gap-2">
-                {analysis.keywords.map((keyword, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary border border-primary/20"
-                  >
-                    {keyword}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Video Chapters Section */}
         {analysis.chapters && analysis.chapters.length > 0 && (
           <div className="space-y-1.5 md:space-y-2">
@@ -221,6 +197,30 @@ export const AnalysisPanel = ({ analysis }: AnalysisPanelProps) => {
                   )}
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Keywords Section - moved to bottom */}
+        {analysis.keywords && analysis.keywords.length > 0 && (
+          <div className="space-y-1.5 md:space-y-2">
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm md:text-base">#</span>
+              </div>
+              <h4 className="text-base md:text-lg font-bold text-primary">Keywords</h4>
+            </div>
+            <div className="pl-2 md:pl-3">
+              <div className="flex flex-wrap gap-2">
+                {analysis.keywords.map((keyword, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary border border-primary/20"
+                  >
+                    {keyword}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         )}

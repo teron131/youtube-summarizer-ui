@@ -12,9 +12,10 @@ import {
   streamingProcessing,
   StreamingProcessingResult,
   StreamingProgressState,
+  VideoInfoResponse,
 } from "@/services/api";
 import { exampleData } from "@/services/example-data";
-import { AlertCircle, CheckCircle, ChevronDown, ChevronUp, FileText, Loader2 } from "lucide-react";
+import { AlertCircle, CheckCircle, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 import { useState } from "react";
 
 const Index = () => {
@@ -28,6 +29,8 @@ const Index = () => {
 
   // Consolidated state for the response data
   const [analysisResult, setAnalysisResult] = useState<StreamingProcessingResult | null>(null);
+  const [scrapedVideoInfo, setScrapedVideoInfo] = useState<VideoInfoResponse | null>(null);
+  const [scrapedTranscript, setScrapedTranscript] = useState<string | null>(null);
 
   const { toast } = useToast();
 
@@ -48,6 +51,8 @@ const Index = () => {
     setProgressStates([]);
     setStreamingLogs([]);
     setShowLogs(false);
+    setScrapedVideoInfo(null);
+    setScrapedTranscript(null);
     
     try {
       const finalUrl = url;
@@ -127,8 +132,9 @@ const Index = () => {
             '[10:00:02] 🌟 Final quality score: 100%'
           ]
         };
-        
+        setScrapedVideoInfo(exampleResult.videoInfo || null);
         setAnalysisResult(exampleResult);
+
         setCurrentStep(2);
         setCurrentStage("Example ready");
         setIsLoading(false);
@@ -166,6 +172,18 @@ const Index = () => {
               return order.indexOf(a.step) - order.indexOf(b.step);
             });
           });
+
+          // If scraping completed, surface video info immediately
+          if (progressState.step === 'scraping' && progressState.status === 'completed') {
+            type ScrapeDataPayload = { videoInfo?: VideoInfoResponse; transcript?: string };
+            const data = (progressState as unknown as { data?: ScrapeDataPayload }).data;
+            if (data && data.videoInfo) {
+              setScrapedVideoInfo(data.videoInfo as VideoInfoResponse);
+            }
+            if (data && typeof data.transcript === 'string') {
+              setScrapedTranscript(data.transcript);
+            }
+          }
         },
         (logs: string[]) => {
           // Update streaming logs
@@ -174,6 +192,8 @@ const Index = () => {
       );
 
       if (result.success) {
+        setScrapedVideoInfo(result.videoInfo || scrapedVideoInfo);
+        setScrapedTranscript(result.transcript || scrapedTranscript);
         setAnalysisResult(result);
         setCurrentStage("Processing completed");
         
@@ -263,6 +283,29 @@ const Index = () => {
       {/* Results and Status Section */}
       <div className="container mx-auto px-4 py-12 bg-background">
         <div className="max-w-5xl mx-auto space-y-8 bg-background">
+          {/* Show Video Info as soon as scraping completes, even while loading */}
+          {(scrapedVideoInfo || (analysisResult && analysisResult.videoInfo)) && (
+            <VideoInfo
+              title={(analysisResult?.videoInfo || scrapedVideoInfo)!.title}
+              author={(analysisResult?.videoInfo || scrapedVideoInfo)!.author}
+              thumbnail={(analysisResult?.videoInfo || scrapedVideoInfo)!.thumbnail}
+              duration={(analysisResult?.videoInfo || scrapedVideoInfo)!.duration}
+              view_count={(analysisResult?.videoInfo || scrapedVideoInfo)!.view_count}
+              like_count={(analysisResult?.videoInfo || scrapedVideoInfo)!.like_count}
+              upload_date={(analysisResult?.videoInfo || scrapedVideoInfo)!.upload_date}
+            />
+          )}
+
+          {/* Show Transcript as soon as it's scraped, even while analysis continues */}
+          {(scrapedTranscript || (analysisResult && analysisResult.transcript)) && (
+            <TranscriptPanel transcript={(analysisResult?.transcript || scrapedTranscript) as string} />
+          )}
+
+          {/* Show AI Analysis after transcript when available */}
+          {analysisResult?.analysis && (
+            <AnalysisPanel analysis={analysisResult.analysis} />
+          )}
+
           {/* Progressive Loading State */}
           {isLoading && (
             <Card className="p-8 modern-blur shadow-glass">
@@ -414,106 +457,83 @@ const Index = () => {
             </Card>
           )}
 
-          {/* Success State */}
-          {!isLoading && !error && analysisResult && analysisResult.success && analysisResult.analysis && (
+          {/* Success State (post-processing UI blocks, excludes Analysis/Transcript to avoid duplicates) */}
+          {!isLoading && !error && analysisResult && analysisResult.success && (
             <>
-              
-              {analysisResult.videoInfo && (
-                <VideoInfo
-                  title={analysisResult.videoInfo.title}
-                  author={analysisResult.videoInfo.author}
-                  thumbnail={analysisResult.videoInfo.thumbnail}
-                  duration={analysisResult.videoInfo.duration}
-                  view_count={analysisResult.videoInfo.view_count}
-                  like_count={analysisResult.videoInfo.like_count}
-                  upload_date={analysisResult.videoInfo.upload_date}
-                />
-              )}
-              
-              {analysisResult.analysis && (
-                <AnalysisPanel analysis={analysisResult.analysis} />
-              )}
-
-              {analysisResult.transcript && (
-                <TranscriptPanel transcript={analysisResult.transcript} />
-              )}
-
-                    {/* Process Logs */}
-      {progressStates.length > 0 && (
-        <Card className="bg-gradient-card border border-red-500/30 shadow-card backdrop-blur-sm">
-          <Button
-            variant="ghost"
-            className="w-full p-8 h-auto justify-between hover:bg-primary/5 transition-all duration-300"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-left">
-                <span className="text-2xl font-bold text-foreground block">Process Logs</span>
-                <span className="text-muted-foreground">Processing steps and timing</span>
-              </div>
-            </div>
-          </Button>
-          <div className="px-6 pb-6 pt-0 space-y-4">
-            {progressStates.map((state, index) => (
-              <div key={index} className="bg-muted/20 rounded-lg p-4 border border-muted/30">
-                <div className="flex items-center gap-3 mb-2">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
-                  <span className="font-semibold text-foreground">{state.stepName}</span>
-                </div>
-                <p className="text-base text-muted-foreground mb-2">{state.message}</p>
-                {state.processingTime && (
-                  <div className="flex justify-end">
-                    <span className="text-base font-medium text-red-500 bg-red-500/10 px-3 py-1 rounded-full">
-                      {state.processingTime}
-                    </span>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
-
-      {/* Streaming Logs */}
-      {streamingLogs.length > 0 && (
-        <Card className="bg-gradient-card border border-primary/30 shadow-card backdrop-blur-sm">
-          <Button
-            variant="ghost"
-            className="w-full p-8 h-auto justify-between hover:bg-primary/5 transition-all duration-300"
-            onClick={() => setShowLogs(!showLogs)}
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center">
-                <FileText className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <span className="text-2xl font-bold text-foreground block">Logs</span>
-                <span className="text-muted-foreground">Real-time processing updates and quality checks ({streamingLogs.length} entries)</span>
-              </div>
-            </div>
-            {showLogs ? (
-              <ChevronUp className="w-6 h-6 text-primary" />
-            ) : (
-              <ChevronDown className="w-6 h-6 text-primary" />
-            )}
-          </Button>
-          {showLogs && (
-            <div className="px-6 pb-6 pt-0 space-y-4">
-              <div className="bg-muted/20 rounded-lg p-4 border border-muted/30 max-h-96 overflow-y-auto">
-                <div className="space-y-2 font-mono text-sm">
-                  {streamingLogs.map((log, index) => (
-                    <div key={index} className="text-foreground">
-                      {log}
+              {/* Process Logs (with optional nested real-time Logs) */}
+              {progressStates.length > 0 && (
+                <Card className="bg-gradient-card border border-red-500/30 shadow-card backdrop-blur-sm">
+                  <Button
+                    variant="ghost"
+                    className="w-full p-8 h-auto justify-between hover:bg-primary/5 transition-all duration-300"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center">
+                        <CheckCircle className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="text-left">
+                        <span className="text-2xl font-bold text-foreground block">Process Logs</span>
+                        <span className="text-muted-foreground">Processing steps and timing</span>
+                      </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-        </Card>
-      )}
+                  </Button>
+                  <div className="px-6 pb-6 pt-0 space-y-4">
+                    {progressStates.map((state, index) => (
+                      <div key={index} className="bg-muted/20 rounded-lg p-4 border border-muted/30">
+                        <div className="flex items-center gap-3 mb-2">
+                          <CheckCircle className="w-5 h-5 text-green-500" />
+                          <span className="font-semibold text-foreground">{state.stepName}</span>
+                        </div>
+                        <p className="text-base text-muted-foreground mb-2">{state.message}</p>
+                        {state.processingTime && (
+                          <div className="flex justify-end">
+                            <span className="text-base font-medium text-red-500 bg-red-500/10 px-3 py-1 rounded-full">
+                              {state.processingTime}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+
+                    {/* Nested Logs inside Process Logs */}
+                    {streamingLogs.length > 0 && (
+                      <>
+                        <div className="mt-2 border-t border-muted/30" />
+                        <Button
+                          variant="ghost"
+                          className="w-full p-6 h-auto justify-between hover:bg-primary/5 transition-all duration-300"
+                          onClick={() => setShowLogs(!showLogs)}
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className="text-left">
+                              <span className="text-2xl font-bold text-foreground block">Logs</span>
+                              <span className="text-muted-foreground">Real-time processing updates and quality checks ({streamingLogs.length} entries)</span>
+                            </div>
+                          </div>
+                          {showLogs ? (
+                            <ChevronUp className="w-6 h-6 text-primary" />
+                          ) : (
+                            <ChevronDown className="w-6 h-6 text-primary" />
+                          )}
+                        </Button>
+                        {showLogs && (
+                          <div className="px-2 pb-2 pt-0 space-y-4">
+                            <div className="bg-muted/20 rounded-lg p-4 border border-muted/30 max-h-96 overflow-y-auto">
+                              <div className="space-y-2 font-mono text-sm text-left">
+                                {streamingLogs.map((log, index) => (
+                                  <div key={index} className="text-foreground">
+                                    {log}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </Card>
+              )}
             </>
           )}
         </div>
