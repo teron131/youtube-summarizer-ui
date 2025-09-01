@@ -1,5 +1,6 @@
 import heroBackground from "@/assets/youtube-subtle-background.jpg";
 import { AnalysisPanel } from "@/components/AnalysisPanel";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { TranscriptPanel } from "@/components/TranscriptPanel";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -221,6 +222,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Theme Toggle */}
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
+      
       {/* Modern Hero Section */}
       <div className="relative overflow-hidden min-h-screen flex items-center bg-background">
         <div 
