@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { CalendarDays, Clock, Eye, ThumbsUp, User } from "lucide-react";
 
 interface VideoInfoProps {
+  url?: string;
   title: string;
   thumbnail?: string;
   author: string;
@@ -46,7 +47,7 @@ const formatDuration = (duration?: string): string | null => {
   return duration.replace(/^0{1,2}:/, "");
 };
 
-export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like_count, upload_date }: VideoInfoProps) => {
+export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like_count, upload_date, url }: VideoInfoProps) => {
   const displayDuration = formatDuration(duration || undefined);
   const hasMetrics = view_count !== undefined || like_count !== undefined;
   
@@ -59,15 +60,37 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
     view_count
   });
   
+  const cleanVideoUrl = (input?: string): string | null => {
+    if (!input) return null;
+    try {
+      const u = new URL(input);
+      const host = u.hostname.replace(/^www\./, "");
+      if (host.includes("youtube.com")) {
+        const v = u.searchParams.get("v");
+        if (v) return `youtube.com/watch?v=${v}`;
+        return `${host}${u.pathname}`;
+      }
+      if (host === "youtu.be") {
+        const id = u.pathname.replace(/^\//, "");
+        return id ? `youtu.be/${id}` : "youtu.be";
+      }
+      return `${host}${u.pathname}`;
+    } catch (e) {
+      return input.replace(/^https?:\/\//, "").replace(/^www\./, "");
+    }
+  };
+
+  const cleanedUrl = cleanVideoUrl(url);
+
   return (
     <Card className="p-8 modern-blur shadow-glass hover-lift overflow-hidden">
       <div className="flex flex-col sm:flex-row gap-6">
         <div className="flex-shrink-0 relative" style={{ aspectRatio: "16 / 9" }}>
-          <img
-            src={thumbnail || "/placeholder.svg"}
-            alt={title}
-            className="w-full sm:w-64 md:w-80 h-full object-cover rounded-xl shadow-lg border border-primary/20"
-          />
+                      <img
+              src={thumbnail || "/placeholder.svg"}
+              alt={title}
+              className="w-full sm:w-64 md:w-80 h-full object-cover rounded-xl shadow-lg border-2 border-primary/20"
+            />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
         </div>
         
@@ -75,6 +98,16 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
           <h3 className="text-2xl font-bold text-foreground line-clamp-2 leading-tight">
             {title}
           </h3>
+          {cleanedUrl && (
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-primary hover:underline break-all"
+            >
+              {cleanedUrl}
+            </a>
+          )}
           
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-muted-foreground">
             <div className="flex items-center gap-2">

@@ -292,6 +292,7 @@ const Index = () => {
           {/* Show Video Info as soon as scraping completes, even while loading */}
           {(scrapedVideoInfo || (analysisResult && analysisResult.videoInfo)) && (
             <VideoInfo
+              url={(analysisResult?.videoInfo || scrapedVideoInfo)!.url}
               title={(analysisResult?.videoInfo || scrapedVideoInfo)!.title}
               author={(analysisResult?.videoInfo || scrapedVideoInfo)!.author}
               thumbnail={(analysisResult?.videoInfo || scrapedVideoInfo)!.thumbnail}
