@@ -4,8 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Play, AlertCircle, ExternalLink, Youtube } from "lucide-react";
-import { Toggle } from "@/components/ui/toggle";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { handleApiError } from "@/services/api";
  
 interface VideoUrlFormProps {
@@ -147,29 +147,24 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-2">
               <span className="text-sm">🌐</span>
-              <Toggle
-                pressed={translate}
-                onPressedChange={setTranslate}
-                className="text-sm"
-              >
-                Translate
-              </Toggle>
+              <span className="text-sm font-medium text-white">Translate</span>
+              <Switch
+                checked={translate}
+                onCheckedChange={setTranslate}
+                className="data-[state=checked]:bg-primary"
+              />
             </div>
             
             {translate && (
-              <ToggleGroup 
-                type="single" 
-                value={language} 
-                onValueChange={(value) => value && setLanguage(value)}
-                className="gap-1"
-              >
-                <ToggleGroupItem value="en" aria-label="English" className="text-sm px-3 py-1">
-                  EN
-                </ToggleGroupItem>
-                <ToggleGroupItem value="zh" aria-label="Chinese" className="text-sm px-3 py-1">
-                  ZH
-                </ToggleGroupItem>
-              </ToggleGroup>
+              <Select value={language} onValueChange={setLanguage}>
+                <SelectTrigger className="w-20 h-8 bg-primary text-white border-primary/30 hover:bg-primary/90">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-primary border-primary/30">
+                  <SelectItem value="en" className="text-white hover:bg-primary/80">EN</SelectItem>
+                  <SelectItem value="zh" className="text-white hover:bg-primary/80">ZH</SelectItem>
+                </SelectContent>
+              </Select>
             )}
           </div>
 
@@ -177,19 +172,16 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <span className="text-sm">🤖</span>
-              <span className="text-sm font-medium">Model:</span>
             </div>
             
-            <ToggleGroup 
-              type="single" 
-              value={model} 
-              onValueChange={(value) => value && setModel(value)}
-              className="gap-1"
-            >
-              <ToggleGroupItem value="gemini-2.5-pro" aria-label="Gemini 2.5 Pro" className="text-sm px-3 py-1">
-                Gemini 2.5 Pro
-              </ToggleGroupItem>
-            </ToggleGroup>
+            <Select value={model} onValueChange={setModel}>
+              <SelectTrigger className="w-40 h-8 bg-primary text-white border-primary/30 hover:bg-primary/90">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-primary border-primary/30">
+                <SelectItem value="gemini-2.5-pro" className="text-white hover:bg-primary/80">Gemini 2.5 Pro</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
