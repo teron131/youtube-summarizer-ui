@@ -518,35 +518,6 @@ const Index = () => {
           )}
         </div>
       </div>
-      
-      {/* Processing Benefits Section */}
-      <div className="bg-background border-t border-muted py-12 mt-16">
-        <div className="container mx-auto px-4 max-w-5xl">
-          <div className="text-center space-y-6">
-            <h3 className="text-2xl font-bold text-foreground">Processing Benefits</h3>
-            <div className="grid md:grid-cols-3 gap-6 text-left">
-              <div className="bg-background/50 p-4 rounded-lg border border-muted">
-                <h4 className="font-semibold text-foreground mb-2">Reliable Processing</h4>
-                <p className="text-base text-muted-foreground">
-                  Advanced streaming technology ensures stable processing without timeouts, even for long videos.
-                </p>
-              </div>
-              <div className="bg-background/50 p-4 rounded-lg border border-muted">
-                <h4 className="font-semibold text-foreground mb-2">Quality Assurance</h4>
-                <p className="text-base text-muted-foreground">
-                  Automatic quality checking and refinement ensures the best possible analysis results.
-                </p>
-              </div>
-              <div className="bg-background/50 p-4 rounded-lg border border-muted">
-                 <h4 className="font-semibold text-foreground mb-2">Real-time Progress</h4>
-                 <p className="text-base text-muted-foreground">
-                   Live updates show AI analysis progress, quality checks, and iterative improvements in human-readable format.
-                 </p>
-               </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

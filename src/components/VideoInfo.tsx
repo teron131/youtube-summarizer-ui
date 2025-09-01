@@ -50,6 +50,15 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
   const displayDuration = formatDuration(duration || undefined);
   const hasMetrics = view_count !== undefined || like_count !== undefined;
   
+  // Debug logging to see what we're receiving
+  console.log('VideoInfo Debug:', {
+    upload_date,
+    upload_date_type: typeof upload_date,
+    formatted_date: formatDate(upload_date),
+    like_count,
+    view_count
+  });
+  
   return (
     <Card className="p-8 modern-blur shadow-glass hover-lift overflow-hidden">
       <div className="flex flex-col sm:flex-row gap-6">

@@ -72,6 +72,8 @@ export interface ScrapResponse {
   duration?: string;
   thumbnail?: string;
   view_count?: number;
+  like_count?: number;
+  upload_date?: string;
   processing_time: string;
 }
 
@@ -451,6 +453,8 @@ class YouTubeApiClient {
         duration: scrapResponse.duration,
         thumbnail: scrapResponse.thumbnail,
         view_count: scrapResponse.view_count,
+        like_count: scrapResponse.like_count,
+        upload_date: scrapResponse.upload_date,
         url: scrapResponse.url
       };
       transcript = scrapResponse.transcript;
@@ -567,6 +571,8 @@ class YouTubeApiClient {
         duration: scrapResponse.duration,
         thumbnail: scrapResponse.thumbnail,
         view_count: scrapResponse.view_count,
+        like_count: scrapResponse.like_count,
+        upload_date: scrapResponse.upload_date,
         url: scrapResponse.url
       };
       transcript = scrapResponse.transcript;
@@ -1013,4 +1019,3 @@ export const ERROR_MESSAGES = {
 
 // Export everything for convenient imports
 export default apiClient;
-
