@@ -42,7 +42,7 @@ export const TranscriptPanel = ({ transcript }: TranscriptPanelProps) => {
                 <FileText className="w-6 h-6 text-white" />
               </div>
               <div className="text-left">
-                <span className="text-2xl font-bold text-foreground block">Full Transcript</span>
+                <span className="text-2xl font-bold text-foreground block">Transcript</span>
                 <span className="text-muted-foreground">Complete video transcription</span>
               </div>
             </div>
