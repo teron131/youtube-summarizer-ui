@@ -294,12 +294,12 @@ const Index = () => {
             <VideoInfo
               url={(analysisResult?.videoInfo || scrapedVideoInfo)!.url}
               title={(analysisResult?.videoInfo || scrapedVideoInfo)!.title}
-              author={(analysisResult?.videoInfo || scrapedVideoInfo)!.author}
               thumbnail={(analysisResult?.videoInfo || scrapedVideoInfo)!.thumbnail}
+              author={(analysisResult?.videoInfo || scrapedVideoInfo)!.author}
               duration={(analysisResult?.videoInfo || scrapedVideoInfo)!.duration}
+              upload_date={(analysisResult?.videoInfo || scrapedVideoInfo)!.upload_date}
               view_count={(analysisResult?.videoInfo || scrapedVideoInfo)!.view_count}
               like_count={(analysisResult?.videoInfo || scrapedVideoInfo)!.like_count}
-              upload_date={(analysisResult?.videoInfo || scrapedVideoInfo)!.upload_date}
             />
           )}
 

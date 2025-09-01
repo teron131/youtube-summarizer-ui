@@ -11,15 +11,20 @@
  * **Production**: Set `VITE_API_BASE_URL=https://youtube-summarizer-teron131.up.railway.app` (no `/api` suffix)
  * 
  * ## Processing Workflow
- * 
- * The backend uses a simplified 2-step approach:
+ *
+ * The backend uses an advanced LangGraph workflow with multiple processing options:
  * - **Step 1**: `/scrap` - Extract video info and transcript using Apify
- * - **Step 2**: `/summarize` or `/stream-summarize` - Generate AI analysis using Gemini
+ * - **Step 2**: `/summarize` or `/stream-summarize` - Generate AI analysis with:
+ *   - Model selection (Gemini, Claude, GPT models)
+ *   - Translation support (multiple languages)
+ *   - Quality control and self-refinement
+ *   - Real-time streaming progress updates
  * 
  * ## Available Endpoints
- * 
+ *
  * - `/` - API information and health check
  * - `/health` - Health check with environment configuration
+ * - `/config` - Get available models and languages for configuration
  * - `/scrap` - Extract video metadata and transcript
  * - `/summarize` - Full LangGraph workflow analysis
  * - `/stream-summarize` - Streaming analysis with real-time progress
@@ -64,30 +69,63 @@ export interface ScrapResponse {
   status: string;
   message: string;
   timestamp: string;
+  transcript: string;
+  processing_time: string;
+
+  // Video data in consistent order
   url: string;
   title: string;
-  author: string;
-  transcript: string;
-  duration?: string;
   thumbnail?: string;
+  author: string;
+  duration?: string;
+  upload_date?: string;
   view_count?: number;
   like_count?: number;
-  upload_date?: string;
-  processing_time: string;
 }
 
 export interface SummarizeRequest {
   content: string;
   content_type?: 'url' | 'transcript';
+
+  // Model selection
+  analysis_model?: string;
+  quality_model?: string;
+
+  // Translation options
+  enable_translation?: boolean;
+  target_language?: string;
+
+
 }
 
-// SummarizeResponse kept for tooling/tests only
+// SummarizeResponse with new metadata fields
 export interface SummarizeResponse {
   status: string;
   message: string;
   timestamp: string;
   analysis: AnalysisData;
+  quality?: QualityData;
   processing_time: string;
+  iteration_count?: number;
+
+  // Model metadata
+  analysis_model?: string;
+  quality_model?: string;
+
+  // Translation metadata
+  target_language?: string | null;
+  enable_translation?: boolean;
+}
+
+// Configuration Response
+export interface ConfigurationResponse {
+  status: string;
+  message: string;
+  available_models: Record<string, string>;
+  supported_languages: Record<string, string>;
+  default_analysis_model: string;
+  default_quality_model: string;
+  default_target_language: string;
 }
 
 // Analysis Data Structure (matches backend Analysis model)
@@ -98,6 +136,7 @@ export interface AnalysisData {
   key_facts: string[];
   chapters: AnalysisChapter[];
   keywords: string[];
+  target_language?: string | null;
 }
 
 export interface AnalysisChapter {
@@ -342,6 +381,13 @@ class YouTubeApiClient {
   }
 
   /**
+   * Get available models and languages configuration
+   */
+  async getConfiguration(): Promise<ConfigurationResponse> {
+    return this.makeRequest('/config');
+  }
+
+  /**
    * Scrap video info and transcript using Apify
    */
   async scrapVideo(request: ScrapRequest): Promise<ScrapResponse> {
@@ -426,7 +472,13 @@ class YouTubeApiClient {
   async streamingProcessing(
     url: string,
     onProgress?: (state: StreamingProgressState) => void,
-    onLogUpdate?: (logs: string[]) => void
+    onLogUpdate?: (logs: string[]) => void,
+    options?: {
+      analysisModel?: string;
+      qualityModel?: string;
+      enableTranslation?: boolean;
+      targetLanguage?: string;
+    }
   ): Promise<StreamingProcessingResult> {
     const startTime = Date.now();
     let videoInfo: VideoInfoResponse | undefined;
@@ -485,7 +537,11 @@ class YouTubeApiClient {
 
       const stream = await this.streamSummarizeContent({
         content: transcript,
-        content_type: 'transcript'
+        content_type: 'transcript',
+        analysis_model: options?.analysisModel,
+        quality_model: options?.qualityModel,
+        enable_translation: options?.enableTranslation,
+        target_language: options?.targetLanguage,
       });
 
       const reader = stream.getReader();
@@ -795,11 +851,18 @@ export const twoStepProcessing = (
 export const streamingProcessing = (
   url: string,
   onProgress?: (state: StreamingProgressState) => void,
-  onLogUpdate?: (logs: string[]) => void
-) => apiClient.streamingProcessing(url, onProgress, onLogUpdate);
+  onLogUpdate?: (logs: string[]) => void,
+  options?: {
+    analysisModel?: string;
+    qualityModel?: string;
+    enableTranslation?: boolean;
+    targetLanguage?: string;
+  }
+) => apiClient.streamingProcessing(url, onProgress, onLogUpdate, options);
 
 // Individual endpoint functions
 export const healthCheck = () => apiClient.healthCheck();
+export const getConfiguration = () => apiClient.getConfiguration();
 export const scrapVideo = (request: ScrapRequest) => apiClient.scrapVideo(request);
 // Not used by UI (streaming is used), but kept for tooling/testing
 export const summarizeContent = (request: SummarizeRequest) => apiClient.summarizeContent(request);
