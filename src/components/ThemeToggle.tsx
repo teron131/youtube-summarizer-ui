@@ -23,7 +23,7 @@ export function ThemeToggle() {
     <Button
       variant="secondary"
       size="sm"
-      className="w-9 h-9 p-0 transition-all duration-300 hover:scale-105 bg-muted/50 hover:bg-muted/80 border-border/50"
+      className="w-9 h-9 p-0 transition-all duration-300 hover:scale-105 bg-muted/50 hover:bg-muted/80 border border-primary/20 hover:border-primary/40"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
     >
       {theme === "dark" ? (
