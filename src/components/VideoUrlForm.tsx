@@ -79,7 +79,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                   <Languages className="w-4 h-4 text-white" />
                 </div>
-                <span className="text-sm font-medium">Translate</span>
+                <span className="text-sm font-medium ml-2">Translate</span>
                 <Switch
                   checked={translate}
                   onCheckedChange={setTranslate}
