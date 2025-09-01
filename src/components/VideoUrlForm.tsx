@@ -76,10 +76,13 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
             {/* Left Column - Translate Toggle and Language Selection */}
             <div className="flex items-center gap-4 flex-wrap">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center group relative">
                   <Languages className="w-4 h-4 text-white" />
+                  {/* Tooltip on hover */}
+                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded border border-gray-300/25 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                    Translate
+                  </div>
                 </div>
-                <span className="text-sm font-medium ml-2">Translate</span>
                 <Switch
                   checked={translate}
                   onCheckedChange={setTranslate}
@@ -102,9 +105,13 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
 
             {/* Right Column - Model Selection */}
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 group relative">
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                   <Bot className="w-4 h-4 text-white" />
+                </div>
+                {/* Tooltip on hover */}
+                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded border border-gray-300/25 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                  Model
                 </div>
               </div>
               
