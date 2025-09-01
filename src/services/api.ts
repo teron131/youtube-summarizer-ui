@@ -388,6 +388,27 @@ class YouTubeApiClient {
   }
 
   /**
+   * Get configuration with fallback to local config
+   */
+  async getConfigurationWithFallback(): Promise<ConfigurationResponse> {
+    try {
+      return await this.getConfiguration();
+    } catch (error) {
+      // Fallback to local configuration if backend is unavailable
+      console.warn('Backend configuration unavailable, using local fallback:', error);
+      return {
+        status: 'success',
+        message: 'Using local configuration fallback',
+        available_models: AVAILABLE_MODELS,
+        supported_languages: SUPPORTED_LANGUAGES,
+        default_analysis_model: DEFAULT_ANALYSIS_MODEL,
+        default_quality_model: DEFAULT_QUALITY_MODEL,
+        default_target_language: DEFAULT_TARGET_LANGUAGE,
+      };
+    }
+  }
+
+  /**
    * Scrap video info and transcript using Apify
    */
   async scrapVideo(request: ScrapRequest): Promise<ScrapResponse> {
@@ -575,15 +596,6 @@ class YouTubeApiClient {
                 // Store the complete workflow state for final results
                 finalWorkflowState = data;
 
-                // Debug: Log chunk processing
-                console.log('📦 Processing chunk:', {
-                  hasAnalysis: !!data.analysis,
-                  hasQuality: !!data.quality,
-                  iterationCount: data.iteration_count,
-                  isComplete: data.is_complete,
-                  chunkNumber: data.chunk_number
-                });
-
                 // Extract data from the workflow state
                 if (data.analysis) {
                   analysis = data.analysis;
@@ -601,6 +613,18 @@ class YouTubeApiClient {
                 const timestamp = new Date(data.timestamp || Date.now()).toLocaleTimeString();
                 let logMessage = '';
 
+                // Convert to 1-based iteration count for display
+                const displayIteration = (data.iteration_count ?? 0) + 1;
+
+                // Debug: Log chunk processing
+                console.log('📦 Processing chunk:', {
+                  hasAnalysis: !!data.analysis,
+                  hasQuality: !!data.quality,
+                  iterationCount: displayIteration,
+                  isComplete: data.is_complete,
+                  chunkNumber: data.chunk_number
+                });
+
                 if (data.is_complete && data.analysis && data.quality) {
                   // Final completion message - handle missing percentage_score
                   const qualityScore = data.quality.percentage_score ?? 0;
@@ -610,29 +634,36 @@ class YouTubeApiClient {
                   // Quality check results - handle missing computed properties
                   const qualityScore = data.quality.percentage_score ?? 0;
                   const isAcceptable = data.quality.is_acceptable ?? (qualityScore >= 90);
-                  
+
                   if (isAcceptable) {
                     logMessage = `🎯 Quality check passed with ${qualityScore}% score - Analysis meets requirements`;
                   } else {
-                    logMessage = `🔄 Quality check: ${qualityScore}% score (needs improvement) - Refining analysis (iteration ${data.iteration_count})`;
+                    logMessage = `🔄 Quality check: ${qualityScore}% score (needs improvement) - Refining analysis (iteration ${displayIteration})`;
                   }
                 } else if (data.analysis && data.iteration_count !== undefined) {
                   // Analysis generation
                   const chaptersCount = data.analysis.chapters?.length || 0;
-                  logMessage = `📝 Generated analysis with ${chaptersCount} chapters (iteration ${data.iteration_count})`;
+                  logMessage = `📝 Generated analysis with ${chaptersCount} chapters (iteration ${displayIteration})`;
                 } else if (data.iteration_count === 0) {
                   // Initial processing
                   logMessage = `🚀 Starting AI analysis with Gemini...`;
                 } else if (data.iteration_count !== undefined && data.iteration_count > 0) {
                   // Refinement iterations
-                  logMessage = `🔧 Refining analysis for better quality (iteration ${data.iteration_count})`;
+                  logMessage = `🔧 Refining analysis for better quality (iteration ${displayIteration})`;
                 } else {
-                  // Fallback for unknown states
-                  logMessage = `⚙️ Processing analysis...`;
+                  // Only show processing message once per chunk to avoid spam
+                  if (chunksProcessed % 5 === 1) { // Show every 5th chunk
+                    logMessage = `⚙️ Processing analysis...`;
+                  } else {
+                    logMessage = ''; // Skip logging for other chunks
+                  }
                 }
 
-                const logEntry = `[${timestamp}] ${logMessage}`;
-                streamingLogs.push(logEntry);
+                // Only add log entry if message is not empty
+                if (logMessage) {
+                  const logEntry = `[${timestamp}] ${logMessage}`;
+                  streamingLogs.push(logEntry);
+                }
 
                 // Only emit basic progress updates
                 if (data.is_complete) {
@@ -641,7 +672,7 @@ class YouTubeApiClient {
                     stepName: 'Analysis Complete',
                     status: 'completed',
                     message: `Analysis completed successfully with ${data.quality?.percentage_score ?? 0}% quality score`,
-                    iterationCount: data.iteration_count
+                    iterationCount: displayIteration
                   });
                 } else if (chunksProcessed % 2 === 0) { // Update every other chunk to avoid spam
                   const currentPhase = data.quality ? 'quality check' : 'analysis generation';
@@ -649,8 +680,8 @@ class YouTubeApiClient {
                     step: 'analyzing',
                     stepName: 'AI Analysis',
                     status: 'processing',
-                    message: `Processing ${currentPhase}... (iteration ${data.iteration_count})`,
-                    iterationCount: data.iteration_count
+                    message: `Processing ${currentPhase}... (iteration ${displayIteration})`,
+                    iterationCount: displayIteration
                   });
                 }
 
@@ -899,6 +930,7 @@ export const streamingProcessing = (
 // Individual endpoint functions
 export const healthCheck = () => apiClient.healthCheck();
 export const getConfiguration = () => apiClient.getConfiguration();
+export const getConfigurationWithFallback = () => apiClient.getConfigurationWithFallback();
 export const scrapVideo = (request: ScrapRequest) => apiClient.scrapVideo(request);
 // Not used by UI (streaming is used), but kept for tooling/testing
 export const summarizeContent = (request: SummarizeRequest) => apiClient.summarizeContent(request);
@@ -910,6 +942,17 @@ export const getThumbnailUrl = (videoId: string, quality?: 'default' | 'hq' | 'm
 export const formatProcessingTime = (timeStr: string) => apiClient.formatProcessingTime(timeStr);
 export const formatViewCount = (count: number) => apiClient.formatViewCount(count);
 export const formatDuration = (durationStr: string) => apiClient.formatDuration(durationStr);
+
+// ================================
+// CONFIGURATION EXPORTS
+// ================================
+
+// Re-export configuration from config.ts for convenience
+export {
+  AVAILABLE_MODELS, AVAILABLE_MODELS_LIST, DEFAULT_ANALYSIS_MODEL,
+  DEFAULT_QUALITY_MODEL,
+  DEFAULT_TARGET_LANGUAGE, getLanguageByKey, getModelByKey, isValidLanguage, isValidModel, SUPPORTED_LANGUAGES, SUPPORTED_LANGUAGES_LIST, validateLanguageSelection, validateModelSelection, type AvailableModel, type LanguageKey, type ModelKey, type SupportedLanguage
+} from './config';
 
 // ================================
 // ERROR HANDLING UTILITIES
