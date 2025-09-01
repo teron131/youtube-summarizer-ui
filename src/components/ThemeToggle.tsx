@@ -21,15 +21,15 @@ export function ThemeToggle() {
 
   return (
     <Button
-      variant="outline"
+      variant="secondary"
       size="sm"
-      className="w-9 h-9 p-0 transition-all duration-300 hover:scale-110"
+      className="w-9 h-9 p-0 transition-all duration-300 hover:scale-105 bg-muted/50 hover:bg-muted/80 border-border/50"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
     >
       {theme === "dark" ? (
-        <Sun className="w-4 h-4 text-foreground transition-transform duration-300 rotate-0 scale-100" />
+        <Sun className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors duration-300" />
       ) : (
-        <Moon className="w-4 h-4 text-foreground transition-transform duration-300 rotate-0 scale-100" />
+        <Moon className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors duration-300" />
       )}
       <span className="sr-only">Toggle theme</span>
     </Button>
