@@ -13,12 +13,8 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <Button
-        variant="secondary"
-        size="sm"
-        className="w-9 h-9 p-0 transition-all duration-300 bg-muted/50 border border-primary/20"
-      >
-        <Moon className="w-4 h-4 text-muted-foreground" />
+      <Button variant="outline" size="sm" className="w-9 h-9 p-0">
+        <div className="w-4 h-4" />
       </Button>
     );
   }

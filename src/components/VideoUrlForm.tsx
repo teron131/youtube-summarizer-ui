@@ -118,7 +118,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
           <Button
             type="submit"
             disabled={isLoading || !isFormValid}
-            className={`w-full h-16 text-lg bg-gradient-button ${url.trim().length === 0 ? 'text-foreground dark:text-primary-foreground' : 'text-primary-foreground'} font-bold hover:shadow-button transition-all duration-500 hover:scale-[1.02] youtube-pulse rounded-2xl disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none border border-primary/30`}
+            className="w-full h-16 text-lg bg-gradient-button text-primary-foreground font-bold hover:shadow-button transition-all duration-500 hover:scale-[1.02] youtube-pulse rounded-2xl disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none border border-primary/30"
           >
             {isLoading ? (
               <>
