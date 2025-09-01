@@ -4,11 +4,17 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { useLanguageSelection, useModelSelection } from "@/hooks/use-config";
 import { AlertCircle, Bot, ExternalLink, Languages, Loader2, Play, Youtube } from "lucide-react";
 import { useState } from "react";
  
 interface VideoUrlFormProps {
-  onSubmit: (url: string) => void;
+  onSubmit: (url: string, options?: {
+    enableTranslation?: boolean;
+    targetLanguage?: string;
+    analysisModel?: string;
+    qualityModel?: string;
+  }) => void;
   isLoading: boolean;
 }
  
@@ -17,8 +23,13 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
   const [validationError, setValidationError] = useState<string>("");
   const [showExamples, setShowExamples] = useState(false);
   const [translate, setTranslate] = useState(false);
-  const [language, setLanguage] = useState("en");
-  const [model, setModel] = useState("gemini-2.5-pro");
+
+  // Use configuration hooks
+  const { languages, defaultLanguage } = useLanguageSelection();
+  const { models, defaultModel } = useModelSelection();
+
+  const [language, setLanguage] = useState(defaultLanguage || "zh");
+  const [model, setModel] = useState(defaultModel || "google/gemini-2.5-pro");
  
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newUrl = e.target.value;
@@ -37,7 +48,12 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
     // Allow empty input for example output
     if (!trimmedUrl) {
       setValidationError("");
-      onSubmit(""); // Send empty string to trigger example response
+      onSubmit("", {
+        analysisModel: model,
+        qualityModel: model, // Use same model for both analysis and quality
+        enableTranslation: translate,
+        targetLanguage: language,
+      }); // Send empty string to trigger example response
       return;
     }
 
@@ -48,7 +64,12 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
     }
 
     setValidationError("");
-    onSubmit(trimmedUrl);
+    onSubmit(trimmedUrl, {
+      analysisModel: model,
+      qualityModel: model, // Use same model for both analysis and quality
+      enableTranslation: translate,
+      targetLanguage: language,
+    });
   };
  
   const isFormValid = url.trim().length === 0 || (url.trim().length > 10 && (url.includes("youtube.com") || url.includes("youtu.be")));
@@ -73,7 +94,37 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Options Section - Moved above input */}
           <div className="grid grid-cols-2 gap-6 pb-6 border-b border-muted">
-            {/* Left Column - Translate Toggle and Language Selection */}
+            {/* Left Column - Model Selection */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 group relative">
+                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                  <Bot className="w-4 h-4 text-white" />
+                </div>
+                {/* Tooltip on hover */}
+                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded border border-gray-300/25 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                  Model
+                </div>
+              </div>
+
+              <Select value={model} onValueChange={setModel}>
+                <SelectTrigger className="w-40 h-8 bg-primary text-white border-primary/30 hover:bg-primary/90">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-primary border-primary/30">
+                  {models.map((modelOption) => (
+                    <SelectItem
+                      key={modelOption.key}
+                      value={modelOption.key}
+                      className="text-white hover:bg-primary/80"
+                    >
+                      {modelOption.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Right Column - Translate Toggle and Language Selection */}
             <div className="flex items-center gap-4 flex-wrap">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center group relative">
@@ -89,40 +140,25 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
                   className="data-[state=checked]:bg-primary"
                 />
               </div>
-              
+
               {translate && (
                 <Select value={language} onValueChange={setLanguage}>
                   <SelectTrigger className="w-40 h-8 bg-primary text-white border-primary/30 hover:bg-primary/90">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-primary border-primary/30">
-                    <SelectItem value="zh" className="text-white hover:bg-primary/80">Chinese</SelectItem>
-                    <SelectItem value="en" className="text-white hover:bg-primary/80">English</SelectItem>
+                    {languages.map((lang) => (
+                      <SelectItem
+                        key={lang.key}
+                        value={lang.key}
+                        className="text-white hover:bg-primary/80"
+                      >
+                        {lang.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}
-            </div>
-
-            {/* Right Column - Model Selection */}
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 group relative">
-                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                  <Bot className="w-4 h-4 text-white" />
-                </div>
-                {/* Tooltip on hover */}
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded border border-gray-300/25 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-                  Model
-                </div>
-              </div>
-              
-              <Select value={model} onValueChange={setModel}>
-                <SelectTrigger className="w-40 h-8 bg-primary text-white border-primary/30 hover:bg-primary/90">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-primary border-primary/30">
-                  <SelectItem value="gemini-2.5-pro" className="text-white hover:bg-primary/80">Gemini 2.5 Pro</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
 

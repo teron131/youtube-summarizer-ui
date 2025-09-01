@@ -42,7 +42,12 @@ const Index = () => {
     { step: 'complete', name: "Complete", description: "Analysis completed successfully" },
   ];
 
-  const handleVideoSubmit = async (url: string) => {
+  const handleVideoSubmit = async (url: string, options?: {
+    analysisModel?: string;
+    qualityModel?: string;
+    enableTranslation?: boolean;
+    targetLanguage?: string;
+  }) => {
     // Set loading state immediately
     setIsLoading(true);
     setError(null);
@@ -189,7 +194,13 @@ const Index = () => {
         (logs: string[]) => {
           // Update streaming logs
           setStreamingLogs(logs);
-        }
+        },
+        options ? {
+          analysisModel: options.analysisModel,
+          qualityModel: options.qualityModel,
+          enableTranslation: options.enableTranslation,
+          targetLanguage: options.targetLanguage,
+        } : undefined
       );
 
       if (result.success) {
