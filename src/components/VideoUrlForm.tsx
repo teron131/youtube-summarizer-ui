@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, Play, AlertCircle, ExternalLink, Youtube } from "lucide-react";
+import { Loader2, Play, AlertCircle, ExternalLink, Youtube, Languages, Bot } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { handleApiError } from "@/services/api";
@@ -146,8 +146,10 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
           {/* Translate Toggle and Language Selection */}
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-2">
-              <span className="text-sm">🌐</span>
-              <span className="text-sm font-medium text-white">Translate</span>
+              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                <Languages className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-sm font-medium">Translate</span>
               <Switch
                 checked={translate}
                 onCheckedChange={setTranslate}
@@ -171,7 +173,9 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
           {/* Model Selection */}
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-sm">🤖</span>
+              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                <Bot className="w-4 h-4 text-white" />
+              </div>
             </div>
             
             <Select value={model} onValueChange={setModel}>
