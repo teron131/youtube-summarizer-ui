@@ -150,7 +150,7 @@ const Index = () => {
       const result = await streamingProcessing(
         finalUrl,
         (progressState: StreamingProgressState) => {
-          console.log('Progress update:', progressState);
+          console.log('📊 Progress update:', progressState);
 
           // Update current step and stage
           const stepIndex = progressSteps.findIndex(s => s.step === progressState.step);
@@ -193,11 +193,20 @@ const Index = () => {
       );
 
       if (result.success) {
+        console.log('🎉 Streaming completed successfully:', {
+          hasVideoInfo: !!result.videoInfo,
+          hasTranscript: !!result.transcript,
+          hasAnalysis: !!result.analysis,
+          hasQuality: !!result.quality,
+          analysisChapters: result.analysis?.chapters?.length || 0,
+          qualityScore: result.quality?.percentage_score || 0
+        });
+
         setScrapedVideoInfo(result.videoInfo || scrapedVideoInfo);
         setScrapedTranscript(result.transcript || scrapedTranscript);
         setAnalysisResult(result);
         setCurrentStage("Processing completed");
-        
+
         // Removed success toast notification
       } else {
         throw result.error || new Error('Processing failed');

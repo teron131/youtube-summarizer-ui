@@ -559,12 +559,15 @@ class YouTubeApiClient {
             if (line.startsWith('data: ')) {
               try {
                 const jsonData = line.slice(6);
-                
+
                 // Skip empty or malformed data lines
                 if (!jsonData.trim() || jsonData.trim() === '{}') {
                   continue;
                 }
-                
+
+                // Debug: Log the raw chunk data
+                console.log('🔍 Processing chunk:', jsonData.substring(0, 200) + (jsonData.length > 200 ? '...' : ''));
+
                 // Try to parse the JSON chunk
                 const data = JSON.parse(jsonData) as StreamingChunk;
                 chunksProcessed++;
@@ -572,12 +575,23 @@ class YouTubeApiClient {
                 // Store the complete workflow state for final results
                 finalWorkflowState = data;
 
+                // Debug: Log chunk processing
+                console.log('📦 Processing chunk:', {
+                  hasAnalysis: !!data.analysis,
+                  hasQuality: !!data.quality,
+                  iterationCount: data.iteration_count,
+                  isComplete: data.is_complete,
+                  chunkNumber: data.chunk_number
+                });
+
                 // Extract data from the workflow state
                 if (data.analysis) {
                   analysis = data.analysis;
+                  console.log('✅ Analysis extracted:', !!analysis);
                 }
                 if (data.quality) {
                   quality = data.quality;
+                  console.log('✅ Quality extracted:', !!quality);
                 }
                 if (data.iteration_count !== undefined) {
                   iterationCount = data.iteration_count;
@@ -647,7 +661,16 @@ class YouTubeApiClient {
                 const errorDetails = parseError instanceof Error ? parseError.message : String(parseError);
                 const isLargeChunk = line.length > 10000;
                 const hasTranscript = line.includes('"transcript_or_url"');
-                
+
+                // Debug: Log the problematic line
+                console.log('❌ Failed to parse chunk:', {
+                  error: errorDetails,
+                  lineLength: line.length,
+                  linePreview: line.substring(0, 200) + (line.length > 200 ? '...' : ''),
+                  isLargeChunk,
+                  hasTranscript
+                });
+
                 if (isLargeChunk && hasTranscript) {
                   // Handle large transcript chunks - try to extract useful info without parsing full JSON
                   const timestamp = new Date().toLocaleTimeString();
@@ -708,6 +731,19 @@ class YouTubeApiClient {
           streamingLogs.push(`[${timestamp}] ${qualityEmoji} Final quality score: ${qualityScore}%`);
         }
       }
+
+      // Debug: Log final result
+      console.log('🏁 Final streaming result:', {
+        success: true,
+        hasVideoInfo: !!videoInfo,
+        hasTranscript: !!transcript,
+        hasAnalysis: !!analysis,
+        hasQuality: !!quality,
+        analysisChapters: analysis?.chapters?.length || 0,
+        qualityScore: quality?.percentage_score || 0,
+        iterationCount,
+        chunksProcessed
+      });
 
       return {
         success: true,
