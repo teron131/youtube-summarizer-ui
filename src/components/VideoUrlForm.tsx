@@ -1,12 +1,11 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, Play, AlertCircle, ExternalLink, Youtube, Languages, Bot } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { handleApiError } from "@/services/api";
+import { Switch } from "@/components/ui/switch";
+import { AlertCircle, Bot, ExternalLink, Languages, Loader2, Play, Youtube } from "lucide-react";
+import { useState } from "react";
  
 interface VideoUrlFormProps {
   onSubmit: (url: string) => void;
@@ -72,6 +71,54 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
       <div className="space-y-8">
         
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Options Section - Moved above input */}
+          <div className="grid grid-cols-2 gap-6 pb-6 border-b border-muted">
+            {/* Left Column - Translate Toggle and Language Selection */}
+            <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                  <Languages className="w-4 h-4 text-white" />
+                </div>
+                <span className="text-sm font-medium">Translate</span>
+                <Switch
+                  checked={translate}
+                  onCheckedChange={setTranslate}
+                  className="data-[state=checked]:bg-primary"
+                />
+              </div>
+              
+              {translate && (
+                <Select value={language} onValueChange={setLanguage}>
+                  <SelectTrigger className="w-40 h-8 bg-primary text-white border-primary/30 hover:bg-primary/90">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-primary border-primary/30">
+                    <SelectItem value="zh" className="text-white hover:bg-primary/80">Chinese</SelectItem>
+                    <SelectItem value="en" className="text-white hover:bg-primary/80">English</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+
+            {/* Right Column - Model Selection */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                  <Bot className="w-4 h-4 text-white" />
+                </div>
+              </div>
+              
+              <Select value={model} onValueChange={setModel}>
+                <SelectTrigger className="w-40 h-8 bg-primary text-white border-primary/30 hover:bg-primary/90">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-primary border-primary/30">
+                  <SelectItem value="gemini-2.5-pro" className="text-white hover:bg-primary/80">Gemini 2.5 Pro</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
           <div className="space-y-3">
             <Input
               type="url"
@@ -140,54 +187,6 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
             )}
           </Button>
         </form>
-
-        {/* Options Section */}
-        <div className="space-y-4 border-t border-muted pt-6">
-          {/* Translate Toggle and Language Selection */}
-          <div className="flex items-center gap-4 flex-wrap">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                <Languages className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-sm font-medium">Translate</span>
-              <Switch
-                checked={translate}
-                onCheckedChange={setTranslate}
-                className="data-[state=checked]:bg-primary"
-              />
-            </div>
-            
-            {translate && (
-              <Select value={language} onValueChange={setLanguage}>
-                <SelectTrigger className="w-20 h-8 bg-primary text-white border-primary/30 hover:bg-primary/90">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-primary border-primary/30">
-                  <SelectItem value="en" className="text-white hover:bg-primary/80">EN</SelectItem>
-                  <SelectItem value="zh" className="text-white hover:bg-primary/80">ZH</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-          </div>
-
-          {/* Model Selection */}
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                <Bot className="w-4 h-4 text-white" />
-              </div>
-            </div>
-            
-            <Select value={model} onValueChange={setModel}>
-              <SelectTrigger className="w-40 h-8 bg-primary text-white border-primary/30 hover:bg-primary/90">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-primary border-primary/30">
-                <SelectItem value="gemini-2.5-pro" className="text-white hover:bg-primary/80">Gemini 2.5 Pro</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
 
         {/* Help text and examples - only show when not showing examples above */}
         {!showExamples && (
