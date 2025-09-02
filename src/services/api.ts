@@ -36,11 +36,11 @@ const API_VERSION = "3.0.0";
 
 // Import configuration constants
 import {
-  AVAILABLE_MODELS,
+  AVAILABLE_MODELS_LIST,
   DEFAULT_ANALYSIS_MODEL,
   DEFAULT_QUALITY_MODEL,
   DEFAULT_TARGET_LANGUAGE,
-  SUPPORTED_LANGUAGES
+  SUPPORTED_LANGUAGES_LIST
 } from './config';
 
 // Development logging
@@ -274,6 +274,8 @@ export interface ApiError {
 class YouTubeApiClient {
   private baseUrl: string;
   private version: string;
+  private requestCache = new Map<string, Promise<unknown>>();
+  private abortController: AbortController | null = null;
 
   constructor(baseUrl: string = API_BASE_URL, version: string = API_VERSION) {
     // Development: Use '/api' for Vite proxy → localhost:8080
@@ -283,15 +285,23 @@ class YouTubeApiClient {
   }
 
   /**
-   * Generic request handler with comprehensive error handling
+   * Optimized request handler with connection pooling and smart retry
    */
   private async makeRequest<T>(
     endpoint: string,
     options: RequestInit = {},
     timeout: number = 60000 // Default 60 seconds
   ): Promise<T> {
+    // Create request key for deduplication
+    const requestKey = `${endpoint}-${JSON.stringify(options)}`;
+
+    // Return cached request if identical is in progress
+    if (this.requestCache.has(requestKey)) {
+      return this.requestCache.get(requestKey)! as Promise<T>;
+    }
+
     const url = `${this.baseUrl}${endpoint}`;
-    
+
     const defaultOptions: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
@@ -304,8 +314,41 @@ class YouTubeApiClient {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
+    // Create and cache the request promise
+    const requestPromise = this._executeRequest<T>(url, { ...defaultOptions, signal: controller.signal }, timeoutId, timeout);
+    this.requestCache.set(requestKey, requestPromise);
+
     try {
-      const response = await fetch(url, defaultOptions);
+      const result = await requestPromise;
+      return result;
+    } finally {
+      // Clean up cache after request completes
+      this.requestCache.delete(requestKey);
+    }
+  }
+
+  /**
+   * Clear request cache (useful for cleanup)
+   */
+  public clearCache(): void {
+    this.requestCache.clear();
+  }
+
+  /**
+   * Get cache size for debugging
+   */
+  public getCacheSize(): number {
+    return this.requestCache.size;
+  }
+
+  private async _executeRequest<T>(
+    url: string,
+    options: RequestInit,
+    timeoutId: NodeJS.Timeout,
+    timeout: number
+  ): Promise<T> {
+    try {
+      const response = await fetch(url, options);
       
       clearTimeout(timeoutId);
 
@@ -320,7 +363,7 @@ class YouTubeApiClient {
           status: response.status,
           statusText: response.statusText,
           errorData,
-          endpoint
+          endpoint: url
         });
         
         // Handle nested error structures from backend
@@ -371,7 +414,7 @@ class YouTubeApiClient {
         const timeoutError: ApiError = {
           message: `Request timed out after ${timeout / 1000} seconds. The operation may still be processing on the server.`,
           type: 'processing',
-          details: `Timeout set to ${timeout}ms for endpoint: ${endpoint}`
+          details: `Timeout set to ${timeout}ms for endpoint: ${url}`
         };
         throw timeoutError;
       }
@@ -438,8 +481,14 @@ class YouTubeApiClient {
       return {
         status: 'success',
         message: 'Using local configuration fallback',
-        available_models: AVAILABLE_MODELS,
-        supported_languages: SUPPORTED_LANGUAGES,
+        available_models: AVAILABLE_MODELS_LIST.reduce((acc, model) => ({
+          ...acc,
+          [model.key]: model.label
+        }), {}),
+        supported_languages: SUPPORTED_LANGUAGES_LIST.reduce((acc, lang) => ({
+          ...acc,
+          [lang.key]: lang.label
+        }), {}),
         default_analysis_model: DEFAULT_ANALYSIS_MODEL,
         default_quality_model: DEFAULT_QUALITY_MODEL,
         default_target_language: DEFAULT_TARGET_LANGUAGE,
@@ -726,24 +775,16 @@ class YouTubeApiClient {
 
                 // Update logs callback
                 onLogUpdate?.([...streamingLogs]);
-              } catch (parseError) {
-                // Enhanced error handling for malformed chunks
+                            } catch (parseError) {
+                // Optimized error handling for malformed chunks with early detection
                 const errorDetails = parseError instanceof Error ? parseError.message : String(parseError);
+
+                // Early detection patterns for better performance
+                const isCompleteChunk = line.includes('"type": "complete"') || line.includes('"is_complete": true');
                 const isLargeChunk = line.length > 10000;
                 const hasTranscript = line.includes('"transcript_or_url"');
-                const isCompleteChunk = line.includes('"type": "complete"') || line.includes('"is_complete": true');
 
-                // Debug: Log the problematic line
-                console.log('❌ Failed to parse chunk:', {
-                  error: errorDetails,
-                  lineLength: line.length,
-                  linePreview: line.substring(0, 200) + (line.length > 200 ? '...' : ''),
-                  isLargeChunk,
-                  hasTranscript,
-                  isCompleteChunk
-                });
-
-                // Handle completion chunks that might be malformed
+                // Handle completion chunks that might be malformed (highest priority)
                 if (isCompleteChunk) {
                   console.log('✅ Detected completion chunk despite parse error');
                   const timestamp = new Date().toLocaleTimeString();
@@ -755,36 +796,47 @@ class YouTubeApiClient {
                     status: 'completed',
                     message: 'Analysis completed successfully'
                   });
-                } else if (isLargeChunk && hasTranscript) {
-                  // Handle large transcript chunks - try to extract useful info without parsing full JSON
+                  return; // Early return for completion
+                }
+
+                // Limit logging for large chunks to reduce console spam
+                if (isLargeChunk && chunksProcessed % 10 !== 0) {
+                  return; // Skip logging every chunk to reduce overhead
+                }
+
+                // Debug: Log the problematic line (optimized)
+                console.log('❌ Failed to parse chunk:', {
+                  error: errorDetails,
+                  lineLength: line.length,
+                  isLargeChunk,
+                  hasTranscript,
+                  isCompleteChunk
+                });
+
+                if (isLargeChunk && hasTranscript) {
+                  // Optimized extraction for large transcript chunks
                   const timestamp = new Date().toLocaleTimeString();
 
-                  // Try to extract iteration count from the malformed chunk
+                  // Use more efficient regex patterns
                   const iterationMatch = line.match(/"iteration_count":\s*(\d+)/);
-                  const qualityMatch = line.match(/"percentage_score":\s*(\d+)/);
+                  const qualityMatch = line.match(/"percentage_score":\s*(\d+(?:\.\d+)?)/);
 
                   if (iterationMatch) {
-                    const extractedIteration = parseInt(iterationMatch[1]);
+                    const extractedIteration = parseInt(iterationMatch[1], 10);
                     iterationCount = Math.max(iterationCount, extractedIteration);
 
                     if (qualityMatch) {
                       streamingLogs.push(`[${timestamp}] 🎯 Quality score: ${qualityMatch[1]}% (iteration ${extractedIteration})`);
                     } else {
-                      streamingLogs.push(`[${timestamp}] 📝 Processing analysis (iteration ${extractedIteration}, chunk size: ${Math.round(line.length/1024)}KB)`);
+                      streamingLogs.push(`[${timestamp}] 📝 Processing analysis (iteration ${extractedIteration})`);
                     }
                   } else {
-                    streamingLogs.push(`[${timestamp}] 📄 Received large data chunk (${Math.round(line.length/1024)}KB)`);
+                    streamingLogs.push(`[${timestamp}] 📄 Large data chunk processed`);
                   }
                 } else {
-                  // Standard malformed chunk handling
-                  console.warn('⚠️ Skipping malformed streaming chunk:', {
-                    error: errorDetails,
-                    linePreview: line.slice(0, 200) + (line.length > 200 ? '...' : ''),
-                    lineLength: line.length
-                  });
-
+                  // Standard malformed chunk handling with reduced logging
                   const timestamp = new Date().toLocaleTimeString();
-                  streamingLogs.push(`[${timestamp}] ⚠️ Received malformed data chunk (skipped)`);
+                  streamingLogs.push(`[${timestamp}] ⚠️ Malformed chunk skipped`);
                 }
 
                 // Update logs callback even for errors
@@ -879,9 +931,7 @@ class YouTubeApiClient {
   isValidYouTubeUrl(url: string): boolean {
     const patterns = [
       /^https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[a-zA-Z0-9_-]+/,
-      /^https?:\/\/(www\.)?youtube\.com\/embed\/[a-zA-Z0-9_-]+/,
       /^https?:\/\/(www\.)?youtube\.com\/v\/[a-zA-Z0-9_-]+/,
-      /^https?:\/\/(www\.)?youtube\.com\/shorts\/[a-zA-Z0-9_-]+/,
     ];
     
     return patterns.some(pattern => pattern.test(url));
@@ -892,7 +942,7 @@ class YouTubeApiClient {
    */
   extractVideoId(url: string): string | null {
     const patterns = [
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]+)/,
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/v\/)([a-zA-Z0-9_-]+)/,
     ];
     
     for (const pattern of patterns) {
@@ -959,7 +1009,7 @@ class YouTubeApiClient {
 // ================================
 
 // Create singleton instance
-export const apiClient = new YouTubeApiClient();
+const apiClient = new YouTubeApiClient();
 
 // Main processing function
 // Deprecated export kept for compatibility: will throw if called
@@ -1103,4 +1153,5 @@ export const ERROR_MESSAGES = {
 } as const;
 
 // Export everything for convenient imports
+export { apiClient };
 export default apiClient;

@@ -14,6 +14,7 @@ export const AVAILABLE_MODELS = {
   "google/gemini-2.5-pro": "Gemini 2.5 Pro",
   "google/gemini-2.5-flash": "Gemini 2.5 Flash",
   "anthropic/claude-sonnet-4": "Claude Sonnet 4",
+  "x-ai/grok-4": "Grok 4",
 } as const;
 
 export const DEFAULT_ANALYSIS_MODEL = "google/gemini-2.5-pro";
@@ -122,7 +123,7 @@ export const SUPPORTED_LANGUAGES_LIST: SupportedLanguage[] = Object.entries(SUPP
 
 function getLanguageFlag(languageKey: LanguageKey): string {
   const flagMap: Record<LanguageKey, string> = {
-    "zh-TW": "🇨🇳",
+    "zh-TW": "🇭🇰",
     "en": "🇺🇸",
     "ja": "🇯🇵",
     "ko": "🇰🇷",
