@@ -11,8 +11,8 @@
 // ================================
 
 export const AVAILABLE_MODELS = {
-  "google/gemini-2.5-pro": "Gemini 2.5 Pro (Recommended)",
-  "google/gemini-2.5-flash": "Gemini 2.5 Flash (Fast)",
+  "google/gemini-2.5-pro": "Gemini 2.5 Pro",
+  "google/gemini-2.5-flash": "Gemini 2.5 Flash",
   "anthropic/claude-sonnet-4": "Claude Sonnet 4",
 } as const;
 
@@ -36,7 +36,7 @@ export const SUPPORTED_LANGUAGES = {
   "pt": "Portuguese",
 } as const;
 
-export const DEFAULT_TARGET_LANGUAGE = "en";
+export const DEFAULT_TARGET_LANGUAGE = "zh-TW";
 
 // ================================
 // QUALITY THRESHOLDS
