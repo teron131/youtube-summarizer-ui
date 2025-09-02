@@ -67,14 +67,14 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
       const host = u.hostname.replace(/^www\./, "");
       if (host.includes("youtube.com")) {
         const v = u.searchParams.get("v");
-        if (v) return `youtube.com/watch?v=${v}`;
-        return `${host}${u.pathname}`;
+        if (v) return `https://www.youtube.com/watch?v=${v}`;
+        return `https://www.${host}${u.pathname}`;
       }
       if (host === "youtu.be") {
         const id = u.pathname.replace(/^\//, "");
-        return id ? `youtu.be/${id}` : "youtu.be";
+        return id ? `https://www.youtube.com/watch?v=${id}` : "https://www.youtube.com";
       }
-      return `${host}${u.pathname}`;
+      return `https://www.${host}${u.pathname}`;
     } catch (e) {
       return input.replace(/^https?:\/\//, "").replace(/^www\./, "");
     }
