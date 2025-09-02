@@ -191,6 +191,7 @@ const Index = () => {
             grammar: { rate: 'Pass', reason: 'Good grammar' },
             timestamp: { rate: 'Pass', reason: 'Timestamps included' },
             no_garbage: { rate: 'Pass', reason: 'No promotional content' },
+            useful_keywords: { rate: 'Pass', reason: 'Keywords are relevant and useful for highlighting key concepts' },
             correct_language: { rate: 'Pass', reason: 'Appropriate language' },
             total_score: 12,
             max_possible_score: 12,
