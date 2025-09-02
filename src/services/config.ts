@@ -122,7 +122,7 @@ export const SUPPORTED_LANGUAGES_LIST: SupportedLanguage[] = Object.entries(SUPP
 
 function getLanguageFlag(languageKey: LanguageKey): string {
   const flagMap: Record<LanguageKey, string> = {
-    "zh": "🇨🇳",
+    "zh-TW": "🇨🇳",
     "en": "🇺🇸",
     "ja": "🇯🇵",
     "ko": "🇰🇷",

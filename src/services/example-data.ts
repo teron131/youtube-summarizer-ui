@@ -2,68 +2,212 @@ import { StreamingProcessingResult } from "./api";
 
 export const exampleData: StreamingProcessingResult = {
   success: true,
-  totalTime: "0.2s",
+  totalTime: "41.8s",
   videoInfo: {
-    url: "https://www.youtube.com/watch?v=A5w-dEgIU1M",
-    title: "The Trillion Dollar Equation",
-    thumbnail: "https://img.youtube.com/vi/A5w-dEgIU1M/maxresdefault.jpg",
+    url: "https://www.youtube.com/watch?v=P_fHJIYENdI",
+    title: "AlphaFold - The Most Useful Thing AI Has Ever Done",
+    thumbnail: "https://img.youtube.com/vi/P_fHJIYENdI/maxresdefault.jpg",
     author: "Veritasium",
-    duration: "00:31:22",
-    upload_date: "Feb 27, 2024",
-    view_count: 13462116,
-    like_count: 321234,
+    duration: "00:24:52",
+    upload_date: "Feb 10, 2025",
+    view_count: 9438380,
+    like_count: 302032,
   },
-  transcript: `This single equation spawned four multi-trillion dollar industries and transformed everyone's approach to risk. Do you think that most people are aware of the size, scale, utility of derivatives? - No. No idea. - But at its core, this equation comes from physics, from discovering atoms, understanding how heat is transferred, and how to beat the casino at blackjack. So maybe it shouldn't be surprising that some of the best to beat the stock market were not veteran traders, but physicists, scientists, and mathematicians. In 1988, a mathematics professor named Jim Simons set up the Medallion Investment Fund, and every year for the next 30 years, the Medallion fund delivered higher returns than the market average, and not just by a little bit, it returned 66% per year. At that rate of growth, $100 invested in 1988 would be worth $8.4 billion today. This made Jim Simons easily the richest mathematician of all time. But being good at math doesn't guarantee success in financial markets. Just ask Isaac Newton. In 1720 Newton was 77 years old, and he was rich. He had made a lot of money working as a professor at Cambridge for decades, and he had a side hustle as the Master of the Royal Mint. His net worth was £30,000 the equivalent of $6 million today. Now, to grow his fortune, Newton invested in stocks. One of his big bets was on the South Sea Company. Their business was shipping enslaved Africans across the Atlantic. Business was booming and the share price grew rapidly. By April of 1720, the value of Newton's shares had doubled. So he sold his stock. But the stock price kept going up and by June, Newton bought back in and he kept buying shares even as the price peaked. When the price started to fall, Newton didn't sell. He bought more shares thinking he was buying the dip. But there was no rebound, and ultimately he lost around a third of his wealth. When asked why he didn't see it coming, Newton responded, "I can calculate the motions of the heavenly bodies, but not the madness of people." So what did Simons get right that Newton got wrong? Well, for one thing, Simons was able to stand on the shoulders of giants. The pioneer of using math to model financial markets was Louis Bachelier, born in 1870. Both of his parents died when he was 18 and he had to take over his father's wine business. He sold the business a few years later and moved to Paris to study physics, but he needed a job to support himself and his family and he found one at the Bourse, The Paris Stock Exchange. And inside was Newton's "madness of people" in its rawest form. Hundreds of traders screaming prices, making hand signals, and doing deals. The thing that captured Bachelier's interest were contracts known as options. The earliest known options were bought around 600 BC by the Greek philosopher Thales of Miletus. He believed that the coming summer would yield a bumper crop of olives. To make money off this idea, he could have purchased olive presses, which if you were right, would be in great demand, but he didn't have enough money to buy the machines. So instead he went to all the existing olive press owners and paid them a little bit of money to secure the option to rent their presses in the summer for a specified price. When the harvest came, Thales was right, there were so many olives that the price of renting a press skyrocketed. Thales paid the press owners their pre-agreed price, and then he rented out the machines at a higher rate and pocketed the difference. Thales had executed the first known call option. A call option gives you the right, but not the obligation to buy something at a later date for a set price known as the strike price. You can also buy a put option, which gives you the right, but not the obligation to sell something at a later date for the strike price. Put options are useful if you expect the price to go down. Call options are useful if you expect the price to go up. For example, let's say the current price of Apple stock is a hundred dollars, but you expect it to go up. You could buy a call option for $10 that gives you the right, but not the obligation to buy Apple stock in one year for a hundred dollars. That is the strike price. Just a little side note, American options can be exercised on any date up to the expiry, whereas European options must be exercised on the expiry date. To keep things simple, we'll stick to European options. So if in a year the price of Apple stock has gone up to $130, you can use the option to buy shares for a hundred dollars and then immediately sell them for $130. After you take into account the $10 you paid for the option, you've made a $20 profit. Alternatively, if in a year the stock prices dropped to $70, you just wouldn't use the option and you've lost the $10 you paid for it. So the profit and loss diagram looks like this. If the stock price ends up below the strike price, you lose what you paid for the option. But if the stock price is higher than the strike price, then you earn that difference minus the cost of the option. There are at least three advantages of options. One is that it limits your downside. If you had bought the stock instead of the option and it went down to $70, you would've lost $30. And in theory, you could have lost a hundred if the stock went to zero. The second benefit is options provide leverage. If you had bought the stock and it went up to $130, then your investment grew by 30%. But if you had bought the option, you only had to put up $10. So your profit of $20 is actually a 200% return on investment. On the downside, if you had owned the stock, your investment would've only dropped by 30%, whereas with the option you lose all 100%. So with options trading, there's a chance to make much larger profits, but also much bigger losses. The third benefit is you can use options as a hedge. - I think the original motivation for options was to figure out a way to reduce risk. And then of course, once people decided they wanted to buy insurance, that meant that there are other people out there that wanted to sell it or a profit, and that's how markets get created. - So options can be an incredibly useful investing tool, but what Bachelier saw on the trading floor was chaos, especially when it came to the price of stock options. Even though they had been around for hundreds of years, no one had found a good way to price them. Traders would just bargain to come to an agreement about what the price should be. - Given the option to buy or sell something in the future, it seems like a very amorphous kind of a trade. And so coming up with prices for these rather strange objects has been a challenge that's plagued a number of economists and business people for centuries. - Now, Bachelier, already interested in probability, thought there had to be a mathematical solution to this problem, and he proposed this as his PhD topic to his advisor Henri Poincaré. Looking into the math of finance wasn't really something people did back then, but to Bachelier's surprise, Poincaré agreed. To accurately price an option, first you need to know what happens to stock prices over time. The price of a stock is basically set by a tug of war between buyers and sellers. When more people wanna buy a stock, the price goes up. When more people wanna sell a stock, the price goes down. But the number of buyers and sellers can be influenced by almost anything, like the weather, politics, new competitors, innovation and so on. So Bachelier realized that it's virtually impossible to predict all these factors accurately. So the best you can do is assume that at any point in time the stock price is just as likely to go up as down and therefore over the long term, stock prices follow a random walk, moving up and down as if their next move is determined by the flip of a coin. - Randomness is a hallmark of an efficient market. By efficient economists typically`,
+  transcript: "What if, all of the world's biggest problems from climate change, to curing diseases, to disposal of plastic waste, what if they all had the same solution? A solution so tiny it would be invisible. I'm inclined to believe this is possible, thanks to a recent breakthrough that solved one of the biggest problems of the last century. How to determine the structure of a protein? [truncated for example]",
   analysis: {
-    title: "The Trillion Dollar Equation",
-    summary: "The video explores the profound impact of a single mathematical concept—the random walk—on the world of finance, leading to the creation of the 'trillion-dollar equation'. It traces the intellectual history from Louis Bachelier's pioneering application of random walk theory to stock prices in 1900, a concept that predated Einstein's use of it to explain Brownian motion, through the practical innovations of Ed Thorp, who took strategies from the blackjack table to Wall Street. The narrative culminates with the 1973 Black-Scholes-Merton equation, which provided a revolutionary formula for pricing financial options. This breakthrough unlocked the modern derivatives market, now a several-hundred-trillion-dollar industry used by companies and investors globally for hedging and leverage. The video contrasts the theory of an efficient, random market with the real-world success of quantitative investors like Jim Simons, whose Medallion Fund used advanced mathematics and machine learning to consistently beat the market for decades. Ultimately, it reveals a central irony of modern finance: the very act of using science to find predictive patterns in the market helps to eliminate those patterns, pushing the financial world ever closer to a state of perfect, unpredictable randomness.",
+    title: "AlphaFold: The Breakthrough That Solved Protein Folding",
+    summary: "This video explores AlphaFold, DeepMind's groundbreaking AI system that solved the protein folding problem - one of biology's greatest challenges. The breakthrough determined the 3D structures of 200 million proteins, potentially revolutionizing medicine, drug discovery, and our understanding of life itself.",
     takeaways: [
-      "Mathematical models originating from physics have revolutionized finance, enabling the creation of multi-trillion dollar industries and transforming how risk is managed.",
-      "Options are powerful financial instruments that allow for leverage, risk limitation, and hedging, but their complexity requires sophisticated pricing models.",
-      "Even brilliant minds like Newton can fail in markets due to psychological factors, while systematic mathematical approaches can provide consistent success.",
-      "The quest to beat the market through quantitative methods ironically helps make markets more efficient and random.",
+      {
+        text: "AlphaFold solved the protein folding problem by predicting 3D protein structures from amino acid sequences with unprecedented accuracy.",
+        timestamp: "0:25"
+      },
+      {
+        text: "Protein structure determines function - the 3D shape dictates how proteins interact with other molecules and perform their biological roles.",
+        timestamp: "0:58"
+      },
+      {
+        text: "Traditional experimental methods like X-ray crystallography are slow and expensive, costing tens of thousands per protein structure.",
+        timestamp: "2:48"
+      },
+      {
+        text: "AlphaFold's breakthrough dwarfs previous progress - 200 million structures determined vs 150,000 over 60 years of traditional research.",
+        timestamp: "3:38"
+      }
     ],
     key_facts: [
-      "Jim Simons' Medallion Fund delivered an average return of 66% per year for 30 years.",
-      "In 1720, Isaac Newton lost approximately one-third of his wealth in the South Sea Company stock bubble.",
-      "The earliest known use of options was by Thales of Miletus around 600 BC.",
-      "Louis Bachelier's PhD thesis on mathematical finance predated Einstein's work on Brownian motion by five years.",
-      "The Black-Scholes-Merton equation was published in 1973 and revolutionized options pricing.",
+      {
+        text: "A small team of 15 people at DeepMind determined 200 million protein structures in just a few years, compared to 150,000 over six decades by tens of thousands of researchers.",
+        timestamp: "0:20"
+      },
+      {
+        text: "John Kendrew took 12 years to determine the first protein structure (myoglobin) using whale meat for crystallization, winning the 1962 Nobel Prize.",
+        timestamp: "1:48"
+      },
+      {
+        text: "X-ray crystallography costs tens of thousands of dollars per protein, while sequencing costs only about $100 - creating a huge incentive for computational methods.",
+        timestamp: "2:42"
+      },
+      {
+        text: "Cyrus Levinthal calculated that a 35-amino-acid protein could theoretically fold in more ways than atoms in the universe, making brute-force computation impossible.",
+        timestamp: "3:42"
+      },
+      {
+        text: "The CASP competition was established in 1994 to benchmark computational protein structure prediction methods.",
+        timestamp: "4:05"
+      }
     ],
     chapters: [
       {
-        header: "Introduction: The Quants vs. The Market",
-        summary: "The video introduces the immense impact of a single mathematical equation on the financial world. It contrasts the staggering success of quantitative investor Jim Simons, whose Medallion Fund generated 66% annual returns for three decades, with the historical failure of Sir Isaac Newton in the stock market. This sets the stage to explore what Simons and other 'quants' understood that Newton did not, pointing to the power of mathematical models over human intuition.",
+        header: "How to Determine Protein Structures",
+        summary: "Explains the fundamental challenge of protein structure determination and introduces AlphaFold as a revolutionary solution.",
         key_points: [
-          "A single equation from physics spawned multi-trillion dollar industries and transformed risk management.",
-          "Mathematician Jim Simons' Medallion Fund achieved an unprecedented 66% annual return for 30 years, turning $100 into $8.4 billion.",
-          "In contrast, physicist Isaac Newton lost a significant portion of his fortune in the South Sea Company bubble, highlighting that intelligence alone isn't enough to beat the market's 'madness'.",
+          "Proteins are complex 3D structures folded from simple amino acid chains.",
+          "Structure determines function - the shape dictates biological activity.",
+          "Traditional methods are slow, expensive, and limited in scope."
         ],
+        timestamp: "0:00"
       },
       {
-        header: "The Origins and Mechanics of Options",
-        summary: "This chapter explains the fundamental concept of financial options. It traces their origin back to ancient Greece with the story of Thales and the olive presses. The summary details the mechanics of call options (betting on a price increase) and put options (betting on a price decrease), using a modern example with Apple stock. It highlights the key benefits of using options: limiting potential losses, achieving leverage to amplify returns, and serving as a form of insurance or 'hedging' to reduce risk.",
+        header: "Why Are Proteins So Complicated?",
+        summary: "Delves into the complexity of protein folding, including Levinthal's paradox and the astronomical number of possible configurations.",
         key_points: [
-          "Options are financial contracts giving the right, but not the obligation, to buy (call option) or sell (put option) an asset at a predetermined price by a future date.",
-          "The earliest known use of options was by Greek philosopher Thales of Miletus around 600 BC to speculate on an olive harvest.",
-          "Options offer three main advantages: limiting downside risk, providing leverage for potentially higher returns (and losses), and hedging against price fluctuations.",
+          "Proteins fold into specific 3D shapes through complex molecular interactions.",
+          "Even short proteins have more possible configurations than atoms in the universe.",
+          "Evolution and natural selection guide the folding process."
         ],
+        timestamp: "3:50"
       },
+      {
+        header: "The CASP Competition and DeepMind",
+        summary: "Covers the Critical Assessment of Protein Structure Prediction competition and DeepMind's entry with AlphaFold.",
+        key_points: [
+          "CASP was created in 1994 to benchmark computational protein prediction methods.",
+          "DeepMind entered with AlphaFold, initially achieving 70% accuracy.",
+          "The competition drove rapid advancement in the field."
+        ],
+        timestamp: "5:34"
+      },
+      {
+        header: "How Does AlphaFold Work?",
+        summary: "Details the technical architecture of AlphaFold, including transformers, attention mechanisms, and the EvoFormer.",
+        key_points: [
+          "AlphaFold uses transformer architecture similar to ChatGPT.",
+          "The EvoFormer has biology and geometry towers that exchange information.",
+          "Triangular attention helps predict amino acid relationships."
+        ],
+        timestamp: "9:08"
+      },
+      {
+        header: "3 Ways to Get Better AI",
+        summary: "Explains the three key factors that made AlphaFold successful: massive compute power, large datasets, and superior algorithms.",
+        key_points: [
+          "DeepMind had access to Google's enormous computing resources (TPUs).",
+          "Large, diverse protein datasets were crucial for training.",
+          "Better AI algorithms (transformers, attention) provided the breakthrough."
+        ],
+        timestamp: "12:06"
+      },
+      {
+        header: "What is a Transformer in AI?",
+        summary: "Explains the transformer architecture and attention mechanism that powers modern AI systems like AlphaFold.",
+        key_points: [
+          "Transformers process sequential data using attention mechanisms.",
+          "Attention identifies relationships between elements in sequences.",
+          "Transformers revolutionized natural language processing and protein prediction."
+        ],
+        timestamp: "14:24"
+      },
+      {
+        header: "The Structure Module",
+        summary: "Describes how AlphaFold's structure module translates 2D predictions into accurate 3D protein structures.",
+        key_points: [
+          "The structure module converts distance predictions into 3D coordinates.",
+          "It uses frames defined by amino acid atoms for positioning.",
+          "Multiple refinement cycles improve accuracy."
+        ],
+        timestamp: "17:15"
+      },
+      {
+        header: "AlphaFold 2 Wins the Nobel Prize",
+        summary: "Covers AlphaFold 2's perfect performance in CASP 14 and the Nobel Prize awarded to its creators.",
+        key_points: [
+          "AlphaFold 2 achieved near-perfect accuracy in CASP 14.",
+          "John Jumper and Demis Hassabis won the 2024 Nobel Prize in Chemistry.",
+          "The breakthrough has been cited over 30,000 times."
+        ],
+        timestamp: "18:35"
+      },
+      {
+        header: "Designing New Proteins - RF Diffusion",
+        summary: "Introduces RF Diffusion, a generative AI method for designing entirely new proteins from scratch.",
+        key_points: [
+          "RF Diffusion uses generative AI to create novel protein structures.",
+          "It can design proteins for specific functions like antivenom.",
+          "David Baker's team pioneered protein design using AI."
+        ],
+        timestamp: "20:36"
+      },
+      {
+        header: "The Future of AI",
+        summary: "Discusses the broader implications of AI breakthroughs in science and potential future applications.",
+        key_points: [
+          "AI is revolutionizing scientific discovery across multiple fields.",
+          "Applications include drug discovery, materials science, and environmental solutions.",
+          "Speed improvements of 100,000x enable fundamentally new approaches."
+        ],
+        timestamp: "22:58"
+      }
     ],
     keywords: [
-      "Stock Market Analysis",
-      "Technical Analysis",
-      "Economic Data"
+      "AlphaFold",
+      "Protein Folding",
+      "DeepMind",
+      "AI Breakthrough",
+      "Nobel Prize"
     ],
   },
-  quality: undefined,
+  quality: {
+    completeness: {
+      rate: "Pass",
+      reason: "The summary, takeaways, and key facts cover the main points of the video comprehensively."
+    },
+    structure: {
+      rate: "Pass",
+      reason: "The output is well-structured with clear sections for summary, takeaways, key facts, and chapters, as requested."
+    },
+    grammar: {
+      rate: "Pass",
+      reason: "There are no noticeable typos or grammatical errors, and the wording is appropriate and clear."
+    },
+    timestamp: {
+      rate: "Pass",
+      reason: "Timestamps are correctly formatted and placed next to the relevant information."
+    },
+    no_garbage: {
+      rate: "Pass",
+      reason: "The content focuses solely on the video's information, with no promotional or irrelevant text."
+    },
+    useful_keywords: {
+      rate: "Pass",
+      reason: "The keywords 'AlphaFold', 'Protein Folding', 'DeepMind' are highly relevant and useful for highlighting key concepts in the analysis."
+    },
+    correct_language: {
+      rate: "Pass",
+      reason: "The output is in English, matching the presumed original language of the video and the user's request."
+    }
+  },
   iterationCount: 1,
-  chunksProcessed: 5,
+  chunksProcessed: 12,
   logs: [
     '[10:00:00] 🚀 Starting AI analysis with Gemini LLM...',
-    '[10:00:00] 📄 Processing 15k characters of transcript',
-    '[10:00:01] 📝 Generated analysis with 3 chapters (iteration 1)',
-    '[10:00:01] 🎯 Quality check passed with 100% score - Analysis meets requirements',
-    '[10:00:02] ✅ Analysis completed successfully! Generated 3 chapters with 100% quality score',
+    '[10:00:02] 🔗 Detected YouTube URL, scraping to get chapters...',
+    '[10:00:08] 📋 Found 10 chapters in YouTube video',
+    '[10:00:08] 📝 Chapter titles: How to determine protein structures, Why are proteins so complicated?, The CASP Competition and Deep Mind...',
+    '[10:00:10] 📄 Processing 30k characters of transcript',
+    '[10:00:12] 📋 Including 10 video chapters in Gemini analysis',
+    '[10:00:25] 📝 Generated analysis with timestamps (iteration 1)',
+    '[10:00:28] 🎯 Quality check passed with 100% score',
+    '[10:00:30] ✅ Analysis completed successfully! Generated 10 chapters with timestamps'
   ],
 };

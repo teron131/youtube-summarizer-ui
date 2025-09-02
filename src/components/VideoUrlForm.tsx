@@ -28,7 +28,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
   const { languages, defaultLanguage } = useLanguageSelection();
   const { models, defaultModel } = useModelSelection();
 
-  const [language, setLanguage] = useState(defaultLanguage || "zh");
+  const [language, setLanguage] = useState(defaultLanguage || "zh-TW");
   const [model, setModel] = useState(defaultModel || "google/gemini-2.5-pro");
  
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {

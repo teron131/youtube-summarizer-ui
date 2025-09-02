@@ -34,6 +34,15 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 const API_VERSION = "3.0.0";
 
+// Import configuration constants
+import {
+  AVAILABLE_MODELS,
+  DEFAULT_ANALYSIS_MODEL,
+  DEFAULT_QUALITY_MODEL,
+  DEFAULT_TARGET_LANGUAGE,
+  SUPPORTED_LANGUAGES
+} from './config';
+
 // Development logging
 if (import.meta.env.DEV) {
   const displayUrl = API_BASE_URL || '/api (Vite proxy → localhost:8080)';
@@ -128,58 +137,88 @@ export interface ConfigurationResponse {
   default_target_language: string;
 }
 
-// Analysis Data Structure (matches backend Analysis model)
+// ================================
+// ANALYSIS DATA STRUCTURES
+// ================================
+// Updated to match backend Python models (v3.0.0):
+// - TimestampedText replaces BulletPoint (better naming)
+// - text field replaces point field (clearer semantics)
+// - Optional timestamps throughout
+// - Keywords in Analysis model for better extraction context
+// - All interfaces aligned with Pydantic models in summarizer.py
+
+// Core text with optional timestamp (matches backend TimestampedText model)
+export interface TimestampedText {
+  text: string;
+  timestamp?: string;
+}
+
+// Main analysis result (matches backend Analysis model)
 export interface AnalysisData {
   title: string;
   summary: string;
-  takeaways: string[];
-  key_facts: string[];
-  chapters: AnalysisChapter[];
-  keywords: string[];
-  target_language?: string | null;
+  takeaways: TimestampedText[];        // Key insights with optional timestamps
+  key_facts: TimestampedText[];        // Important facts with optional timestamps
+  chapters: AnalysisChapter[];         // Video chapter breakdown
+  keywords: string[];                  // Extracted keywords (max 3)
+  target_language?: string | null;     // Translation target language
 }
 
+// Video chapter structure (matches backend Chapter model)
 export interface AnalysisChapter {
   header: string;
   summary: string;
-  key_points: string[];
+  key_points: string[];               // Chapter-specific key points
+  timestamp?: string;                  // Optional chapter timestamp
 }
 
-// Streaming Analysis Types
+// ================================
+// STREAMING ANALYSIS TYPES
+// ================================
+
+// Real-time streaming chunk from LangGraph workflow (matches backend GraphState)
 export interface StreamingChunk {
-  // WorkflowState fields from backend (exact match)
-  transcript_or_url?: string;
-  analysis?: AnalysisData;
-  quality?: QualityData;
-  iteration_count?: number;
-  is_complete?: boolean;
+  // Core workflow state (matches backend GraphState fields)
+  transcript_or_url?: string;        // Input content or YouTube URL
+  analysis?: AnalysisData;           // Current analysis result
+  quality?: QualityData;             // Current quality assessment
+  iteration_count?: number;          // Current iteration number
+  is_complete?: boolean;             // Whether workflow is finished
 
-  // Additional streaming metadata added by backend
-  timestamp?: string;
-  chunk_number?: number;
+  // Streaming metadata (added by backend API)
+  timestamp?: string;                // Chunk timestamp
+  chunk_number?: number;             // Sequential chunk number
   type?: 'status' | 'analysis' | 'quality' | 'complete' | 'error';
-  message?: string;
-  processing_time?: string;
-  total_chunks?: number;
+  message?: string;                  // Human-readable status message
+  processing_time?: string;          // Current processing time
+  total_chunks?: number;             // Total chunks expected
 }
 
+// ================================
+// QUALITY ASSESSMENT STRUCTURES
+// ================================
+
+// Quality assessment for analysis (matches backend Quality model)
 export interface QualityData {
-  completeness: QualityRate;
-  structure: QualityRate;
-  grammar: QualityRate;
-  timestamp: QualityRate;
-  no_garbage: QualityRate;
-  language: QualityRate;
-  // These might not be present if they're computed properties in backend
-  total_score?: number;
-  max_possible_score?: number;
-  percentage_score?: number;
-  is_acceptable?: boolean;
+  completeness: QualityRate;         // Coverage of entire transcript
+  structure: QualityRate;            // Organization and formatting
+  grammar: QualityRate;              // Language quality and correctness
+  timestamp: QualityRate;            // Timestamp accuracy and format
+  no_garbage: QualityRate;           // Removal of promotional content
+  useful_keywords: QualityRate;      // Usefulness of keywords for analysis highlighting
+  correct_language: QualityRate;     // Language consistency and quality
+
+  // Computed quality metrics (optional - calculated by backend)
+  total_score?: number;               // Raw score out of max possible
+  max_possible_score?: number;        // Maximum possible score
+  percentage_score?: number;          // Quality percentage (0-100)
+  is_acceptable?: boolean;           // Whether quality meets threshold
 }
 
+// Individual quality rating (matches backend Rate model)
 export interface QualityRate {
-  rate: 'Fail' | 'Refine' | 'Pass';
-  reason: string;
+  rate: 'Fail' | 'Refine' | 'Pass';  // Quality level assessment
+  reason: string;                   // Explanation for the rating
 }
 
 export interface StreamingProgressState {

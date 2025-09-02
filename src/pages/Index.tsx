@@ -42,6 +42,80 @@ const Index = () => {
     { step: 'complete', name: "Complete", description: "Analysis completed successfully" },
   ];
 
+  // Convert timestamp format [HH:MM:SS] to YouTube format ?t=1m23s
+  const convertTimestampToYouTube = (timestamp: string): string => {
+    // Remove brackets and split by colons
+    const cleanTime = timestamp.replace(/[[\]]/g, '');
+    const parts = cleanTime.split(':');
+
+    if (parts.length !== 3) return timestamp;
+
+    const hours = parseInt(parts[0]);
+    const minutes = parseInt(parts[1]);
+    const seconds = parseInt(parts[2]);
+
+    // Format for YouTube: ?t=83, ?t=1m23, ?t=1h2m3
+    if (hours > 0) {
+      return `?t=${hours}h${minutes}m${seconds}`;
+    } else if (minutes > 0) {
+      return `?t=${minutes}m${seconds}`;
+    } else {
+      return `?t=${seconds}`;
+    }
+  };
+
+  // Render log with clickable timestamp
+  const renderLogWithClickableTimestamp = (log: string) => {
+    const timestampRegex = /\[(\d{2}:\d{2}:\d{2})\]/;
+    const match = log.match(timestampRegex);
+
+    if (!match) {
+      return log; // No timestamp found, return as is
+    }
+
+    const timestamp = match[1];
+    const videoUrl = (scrapedVideoInfo || analysisResult?.videoInfo)?.url;
+
+    if (!videoUrl) {
+      return log; // No video URL available, return as is
+    }
+
+    const youtubeTimestamp = convertTimestampToYouTube(`[${timestamp}]`);
+    const fullUrl = `${videoUrl}${youtubeTimestamp}`;
+
+    // Debug logging for development
+    if (import.meta.env.DEV) {
+      console.log(`🔗 Timestamp conversion: [${timestamp}] → ${youtubeTimestamp} → ${fullUrl}`);
+
+      // Test specific examples from user
+      if (timestamp === '17:31:58') {
+        console.log('✅ Example: [17:31:58] should convert to ?t=17m31');
+      } else if (timestamp === '01:32:50') {
+        console.log('✅ Example: [01:32:50] should convert to ?t=1h32m50');
+      }
+    }
+
+    // Split the log into timestamp and message parts
+    const parts = log.split(timestampRegex);
+
+    return (
+      <>
+        <span>[</span>
+        <a
+          href={fullUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:text-primary/80 underline decoration-primary/50 hover:decoration-primary transition-all duration-200 cursor-pointer font-mono"
+          title={`Jump to ${timestamp} in video`}
+        >
+          {timestamp}
+        </a>
+        <span>]</span>
+        {parts[2]} {/* The message part after the timestamp */}
+      </>
+    );
+  };
+
   const handleVideoSubmit = async (url: string, options?: {
     analysisModel?: string;
     qualityModel?: string;
@@ -109,7 +183,7 @@ const Index = () => {
             chapters: [],
             key_facts: [],
             takeaways: [],
-            keywords: ['example', 'demo']
+            keywords: []
           },
           quality: {
             completeness: { rate: 'Pass', reason: 'Complete analysis provided' },
@@ -117,7 +191,7 @@ const Index = () => {
             grammar: { rate: 'Pass', reason: 'Good grammar' },
             timestamp: { rate: 'Pass', reason: 'Timestamps included' },
             no_garbage: { rate: 'Pass', reason: 'No promotional content' },
-            language: { rate: 'Pass', reason: 'Appropriate language' },
+            correct_language: { rate: 'Pass', reason: 'Appropriate language' },
             total_score: 12,
             max_possible_score: 12,
             percentage_score: 100,
@@ -273,7 +347,7 @@ const Index = () => {
             <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-foreground fade-in-up stagger-1">
               YouTube
               <br />
-              <span className="text-primary animate-glow bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+              <span className="animate-glow bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
                 Summarizer
               </span>
             </h1>
@@ -330,7 +404,11 @@ const Index = () => {
 
           {/* Show AI Analysis after transcript when available */}
           {analysisResult?.analysis && (
-            <AnalysisPanel analysis={analysisResult.analysis} />
+            <AnalysisPanel
+              analysis={analysisResult.analysis}
+              quality={analysisResult.quality}
+              videoUrl={analysisResult.videoInfo?.url}
+            />
           )}
 
           {/* Progressive Loading State */}
@@ -549,7 +627,7 @@ const Index = () => {
                               <div className="space-y-2 font-mono text-sm text-left">
                                 {streamingLogs.map((log, index) => (
                                   <div key={index} className="text-foreground">
-                                    {log}
+                                    {renderLogWithClickableTimestamp(log)}
                                   </div>
                                 ))}
                               </div>
