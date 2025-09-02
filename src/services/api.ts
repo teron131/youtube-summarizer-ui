@@ -727,10 +727,11 @@ class YouTubeApiClient {
                 // Update logs callback
                 onLogUpdate?.([...streamingLogs]);
               } catch (parseError) {
-                // Enhanced error handling for large transcript chunks
+                // Enhanced error handling for malformed chunks
                 const errorDetails = parseError instanceof Error ? parseError.message : String(parseError);
                 const isLargeChunk = line.length > 10000;
                 const hasTranscript = line.includes('"transcript_or_url"');
+                const isCompleteChunk = line.includes('"type": "complete"') || line.includes('"is_complete": true');
 
                 // Debug: Log the problematic line
                 console.log('❌ Failed to parse chunk:', {
@@ -738,28 +739,41 @@ class YouTubeApiClient {
                   lineLength: line.length,
                   linePreview: line.substring(0, 200) + (line.length > 200 ? '...' : ''),
                   isLargeChunk,
-                  hasTranscript
+                  hasTranscript,
+                  isCompleteChunk
                 });
 
-                if (isLargeChunk && hasTranscript) {
+                // Handle completion chunks that might be malformed
+                if (isCompleteChunk) {
+                  console.log('✅ Detected completion chunk despite parse error');
+                  const timestamp = new Date().toLocaleTimeString();
+                  streamingLogs.push(`[${timestamp}] ✅ Analysis completed (completion detected)`);
+
+                  onProgress?.({
+                    step: 'complete',
+                    stepName: 'Analysis Complete',
+                    status: 'completed',
+                    message: 'Analysis completed successfully'
+                  });
+                } else if (isLargeChunk && hasTranscript) {
                   // Handle large transcript chunks - try to extract useful info without parsing full JSON
                   const timestamp = new Date().toLocaleTimeString();
-                  
+
                   // Try to extract iteration count from the malformed chunk
                   const iterationMatch = line.match(/"iteration_count":\s*(\d+)/);
-                  const isCompleteMatch = line.match(/"is_complete":\s*(true|false)/);
-                  
+                  const qualityMatch = line.match(/"percentage_score":\s*(\d+)/);
+
                   if (iterationMatch) {
                     const extractedIteration = parseInt(iterationMatch[1]);
-                    iterationCount = extractedIteration;
-                    
-                    if (isCompleteMatch && isCompleteMatch[1] === 'true') {
-                      streamingLogs.push(`[${timestamp}] ✅ Processing completed (extracted from large chunk)`);
+                    iterationCount = Math.max(iterationCount, extractedIteration);
+
+                    if (qualityMatch) {
+                      streamingLogs.push(`[${timestamp}] 🎯 Quality score: ${qualityMatch[1]}% (iteration ${extractedIteration})`);
                     } else {
                       streamingLogs.push(`[${timestamp}] 📝 Processing analysis (iteration ${extractedIteration}, chunk size: ${Math.round(line.length/1024)}KB)`);
                     }
                   } else {
-                    streamingLogs.push(`[${timestamp}] 📄 Received large transcript chunk (${Math.round(line.length/1024)}KB)`);
+                    streamingLogs.push(`[${timestamp}] 📄 Received large data chunk (${Math.round(line.length/1024)}KB)`);
                   }
                 } else {
                   // Standard malformed chunk handling
@@ -768,11 +782,11 @@ class YouTubeApiClient {
                     linePreview: line.slice(0, 200) + (line.length > 200 ? '...' : ''),
                     lineLength: line.length
                   });
-                  
+
                   const timestamp = new Date().toLocaleTimeString();
                   streamingLogs.push(`[${timestamp}] ⚠️ Received malformed data chunk (skipped)`);
                 }
-                
+
                 // Update logs callback even for errors
                 onLogUpdate?.([...streamingLogs]);
               }
