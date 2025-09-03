@@ -706,30 +706,33 @@ class YouTubeApiClient {
 
                 if (data.is_complete && data.analysis && data.quality) {
                   // Final completion message - handle missing percentage_score
-                  const qualityScore = data.quality.percentage_score ?? 0;
+                  const qualityScore = typeof data.quality.percentage_score === 'number' ? data.quality.percentage_score : undefined;
                   const chaptersCount = data.analysis.chapters?.length || 0;
-                  logMessage = `✅ Analysis completed successfully! Generated ${chaptersCount} chapters with ${qualityScore}% quality score`;
+                  logMessage = qualityScore !== undefined
+                    ? `✅ Analysis completed successfully! Generated ${chaptersCount} chapters with ${qualityScore}% quality score`
+                    : `✅ Analysis completed successfully! Generated ${chaptersCount} chapters`;
                 } else if (data.quality && data.iteration_count !== undefined) {
                   // Quality check results - handle missing computed properties
-                  const qualityScore = data.quality.percentage_score ?? 0;
-                  const isAcceptable = data.quality.is_acceptable ?? (qualityScore >= 90);
+                  const qualityScore = typeof data.quality.percentage_score === 'number' ? data.quality.percentage_score : undefined;
+                  const isAcceptable = data.quality.is_acceptable ?? (typeof qualityScore === 'number' ? qualityScore >= 90 : false);
 
                   if (isAcceptable) {
-                    logMessage = `🎯 Quality check passed with ${qualityScore}% score - Analysis meets requirements`;
+                    logMessage = qualityScore !== undefined
+                      ? `🎯 Quality check passed with ${qualityScore}% score - Analysis meets requirements`
+                      : `🎯 Quality check passed - Analysis meets requirements`;
                   } else {
-                    logMessage = `🔄 Quality check: ${qualityScore}% score (needs improvement) - Starting refinement (iteration ${displayIteration})`;
+                    logMessage = qualityScore !== undefined
+                      ? `🔄 Quality check: ${qualityScore}% score (needs improvement) - Starting refinement (iteration ${displayIteration})`
+                      : `🔄 Quality check: needs improvement - Starting refinement (iteration ${displayIteration})`;
                   }
-                } else if (data.analysis && data.iteration_count !== undefined && data.iteration_count === 0) {
-                  // Initial analysis generation
+                } else if (data.analysis && data.iteration_count !== undefined && data.iteration_count === 1 && !data.quality) {
+                  // Initial analysis generation (iteration 1 in backend)
                   const chaptersCount = data.analysis.chapters?.length || 0;
                   logMessage = `📝 Initial analysis generated with ${chaptersCount} chapters`;
-                } else if (data.analysis && data.iteration_count !== undefined && data.iteration_count > 0) {
+                } else if (data.analysis && data.iteration_count !== undefined && data.iteration_count > 1 && !data.quality) {
                   // Analysis refinement
                   const chaptersCount = data.analysis.chapters?.length || 0;
                   logMessage = `🔧 Analysis refined with ${chaptersCount} chapters (iteration ${displayIteration})`;
-                } else if (data.iteration_count === 0) {
-                  // Initial processing
-                  logMessage = `🚀 Starting AI analysis with Gemini model...`;
                 } else {
                   // Only show processing message once per chunk to avoid spam
                   if (chunksProcessed % 5 === 1) { // Show every 5th chunk
@@ -751,29 +754,30 @@ class YouTubeApiClient {
                     step: 'complete',
                     stepName: 'Analysis Complete',
                     status: 'completed',
-                    message: `✅ Analysis completed successfully with ${data.quality?.percentage_score ?? 0}% quality score`,
+                    message: typeof data.quality?.percentage_score === 'number'
+                      ? `✅ Analysis completed successfully with ${data.quality?.percentage_score}% quality score`
+                      : '✅ Analysis completed successfully',
                     iterationCount: displayIteration,
-                    qualityScore: data.quality?.percentage_score,
+                    qualityScore: typeof data.quality?.percentage_score === 'number' ? data.quality?.percentage_score : undefined,
                     chunkCount: chunksProcessed
                   });
                 } else if (data.quality && data.iteration_count !== undefined) {
                   // Quality check phase
-                  const qualityScore = data.quality.percentage_score ?? 0;
-                  const isAcceptable = data.quality.is_acceptable ?? (qualityScore >= 90);
+                  const qualityScore = typeof data.quality.percentage_score === 'number' ? data.quality.percentage_score : undefined;
+                  const isAcceptable = data.quality.is_acceptable ?? (typeof qualityScore === 'number' ? qualityScore >= 90 : false);
 
                   onProgress?.({
                     step: 'quality_check',
                     stepName: 'Quality Assessment',
                     status: 'processing',
                     message: isAcceptable ?
-                      `🎯 Quality check passed (${qualityScore}%)` :
-                      `🔄 Quality check: ${qualityScore}% - Starting refinement`,
+                      (typeof qualityScore === 'number' ? `🎯 Quality check passed (${qualityScore}%)` : '🎯 Quality check passed') :
+                      (typeof qualityScore === 'number' ? `🔄 Quality check: ${qualityScore}% - Starting refinement` : '🔄 Quality check: needs refinement - Starting refinement'),
                     iterationCount: displayIteration,
                     qualityScore: qualityScore
                   });
-                } else if (data.analysis && data.iteration_count !== undefined && data.iteration_count > 0) {
+                } else if (data.analysis && data.iteration_count !== undefined && data.iteration_count > 1 && !data.quality) {
                   // Refinement phase
-                  const chaptersCount = data.analysis.chapters?.length || 0;
                   onProgress?.({
                     step: 'refinement',
                     stepName: 'Analysis Refinement',
@@ -782,14 +786,13 @@ class YouTubeApiClient {
                     iterationCount: displayIteration,
                     chunkCount: chunksProcessed
                   });
-                } else if (data.analysis && data.iteration_count === 0) {
+                } else if (data.analysis && data.iteration_count === 1 && !data.quality) {
                   // Initial analysis generation
-                  const chaptersCount = data.analysis.chapters?.length || 0;
                   onProgress?.({
                     step: 'analysis_generation',
                     stepName: 'Analysis Generation',
                     status: 'processing',
-                    message: `📝 Generating initial analysis with ${chaptersCount} chapters`,
+                    message: '📝 Generating initial analysis',
                     iterationCount: displayIteration
                   });
                 } else if (chunksProcessed % 3 === 1) { // Update every 3rd chunk to avoid spam
