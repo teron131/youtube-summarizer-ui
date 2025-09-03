@@ -141,24 +141,19 @@ export interface ConfigurationResponse {
 // ANALYSIS DATA STRUCTURES
 // ================================
 // Updated to match backend Python models (v3.0.0):
-// - TimestampedText replaces BulletPoint (better naming)
+// - TextItem provides clean text content
 // - text field replaces point field (clearer semantics)
-// - Optional timestamps throughout
 // - Keywords in Analysis model for better extraction context
 // - All interfaces aligned with Pydantic models in summarizer.py
 
-// Core text with optional timestamp (matches backend TimestampedText model)
-export interface TimestampedText {
-  text: string;
-  timestamp?: string;
-}
+// Using simple strings for takeaways and key facts
 
 // Main analysis result (matches backend Analysis model)
 export interface AnalysisData {
   title: string;
   summary: string;
-  takeaways: TimestampedText[];        // Key insights with optional timestamps
-  key_facts: TimestampedText[];        // Important facts with optional timestamps
+  takeaways: string[];                 // Key insights as simple strings
+  key_facts: string[];                 // Important facts as simple strings
   chapters: AnalysisChapter[];         // Video chapter breakdown
   keywords: string[];                  // Extracted keywords (max 3)
   target_language?: string | null;     // Translation target language
@@ -169,7 +164,6 @@ export interface AnalysisChapter {
   header: string;
   summary: string;
   key_points: string[];               // Chapter-specific key points
-  timestamp?: string;                  // Optional chapter timestamp
 }
 
 // ================================
@@ -203,7 +197,6 @@ export interface QualityData {
   completeness: QualityRate;         // Coverage of entire transcript
   structure: QualityRate;            // Organization and formatting
   grammar: QualityRate;              // Language quality and correctness
-  timestamp: QualityRate;            // Timestamp accuracy and format
   no_garbage: QualityRate;           // Removal of promotional content
   useful_keywords: QualityRate;      // Usefulness of keywords for analysis highlighting
   correct_language: QualityRate;     // Language consistency and quality

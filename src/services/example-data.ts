@@ -18,44 +18,17 @@ export const exampleData: StreamingProcessingResult = {
     title: "AlphaFold: The Breakthrough That Solved Protein Folding",
     summary: "This video explores AlphaFold, DeepMind's groundbreaking AI system that solved the protein folding problem - one of biology's greatest challenges. The breakthrough determined the 3D structures of 200 million proteins, potentially revolutionizing medicine, drug discovery, and our understanding of life itself.",
     takeaways: [
-      {
-        text: "AlphaFold solved the protein folding problem by predicting 3D protein structures from amino acid sequences with unprecedented accuracy.",
-        timestamp: "0:25"
-      },
-      {
-        text: "Protein structure determines function - the 3D shape dictates how proteins interact with other molecules and perform their biological roles.",
-        timestamp: "0:58"
-      },
-      {
-        text: "Traditional experimental methods like X-ray crystallography are slow and expensive, costing tens of thousands per protein structure.",
-        timestamp: "2:48"
-      },
-      {
-        text: "AlphaFold's breakthrough dwarfs previous progress - 200 million structures determined vs 150,000 over 60 years of traditional research.",
-        timestamp: "3:38"
-      }
+      "AlphaFold solved the protein folding problem by predicting 3D protein structures from amino acid sequences with unprecedented accuracy.",
+      "Protein structure determines function - the 3D shape dictates how proteins interact with other molecules and perform their biological roles.",
+      "Traditional experimental methods like X-ray crystallography are slow and expensive, costing tens of thousands per protein structure.",
+      "AlphaFold's breakthrough dwarfs previous progress - 200 million structures determined vs 150,000 over 60 years of traditional research."
     ],
     key_facts: [
-      {
-        text: "A small team of 15 people at DeepMind determined 200 million protein structures in just a few years, compared to 150,000 over six decades by tens of thousands of researchers.",
-        timestamp: "0:20"
-      },
-      {
-        text: "John Kendrew took 12 years to determine the first protein structure (myoglobin) using whale meat for crystallization, winning the 1962 Nobel Prize.",
-        timestamp: "1:48"
-      },
-      {
-        text: "X-ray crystallography costs tens of thousands of dollars per protein, while sequencing costs only about $100 - creating a huge incentive for computational methods.",
-        timestamp: "2:42"
-      },
-      {
-        text: "Cyrus Levinthal calculated that a 35-amino-acid protein could theoretically fold in more ways than atoms in the universe, making brute-force computation impossible.",
-        timestamp: "3:42"
-      },
-      {
-        text: "The CASP competition was established in 1994 to benchmark computational protein structure prediction methods.",
-        timestamp: "4:05"
-      }
+      "A small team of 15 people at DeepMind determined 200 million protein structures in just a few years, compared to 150,000 over six decades by tens of thousands of researchers.",
+      "John Kendrew took 12 years to determine the first protein structure (myoglobin) using whale meat for crystallization, winning the 1962 Nobel Prize.",
+      "X-ray crystallography costs tens of thousands of dollars per protein, while sequencing costs only about $100 - creating a huge incentive for computational methods.",
+      "Cyrus Levinthal calculated that a 35-amino-acid protein could theoretically fold in more ways than atoms in the universe, making brute-force computation impossible.",
+      "The CASP competition was established in 1994 to benchmark computational protein structure prediction methods."
     ],
     chapters: [
       {
@@ -66,7 +39,7 @@ export const exampleData: StreamingProcessingResult = {
           "Structure determines function - the shape dictates biological activity.",
           "Traditional methods are slow, expensive, and limited in scope."
         ],
-        timestamp: "0:00"
+
       },
       {
         header: "Why Are Proteins So Complicated?",
@@ -76,7 +49,6 @@ export const exampleData: StreamingProcessingResult = {
           "Even short proteins have more possible configurations than atoms in the universe.",
           "Evolution and natural selection guide the folding process."
         ],
-        timestamp: "3:50"
       },
       {
         header: "The CASP Competition and DeepMind",
@@ -86,7 +58,6 @@ export const exampleData: StreamingProcessingResult = {
           "DeepMind entered with AlphaFold, initially achieving 70% accuracy.",
           "The competition drove rapid advancement in the field."
         ],
-        timestamp: "5:34"
       },
       {
         header: "How Does AlphaFold Work?",
@@ -96,7 +67,6 @@ export const exampleData: StreamingProcessingResult = {
           "The EvoFormer has biology and geometry towers that exchange information.",
           "Triangular attention helps predict amino acid relationships."
         ],
-        timestamp: "9:08"
       },
       {
         header: "3 Ways to Get Better AI",
@@ -106,7 +76,6 @@ export const exampleData: StreamingProcessingResult = {
           "Large, diverse protein datasets were crucial for training.",
           "Better AI algorithms (transformers, attention) provided the breakthrough."
         ],
-        timestamp: "12:06"
       },
       {
         header: "What is a Transformer in AI?",
@@ -116,7 +85,6 @@ export const exampleData: StreamingProcessingResult = {
           "Attention identifies relationships between elements in sequences.",
           "Transformers revolutionized natural language processing and protein prediction."
         ],
-        timestamp: "14:24"
       },
       {
         header: "The Structure Module",
@@ -126,7 +94,6 @@ export const exampleData: StreamingProcessingResult = {
           "It uses frames defined by amino acid atoms for positioning.",
           "Multiple refinement cycles improve accuracy."
         ],
-        timestamp: "17:15"
       },
       {
         header: "AlphaFold 2 Wins the Nobel Prize",
@@ -136,7 +103,6 @@ export const exampleData: StreamingProcessingResult = {
           "John Jumper and Demis Hassabis won the 2024 Nobel Prize in Chemistry.",
           "The breakthrough has been cited over 30,000 times."
         ],
-        timestamp: "18:35"
       },
       {
         header: "Designing New Proteins - RF Diffusion",
@@ -146,7 +112,6 @@ export const exampleData: StreamingProcessingResult = {
           "It can design proteins for specific functions like antivenom.",
           "David Baker's team pioneered protein design using AI."
         ],
-        timestamp: "20:36"
       },
       {
         header: "The Future of AI",
@@ -156,7 +121,6 @@ export const exampleData: StreamingProcessingResult = {
           "Applications include drug discovery, materials science, and environmental solutions.",
           "Speed improvements of 100,000x enable fundamentally new approaches."
         ],
-        timestamp: "22:58"
       }
     ],
     keywords: [
@@ -180,10 +144,6 @@ export const exampleData: StreamingProcessingResult = {
       rate: "Pass",
       reason: "There are no noticeable typos or grammatical errors, and the wording is appropriate and clear."
     },
-    timestamp: {
-      rate: "Pass",
-      reason: "Timestamps are correctly formatted and placed next to the relevant information."
-    },
     no_garbage: {
       rate: "Pass",
       reason: "The content focuses solely on the video's information, with no promotional or irrelevant text."
@@ -206,8 +166,8 @@ export const exampleData: StreamingProcessingResult = {
     '[10:00:08] 📝 Chapter titles: How to determine protein structures, Why are proteins so complicated?, The CASP Competition and Deep Mind...',
     '[10:00:10] 📄 Processing 30k characters of transcript',
     '[10:00:12] 📋 Including 10 video chapters in Gemini analysis',
-    '[10:00:25] 📝 Generated analysis with timestamps (iteration 1)',
+    '[10:00:25] 📝 Generated analysis (iteration 1)',
     '[10:00:28] 🎯 Quality check passed with 100% score',
-    '[10:00:30] ✅ Analysis completed successfully! Generated 10 chapters with timestamps'
+    '[10:00:30] ✅ Analysis completed successfully! Generated 10 chapters'
   ],
 };

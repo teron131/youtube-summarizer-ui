@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { generateYouTubeTimestampUrl, isValidTimestamp } from "@/lib/utils";
-import { AnalysisData, QualityData, TimestampedText } from "@/services/api";
-import { BookOpen, Clock, Copy, FileText, Lightbulb, ListChecks, Sparkles } from "lucide-react";
+import { AnalysisData, QualityData } from "@/services/api";
+import { BookOpen, Copy, FileText, Lightbulb, ListChecks, Sparkles } from "lucide-react";
 
 interface AnalysisPanelProps {
   analysis: AnalysisData;
@@ -11,40 +10,16 @@ interface AnalysisPanelProps {
   videoUrl?: string;
 }
 
-// Helper component to render timestamped text with clickable timestamps
-interface TimestampedTextRendererProps {
-  item: TimestampedText;
-  videoUrl?: string;
+// Helper component to render text strings
+interface TextRendererProps {
+  text: string;
   className?: string;
 }
 
-const TimestampedTextRenderer = ({ item, videoUrl, className = "" }: TimestampedTextRendererProps) => {
-  const hasValidTimestamp = item.timestamp && isValidTimestamp(item.timestamp);
-  const timestampUrl = hasValidTimestamp && videoUrl ? generateYouTubeTimestampUrl(videoUrl, item.timestamp!) : undefined;
-
-  if (hasValidTimestamp && timestampUrl) {
-    return (
-      <div className={`flex items-start gap-2 ${className}`}>
-        <span className="text-foreground leading-7 md:leading-8 text-sm md:text-base flex-1">
-          {item.text}
-        </span>
-        <a
-          href={timestampUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-primary/10 text-primary border border-primary/20 rounded-md hover:bg-primary/20 transition-colors duration-200 whitespace-nowrap"
-          title={`Jump to ${item.timestamp} in video`}
-        >
-          <Clock className="w-3 h-3" />
-          {item.timestamp}
-        </a>
-      </div>
-    );
-  }
-
+const TextRenderer = ({ text, className = "" }: TextRendererProps) => {
   return (
     <span className={`text-foreground leading-7 md:leading-8 text-sm md:text-base ${className}`}>
-      {item.text}
+      {text}
     </span>
   );
 };
@@ -67,14 +42,7 @@ export const AnalysisPanel = ({ analysis, quality, videoUrl }: AnalysisPanelProp
     if (analysis.takeaways && analysis.takeaways.length > 0) {
       markdown += "# Key Takeaways\n\n";
       analysis.takeaways.forEach(takeaway => {
-        const text = takeaway.text || takeaway;
-        const timestamp = takeaway.timestamp;
-        if (timestamp && videoUrl) {
-          const timestampUrl = generateYouTubeTimestampUrl(videoUrl, timestamp);
-          markdown += `- ${text} [[${timestamp}](${timestampUrl})]\n`;
-        } else {
-          markdown += `- ${text}\n`;
-        }
+        markdown += `- ${takeaway}\n`;
       });
       markdown += "\n";
     }
@@ -82,14 +50,7 @@ export const AnalysisPanel = ({ analysis, quality, videoUrl }: AnalysisPanelProp
     if (analysis.key_facts && analysis.key_facts.length > 0) {
       markdown += "# Key Facts\n\n";
       analysis.key_facts.forEach(fact => {
-        const text = fact.text || fact;
-        const timestamp = fact.timestamp;
-        if (timestamp && videoUrl) {
-          const timestampUrl = generateYouTubeTimestampUrl(videoUrl, timestamp);
-          markdown += `- ${text} [[${timestamp}](${timestampUrl})]\n`;
-        } else {
-          markdown += `- ${text}\n`;
-        }
+        markdown += `- ${fact}\n`;
       });
       markdown += "\n";
     }
@@ -105,14 +66,7 @@ export const AnalysisPanel = ({ analysis, quality, videoUrl }: AnalysisPanelProp
     if (analysis.chapters && analysis.chapters.length > 0) {
       markdown += "# Video Chapters\n\n";
       analysis.chapters.forEach(chapter => {
-        const headerText = chapter.header;
-        const timestamp = chapter.timestamp;
-        if (timestamp && videoUrl) {
-          const timestampUrl = generateYouTubeTimestampUrl(videoUrl, timestamp);
-          markdown += `## ${headerText} [[${timestamp}](${timestampUrl})]\n\n`;
-        } else {
-          markdown += `## ${headerText}\n\n`;
-        }
+        markdown += `## ${chapter.header}\n\n`;
         markdown += `${chapter.summary}\n\n`;
 
         if (chapter.key_points && chapter.key_points.length > 0) {
@@ -201,7 +155,7 @@ export const AnalysisPanel = ({ analysis, quality, videoUrl }: AnalysisPanelProp
                 {analysis.takeaways.map((takeaway, index) => (
                   <li key={index} className="flex items-start gap-2 md:gap-3">
                     <span className="text-primary font-bold mt-0.5 text-sm md:text-base">•</span>
-                    <TimestampedTextRenderer item={takeaway} videoUrl={videoUrl} />
+                    <TextRenderer text={takeaway} />
                   </li>
                 ))}
               </ul>
@@ -223,7 +177,7 @@ export const AnalysisPanel = ({ analysis, quality, videoUrl }: AnalysisPanelProp
                 {analysis.key_facts.map((fact, index) => (
                   <li key={index} className="flex items-start gap-2 md:gap-3">
                     <span className="text-primary font-bold mt-0.5 text-sm md:text-base">•</span>
-                    <TimestampedTextRenderer item={fact} videoUrl={videoUrl} />
+                    <TextRenderer text={fact} />
                   </li>
                 ))}
               </ul>
@@ -242,42 +196,24 @@ export const AnalysisPanel = ({ analysis, quality, videoUrl }: AnalysisPanelProp
             </div>
             
             <div className="pl-2 md:pl-3 space-y-2 md:space-y-3">
-              {analysis.chapters.map((chapter, index) => {
-                const hasValidTimestamp = chapter.timestamp && isValidTimestamp(chapter.timestamp);
-                const timestampUrl = hasValidTimestamp && videoUrl ? generateYouTubeTimestampUrl(videoUrl, chapter.timestamp!) : undefined;
-
-                return (
-                  <div key={index} className="space-y-1 md:space-y-1.5">
-                    <div className="flex items-center gap-3">
-                      <h5 className="text-base md:text-lg font-semibold text-primary">{chapter.header}</h5>
-                      {hasValidTimestamp && timestampUrl && (
-                        <a
-                          href={timestampUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-primary/10 text-primary border border-primary/20 rounded-md hover:bg-primary/20 transition-colors duration-200 whitespace-nowrap"
-                          title={`Jump to ${chapter.timestamp} in video`}
-                        >
-                          <Clock className="w-3 h-3" />
-                          {chapter.timestamp}
-                        </a>
-                      )}
-                    </div>
-                    <p className="text-foreground leading-7 md:leading-8 text-sm md:text-base">{chapter.summary}</p>
-
-                    {chapter.key_points && chapter.key_points.length > 0 && (
-                      <ul className="space-y-0.5 md:space-y-1">
-                        {chapter.key_points.map((point, pIndex) => (
-                          <li key={pIndex} className="flex items-start gap-2 md:gap-3">
-                            <span className="text-primary font-bold mt-0.5 text-sm md:text-base">•</span>
-                            <span className="text-foreground leading-7 md:leading-8 text-sm md:text-base">{point}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+              {analysis.chapters.map((chapter, index) => (
+                <div key={index} className="space-y-1 md:space-y-1.5">
+                  <div className="flex items-center gap-3">
+                    <h5 className="text-base md:text-lg font-semibold text-primary">{chapter.header}</h5>
                   </div>
-                );
-              })}
+                  <p className="text-foreground leading-7 md:leading-8 text-sm md:text-base">{chapter.summary}</p>
+                  {chapter.key_points && chapter.key_points.length > 0 && (
+                    <ul className="space-y-0.5 md:space-y-1">
+                      {chapter.key_points.map((point, pIndex) => (
+                        <li key={pIndex} className="flex items-start gap-2 md:gap-3">
+                          <span className="text-primary font-bold mt-0.5 text-sm md:text-base">•</span>
+                          <span className="text-foreground leading-7 md:leading-8 text-sm md:text-base">{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         )}

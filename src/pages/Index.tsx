@@ -42,79 +42,9 @@ const Index = () => {
     { step: 'complete', name: "Complete", description: "Analysis completed successfully" },
   ];
 
-  // Convert timestamp format [HH:MM:SS] to YouTube format ?t=1m23s
-  const convertTimestampToYouTube = (timestamp: string): string => {
-    // Remove brackets and split by colons
-    const cleanTime = timestamp.replace(/[[\]]/g, '');
-    const parts = cleanTime.split(':');
 
-    if (parts.length !== 3) return timestamp;
 
-    const hours = parseInt(parts[0]);
-    const minutes = parseInt(parts[1]);
-    const seconds = parseInt(parts[2]);
 
-    // Format for YouTube: ?t=83, ?t=1m23, ?t=1h2m3
-    if (hours > 0) {
-      return `?t=${hours}h${minutes}m${seconds}`;
-    } else if (minutes > 0) {
-      return `?t=${minutes}m${seconds}`;
-    } else {
-      return `?t=${seconds}`;
-    }
-  };
-
-  // Render log with clickable timestamp
-  const renderLogWithClickableTimestamp = (log: string) => {
-    const timestampRegex = /\[(\d{2}:\d{2}:\d{2})\]/;
-    const match = log.match(timestampRegex);
-
-    if (!match) {
-      return log; // No timestamp found, return as is
-    }
-
-    const timestamp = match[1];
-    const videoUrl = (scrapedVideoInfo || analysisResult?.videoInfo)?.url;
-
-    if (!videoUrl) {
-      return log; // No video URL available, return as is
-    }
-
-    const youtubeTimestamp = convertTimestampToYouTube(`[${timestamp}]`);
-    const fullUrl = `${videoUrl}${youtubeTimestamp}`;
-
-    // Debug logging for development
-    if (import.meta.env.DEV) {
-      console.log(`🔗 Timestamp conversion: [${timestamp}] → ${youtubeTimestamp} → ${fullUrl}`);
-
-      // Test specific examples from user
-      if (timestamp === '17:31:58') {
-        console.log('✅ Example: [17:31:58] should convert to ?t=17m31');
-      } else if (timestamp === '01:32:50') {
-        console.log('✅ Example: [01:32:50] should convert to ?t=1h32m50');
-      }
-    }
-
-    // Split the log into timestamp and message parts
-    const parts = log.split(timestampRegex);
-
-    return (
-      <>
-        <span>[</span>
-        <a
-          href={fullUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-primary hover:text-primary/80 underline decoration-primary/50 hover:decoration-primary transition-all duration-200 cursor-pointer font-mono"
-          title={`Jump to ${timestamp} in video`}
-        >
-          {timestamp}
-        </a>
-        <span>]</span>
-        {parts[2]} {/* The message part after the timestamp */}
-      </>
-    );
-  };
 
   const handleVideoSubmit = async (url: string, options?: {
     analysisModel?: string;
@@ -189,7 +119,6 @@ const Index = () => {
             completeness: { rate: 'Pass', reason: 'Complete analysis provided' },
             structure: { rate: 'Pass', reason: 'Well structured' },
             grammar: { rate: 'Pass', reason: 'Good grammar' },
-            timestamp: { rate: 'Pass', reason: 'Timestamps included' },
             no_garbage: { rate: 'Pass', reason: 'No promotional content' },
             useful_keywords: { rate: 'Pass', reason: 'Keywords are relevant and useful for highlighting key concepts' },
             correct_language: { rate: 'Pass', reason: 'Appropriate language' },
@@ -628,7 +557,7 @@ const Index = () => {
                               <div className="space-y-2 font-mono text-sm text-left">
                                 {streamingLogs.map((log, index) => (
                                   <div key={index} className="text-foreground">
-                                    {renderLogWithClickableTimestamp(log)}
+                                    {log}
                                   </div>
                                 ))}
                               </div>
