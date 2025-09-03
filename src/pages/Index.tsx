@@ -35,10 +35,12 @@ const Index = () => {
 
   const { toast } = useToast();
 
-  // Progress steps configuration (simple workflow)
+  // Progress steps configuration (detailed workflow)
   const progressSteps = [
     { step: 'scraping', name: "Scraping Video", description: "Extracting video info and transcript using Apify" },
-    { step: 'analyzing', name: "AI Analysis", description: "Generating AI summary and analysis using Gemini" },
+    { step: 'analysis_generation', name: "Analysis Generation", description: "Generating initial AI analysis with Gemini model" },
+    { step: 'quality_check', name: "Quality Assessment", description: "Evaluating analysis quality and completeness" },
+    { step: 'refinement', name: "Analysis Refinement", description: "Refining analysis based on quality feedback" },
     { step: 'complete', name: "Complete", description: "Analysis completed successfully" },
   ];
 
@@ -80,22 +82,28 @@ const Index = () => {
             processingTime: "0.1s"
           },
           {
-            step: 'analyzing',
-            stepName: "AI Analysis",
+            step: 'analysis_generation',
+            stepName: "Analysis Generation",
             status: "completed",
-            message: "Analysis completed successfully",
-            processingTime: "0.1s",
-            iterationCount: 1,
-            qualityScore: 95
+            message: "📝 Initial analysis generated with 3 chapters",
+            iterationCount: 1
+          },
+          {
+            step: 'quality_check',
+            stepName: "Quality Assessment",
+            status: "completed",
+            message: "🎯 Quality check passed with 100% score - Analysis meets requirements",
+            qualityScore: 100
           },
           {
             step: 'complete',
             stepName: "Analysis Complete",
             status: "completed",
-            message: "Analysis completed successfully",
+            message: "✅ Analysis completed successfully with 100% quality score",
             processingTime: "0.2s",
             chunkCount: 5,
-            iterationCount: 1
+            iterationCount: 1,
+            qualityScore: 100
           }
         ];
         
@@ -130,11 +138,10 @@ const Index = () => {
           iterationCount: 1,
           chunksProcessed: 5,
           logs: [
-            '[10:00:00] Starting AI analysis with Gemini LLM...',
-            '[10:00:00] Processing 15k characters of transcript',
-            '[10:00:01] Generated analysis with 3 chapters (iteration 1)',
-            '[10:00:01] Quality check passed with 100% score - Analysis meets requirements',
-            '[10:00:02] Analysis completed successfully! Generated 3 chapters with 100% quality score',
+            '[10:00:00] 🚀 Starting AI analysis with Gemini model...',
+            '[10:00:01] 📝 Initial analysis generated with 3 chapters',
+            '[10:00:01] 🎯 Quality check passed with 100% score - Analysis meets requirements',
+            '[10:00:02] ✅ Analysis completed successfully! Generated 3 chapters with 100% quality score',
             '[10:00:02] 🏁 Workflow completed successfully in 0.2s',
             '[10:00:02] Summary: 1 iterations processed',
             '[10:00:02] 📚 Generated 3 video chapters',
@@ -144,7 +151,7 @@ const Index = () => {
         setScrapedVideoInfo(exampleResult.videoInfo || null);
         setAnalysisResult(exampleResult);
 
-        setCurrentStep(2);
+        setCurrentStep(4);
         setCurrentStage("Example ready");
         setIsLoading(false);
         
@@ -177,7 +184,7 @@ const Index = () => {
             }
 
             return updated.sort((a, b) => {
-              const order = ['scraping', 'analyzing', 'complete'];
+              const order = ['scraping', 'analysis_generation', 'quality_check', 'refinement', 'complete'];
               return order.indexOf(a.step) - order.indexOf(b.step);
             });
           });
@@ -405,7 +412,7 @@ const Index = () => {
                   <div className="w-full bg-muted/30 rounded-full h-3 mt-6">
                     <div
                       className="bg-gradient-primary h-3 rounded-full transition-all duration-500 ease-out"
-                      style={{width: `${(currentStep / 2) * 100}%`}}
+                      style={{width: `${(currentStep / 4) * 100}%`}}
                     ></div>
                   </div>
                 </div>
