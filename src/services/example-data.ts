@@ -171,3 +171,17 @@ export const exampleData: StreamingProcessingResult = {
     '[10:00:30] Analysis completed successfully! Generated 10 chapters'
   ],
 };
+
+// Export individual constants for easier testing
+export const EXAMPLE_VIDEO_URL = exampleData.videoInfo.url;
+export const EXAMPLE_TRANSCRIPT = exampleData.transcript;
+export const EXAMPLE_ANALYSIS = exampleData.analysis;
+export const EXAMPLE_QUALITY = exampleData.quality;
+export const EXAMPLE_VIDEO_INFO = exampleData.videoInfo;
+
+// Utility functions for testing
+export const getExampleData = () => ({ ...exampleData });
+
+export const createMockAnalysis = () => ({ ...EXAMPLE_ANALYSIS });
+
+export const createMockQuality = () => ({ ...EXAMPLE_QUALITY });

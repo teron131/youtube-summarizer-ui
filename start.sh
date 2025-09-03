@@ -2,10 +2,21 @@
 
 # YouTube Summarizer - Local Development Start Script
 # This script starts both frontend and backend services locally
+# Use --force to stop existing services before starting
 
 set -e
 
-echo "🚀 Starting YouTube Summarizer (Local Development)"
+# Check for force restart flag
+FORCE_RESTART=false
+if [ "$1" = "--force" ]; then
+    FORCE_RESTART=true
+fi
+
+if [ "$FORCE_RESTART" = true ]; then
+    echo "🔄 Force restarting YouTube Summarizer (Local Development)"
+else
+    echo "🚀 Starting YouTube Summarizer (Local Development)"
+fi
 echo "=================================================="
 
 # Colors for output
@@ -42,9 +53,63 @@ fi
 
 echo -e "${GREEN}✅ Dependencies check passed${NC}"
 
+# Function to stop existing services
+stop_services() {
+    echo -e "${YELLOW}🛑 Stopping existing services...${NC}"
+
+    # Stop backend
+    if [ -f "backend.pid" ]; then
+        BACKEND_PID=$(cat backend.pid)
+        if kill $BACKEND_PID 2>/dev/null; then
+            echo -e "${GREEN}✅ Backend stopped${NC}"
+        else
+            echo -e "${YELLOW}⚠️  Backend process not found${NC}"
+        fi
+        rm -f backend.pid
+    else
+        echo -e "${YELLOW}⚠️  No backend PID file found${NC}"
+    fi
+
+    # Stop frontend
+    if [ -f "frontend.pid" ]; then
+        FRONTEND_PID=$(cat frontend.pid)
+        if kill $FRONTEND_PID 2>/dev/null; then
+            echo -e "${GREEN}✅ Frontend stopped${NC}"
+        else
+            echo -e "${YELLOW}⚠️  Frontend process not found${NC}"
+        fi
+        rm -f frontend.pid
+    else
+        echo -e "${YELLOW}⚠️  No frontend PID file found${NC}"
+    fi
+
+    # Kill any remaining processes on our ports
+    echo -e "${YELLOW}🧹 Cleaning up port usage...${NC}"
+
+    # Kill processes on backend port
+    if lsof -ti:$BACKEND_PORT >/dev/null 2>&1; then
+        lsof -ti:$BACKEND_PORT | xargs kill -9 2>/dev/null || true
+        echo -e "${GREEN}✅ Port $BACKEND_PORT cleared${NC}"
+    fi
+
+    # Kill processes on frontend port
+    if lsof -ti:$FRONTEND_PORT >/dev/null 2>&1; then
+        lsof -ti:$FRONTEND_PORT | xargs kill -9 2>/dev/null || true
+        echo -e "${GREEN}✅ Port $FRONTEND_PORT cleared${NC}"
+    fi
+
+    echo -e "${GREEN}🎉 Existing services stopped and ports cleared${NC}"
+    echo ""
+}
+
 # Check ports
 FRONTEND_PORT=5173
 BACKEND_PORT=8080
+
+# Force stop existing services if requested
+if [ "$FORCE_RESTART" = true ]; then
+    stop_services
+fi
 
 if port_in_use $FRONTEND_PORT; then
     echo -e "${YELLOW}⚠️  Port $FRONTEND_PORT is already in use${NC}"
@@ -135,6 +200,7 @@ echo -e "${BLUE}🐍 Backend:${NC}  http://localhost:$BACKEND_PORT"
 echo -e "${BLUE}📚 API Docs:${NC} http://localhost:$BACKEND_PORT/docs"
 echo ""
 echo -e "${YELLOW}💡 Press Ctrl+C to stop all services${NC}"
+echo -e "${BLUE}💡 Use './start.sh --force' to force restart services${NC}"
 echo ""
 
 # Wait for user interrupt
