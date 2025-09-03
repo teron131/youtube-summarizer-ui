@@ -46,12 +46,12 @@ import {
 // Development logging
 if (import.meta.env.DEV) {
   const displayUrl = API_BASE_URL || '/api (Vite proxy → localhost:8080)';
-  console.log('🔗 API Base URL:', displayUrl);
-  console.log('📊 API Version:', API_VERSION);
+  console.log('API Base URL:', displayUrl);
+  console.log('API Version:', API_VERSION);
 } else {
   // Production logging
-  console.log('🔗 Production API Base URL:', API_BASE_URL || 'Not configured');
-  console.log('📊 API Version:', API_VERSION);
+  console.log('Production API Base URL:', API_BASE_URL || 'Not configured');
+  console.log('API Version:', API_VERSION);
 }
 
 // ================================
@@ -578,7 +578,6 @@ class YouTubeApiClient {
     options?: {
       analysisModel?: string;
       qualityModel?: string;
-      enableTranslation?: boolean;
       targetLanguage?: string;
     }
   ): Promise<StreamingProcessingResult> {
@@ -642,7 +641,6 @@ class YouTubeApiClient {
         content_type: 'transcript',
         analysis_model: options?.analysisModel,
         quality_model: options?.qualityModel,
-        enable_translation: options?.enableTranslation,
         target_language: options?.targetLanguage,
       });
 
@@ -680,11 +678,11 @@ class YouTubeApiClient {
                 // Extract data from the workflow state
                 if (data.analysis) {
                   analysis = data.analysis;
-                  console.log('✅ Analysis extracted:', !!analysis);
+                  console.log('Analysis extracted:', !!analysis);
                 }
                 if (data.quality) {
                   quality = data.quality;
-                  console.log('✅ Quality extracted:', !!quality);
+                  console.log('Quality extracted:', !!quality);
                 }
                 if (data.iteration_count !== undefined) {
                   iterationCount = data.iteration_count;
@@ -710,31 +708,31 @@ class YouTubeApiClient {
                   // Final completion message - handle missing percentage_score
                   const qualityScore = data.quality.percentage_score ?? 0;
                   const chaptersCount = data.analysis.chapters?.length || 0;
-                  logMessage = `✅ Analysis completed successfully! Generated ${chaptersCount} chapters with ${qualityScore}% quality score`;
+                  logMessage = `Analysis completed successfully! Generated ${chaptersCount} chapters with ${qualityScore}% quality score`;
                 } else if (data.quality && data.iteration_count !== undefined) {
                   // Quality check results - handle missing computed properties
                   const qualityScore = data.quality.percentage_score ?? 0;
                   const isAcceptable = data.quality.is_acceptable ?? (qualityScore >= 90);
 
                   if (isAcceptable) {
-                    logMessage = `🎯 Quality check passed with ${qualityScore}% score - Analysis meets requirements`;
+                    logMessage = `Quality check passed with ${qualityScore}% score - Analysis meets requirements`;
                   } else {
-                    logMessage = `🔄 Quality check: ${qualityScore}% score (needs improvement) - Refining analysis (iteration ${displayIteration})`;
+                    logMessage = `Quality check: ${qualityScore}% score (needs improvement) - Refining analysis (iteration ${displayIteration})`;
                   }
                 } else if (data.analysis && data.iteration_count !== undefined) {
                   // Analysis generation
                   const chaptersCount = data.analysis.chapters?.length || 0;
-                  logMessage = `📝 Generated analysis with ${chaptersCount} chapters (iteration ${displayIteration})`;
+                  logMessage = `Generated analysis with ${chaptersCount} chapters (iteration ${displayIteration})`;
                 } else if (data.iteration_count === 0) {
                   // Initial processing
-                  logMessage = `🚀 Starting AI analysis with Gemini...`;
+                  logMessage = `Starting AI analysis with Gemini...`;
                 } else if (data.iteration_count !== undefined && data.iteration_count > 0) {
                   // Refinement iterations
-                  logMessage = `🔧 Refining analysis for better quality (iteration ${displayIteration})`;
+                  logMessage = `Refining analysis for better quality (iteration ${displayIteration})`;
                 } else {
                   // Only show processing message once per chunk to avoid spam
                   if (chunksProcessed % 5 === 1) { // Show every 5th chunk
-                    logMessage = `⚙️ Processing analysis...`;
+                    logMessage = `Processing analysis...`;
                   } else {
                     logMessage = ''; // Skip logging for other chunks
                   }
@@ -779,9 +777,9 @@ class YouTubeApiClient {
 
                 // Handle completion chunks that might be malformed (highest priority)
                 if (isCompleteChunk) {
-                  console.log('✅ Detected completion chunk despite parse error');
+                  console.log('Detected completion chunk despite parse error');
                   const timestamp = new Date().toLocaleTimeString();
-                  streamingLogs.push(`[${timestamp}] ✅ Analysis completed (completion detected)`);
+                  streamingLogs.push(`[${timestamp}] Analysis completed (completion detected)`);
 
                   onProgress?.({
                     step: 'complete',
@@ -819,17 +817,17 @@ class YouTubeApiClient {
                     iterationCount = Math.max(iterationCount, extractedIteration);
 
                     if (qualityMatch) {
-                      streamingLogs.push(`[${timestamp}] 🎯 Quality score: ${qualityMatch[1]}% (iteration ${extractedIteration})`);
+                      streamingLogs.push(`[${timestamp}] Quality score: ${qualityMatch[1]}% (iteration ${extractedIteration})`);
                     } else {
-                      streamingLogs.push(`[${timestamp}] 📝 Processing analysis (iteration ${extractedIteration})`);
+                      streamingLogs.push(`[${timestamp}] Processing analysis (iteration ${extractedIteration})`);
                     }
                   } else {
-                    streamingLogs.push(`[${timestamp}] 📄 Large data chunk processed`);
+                    streamingLogs.push(`[${timestamp}] Large data chunk processed`);
                   }
                 } else {
                   // Standard malformed chunk handling with reduced logging
                   const timestamp = new Date().toLocaleTimeString();
-                  streamingLogs.push(`[${timestamp}] ⚠️ Malformed chunk skipped`);
+                  streamingLogs.push(`[${timestamp}] Malformed chunk skipped`);
                 }
 
                 // Update logs callback even for errors
@@ -848,7 +846,7 @@ class YouTubeApiClient {
       if (finalWorkflowState) {
         const timestamp = new Date().toLocaleTimeString();
         streamingLogs.push(`[${timestamp}] 🏁 Workflow completed successfully in ${totalTime}`);
-        streamingLogs.push(`[${timestamp}] 📊 Summary: ${iterationCount} iterations processed`);
+        streamingLogs.push(`[${timestamp}] Summary: ${iterationCount} iterations processed`);
         
         if (analysis?.chapters?.length) {
           streamingLogs.push(`[${timestamp}] 📚 Generated ${analysis.chapters.length} video chapters`);
@@ -893,7 +891,7 @@ class YouTubeApiClient {
       // Add error to logs
       const errorTimestamp = new Date().toLocaleTimeString();
       streamingLogs.push(`[${errorTimestamp}] ❌ Error occurred: ${apiError.message}`);
-      streamingLogs.push(`[${errorTimestamp}] ⏱️ Total processing time: ${totalTime}`);
+      streamingLogs.push(`[${errorTimestamp}] Total processing time: ${totalTime}`);
 
       onProgress?.({
         step: 'analyzing',
@@ -1018,7 +1016,6 @@ export const streamingProcessing = (
   options?: {
     analysisModel?: string;
     qualityModel?: string;
-    enableTranslation?: boolean;
     targetLanguage?: string;
   }
 ) => apiClient.streamingProcessing(url, onProgress, onLogUpdate, options);

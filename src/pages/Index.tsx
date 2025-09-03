@@ -49,7 +49,6 @@ const Index = () => {
   const handleVideoSubmit = async (url: string, options?: {
     analysisModel?: string;
     qualityModel?: string;
-    enableTranslation?: boolean;
     targetLanguage?: string;
   }) => {
     // Set loading state immediately
@@ -131,13 +130,13 @@ const Index = () => {
           iterationCount: 1,
           chunksProcessed: 5,
           logs: [
-            '[10:00:00] 🚀 Starting AI analysis with Gemini LLM...',
-            '[10:00:00] 📄 Processing 15k characters of transcript',
-            '[10:00:01] 📝 Generated analysis with 3 chapters (iteration 1)',
-            '[10:00:01] 🎯 Quality check passed with 100% score - Analysis meets requirements',
-            '[10:00:02] ✅ Analysis completed successfully! Generated 3 chapters with 100% quality score',
+            '[10:00:00] Starting AI analysis with Gemini LLM...',
+            '[10:00:00] Processing 15k characters of transcript',
+            '[10:00:01] Generated analysis with 3 chapters (iteration 1)',
+            '[10:00:01] Quality check passed with 100% score - Analysis meets requirements',
+            '[10:00:02] Analysis completed successfully! Generated 3 chapters with 100% quality score',
             '[10:00:02] 🏁 Workflow completed successfully in 0.2s',
-            '[10:00:02] 📊 Summary: 1 iterations processed',
+            '[10:00:02] Summary: 1 iterations processed',
             '[10:00:02] 📚 Generated 3 video chapters',
             '[10:00:02] 🌟 Final quality score: 100%'
           ]
@@ -159,7 +158,7 @@ const Index = () => {
       const result = await streamingProcessing(
         finalUrl,
         (progressState: StreamingProgressState) => {
-          console.log('📊 Progress update:', progressState);
+          console.log('Progress update:', progressState);
 
           // Update current step and stage
           const stepIndex = progressSteps.findIndex(s => s.step === progressState.step);
@@ -202,7 +201,6 @@ const Index = () => {
         options ? {
           analysisModel: options.analysisModel,
           qualityModel: options.qualityModel,
-          enableTranslation: options.enableTranslation,
           targetLanguage: options.targetLanguage,
         } : undefined
       );

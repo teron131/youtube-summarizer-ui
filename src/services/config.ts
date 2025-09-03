@@ -25,6 +25,7 @@ export const DEFAULT_QUALITY_MODEL = "google/gemini-2.5-flash";
 // ================================
 
 export const SUPPORTED_LANGUAGES = {
+  "auto": "Auto",
   "zh-TW": "Chinese",
   "en": "English",
   "ja": "Japanese",
@@ -37,7 +38,7 @@ export const SUPPORTED_LANGUAGES = {
   "pt": "Portuguese",
 } as const;
 
-export const DEFAULT_TARGET_LANGUAGE = "zh-TW";
+export const DEFAULT_TARGET_LANGUAGE = "auto";
 
 // ================================
 // QUALITY THRESHOLDS
@@ -113,30 +114,13 @@ export const SUPPORTED_LANGUAGES_LIST: SupportedLanguage[] = Object.entries(SUPP
   ([key, label]) => ({
     key: key as LanguageKey,
     label,
-    flag: getLanguageFlag(key as LanguageKey),
+    flag: "",
   })
 );
 
 // ================================
 // UTILITY FUNCTIONS
 // ================================
-
-function getLanguageFlag(languageKey: LanguageKey): string {
-  const flagMap: Record<LanguageKey, string> = {
-    "zh-TW": "🇭🇰",
-    "en": "🇺🇸",
-    "ja": "🇯🇵",
-    "ko": "🇰🇷",
-    "de": "🇩🇪",
-    "ru": "🇷🇺",
-    "es": "🇪🇸",
-    "fr": "🇫🇷",
-    "it": "🇮🇹",
-    "pt": "🇵🇹",
-  };
-
-  return flagMap[languageKey] || "🌍";
-}
 
 export function getModelByKey(key: ModelKey): AvailableModel | undefined {
   return AVAILABLE_MODELS_LIST.find(model => model.key === key);

@@ -3,14 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { useLanguageSelection, useModelSelection } from "@/hooks/use-config";
 import { AlertCircle, Bot, ExternalLink, Languages, Loader2, Play, Youtube } from "lucide-react";
 import { useState } from "react";
  
 interface VideoUrlFormProps {
   onSubmit: (url: string, options?: {
-    enableTranslation?: boolean;
     targetLanguage?: string;
     analysisModel?: string;
     qualityModel?: string;
@@ -22,13 +20,12 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
   const [url, setUrl] = useState("");
   const [validationError, setValidationError] = useState<string>("");
   const [showExamples, setShowExamples] = useState(false);
-  const [translate, setTranslate] = useState(false);
 
   // Use configuration hooks
   const { languages, defaultLanguage } = useLanguageSelection();
   const { models, defaultModel } = useModelSelection();
 
-  const [language, setLanguage] = useState(defaultLanguage || "zh-TW");
+  const [language, setLanguage] = useState(defaultLanguage || "auto");
   const [model, setModel] = useState(defaultModel || "google/gemini-2.5-pro");
  
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,16 +41,25 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedUrl = url.trim();
-    
+
+    // Prepare options - don't pass targetLanguage if it's "auto"
+    const options: {
+      targetLanguage?: string;
+      analysisModel?: string;
+      qualityModel?: string;
+    } = {
+      analysisModel: model,
+      qualityModel: model, // Use same model for both analysis and quality
+    };
+
+    if (language !== "auto") {
+      options.targetLanguage = language;
+    }
+
     // Allow empty input for example output
     if (!trimmedUrl) {
       setValidationError("");
-      onSubmit("", {
-        analysisModel: model,
-        qualityModel: model, // Use same model for both analysis and quality
-        enableTranslation: translate,
-        targetLanguage: language,
-      }); // Send empty string to trigger example response
+      onSubmit("", options); // Send empty string to trigger example response
       return;
     }
 
@@ -64,12 +70,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
     }
 
     setValidationError("");
-    onSubmit(trimmedUrl, {
-      analysisModel: model,
-      qualityModel: model, // Use same model for both analysis and quality
-      enableTranslation: translate,
-      targetLanguage: language,
-    });
+    onSubmit(trimmedUrl, options);
   };
  
   const isFormValid = url.trim().length === 0 || (url.trim().length > 10 && (url.includes("youtube.com") || url.includes("youtu.be")));
@@ -124,24 +125,17 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
               </Select>
             </div>
 
-            {/* Right Column - Translate Toggle and Language Selection */}
+            {/* Right Column - Language Selection */}
             <div className="flex items-center gap-4 flex-wrap">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-4">
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center group relative">
                   <Languages className="w-4 h-4 text-white" />
                   {/* Tooltip on hover */}
                   <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded border border-gray-300/25 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-                    Translate
+                    Language
                   </div>
                 </div>
-                <Switch
-                  checked={translate}
-                  onCheckedChange={setTranslate}
-                  className="data-[state=checked]:bg-primary"
-                />
-              </div>
 
-              {translate && (
                 <Select value={language} onValueChange={setLanguage}>
                   <SelectTrigger className="w-40 h-8 bg-primary text-white border-primary/30 hover:bg-primary/90">
                     <SelectValue />
@@ -158,7 +152,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
                     ))}
                   </SelectContent>
                 </Select>
-              )}
+              </div>
             </div>
           </div>
 

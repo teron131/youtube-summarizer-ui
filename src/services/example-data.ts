@@ -160,14 +160,14 @@ export const exampleData: StreamingProcessingResult = {
   iterationCount: 1,
   chunksProcessed: 12,
   logs: [
-    '[10:00:00] 🚀 Starting AI analysis with Gemini LLM...',
-    '[10:00:02] 🔗 Detected YouTube URL, scraping to get chapters...',
-    '[10:00:08] 📋 Found 10 chapters in YouTube video',
-    '[10:00:08] 📝 Chapter titles: How to determine protein structures, Why are proteins so complicated?, The CASP Competition and Deep Mind...',
-    '[10:00:10] 📄 Processing 30k characters of transcript',
-    '[10:00:12] 📋 Including 10 video chapters in Gemini analysis',
-    '[10:00:25] 📝 Generated analysis (iteration 1)',
-    '[10:00:28] 🎯 Quality check passed with 100% score',
-    '[10:00:30] ✅ Analysis completed successfully! Generated 10 chapters'
+    '[10:00:00] Starting AI analysis with Gemini LLM...',
+    '[10:00:02] Detected YouTube URL, scraping to get chapters...',
+    '[10:00:08] Found 10 chapters in YouTube video',
+    '[10:00:08] Chapter titles: How to determine protein structures, Why are proteins so complicated?, The CASP Competition and Deep Mind...',
+    '[10:00:10] Processing 30k characters of transcript',
+    '[10:00:12] Including 10 video chapters in Gemini analysis',
+    '[10:00:25] Generated analysis (iteration 1)',
+    '[10:00:28] Quality check passed with 100% score',
+    '[10:00:30] Analysis completed successfully! Generated 10 chapters'
   ],
 };
