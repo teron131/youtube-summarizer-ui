@@ -598,6 +598,7 @@ class YouTubeApiClient {
     let chunksProcessed = 0;
     const streamingLogs: string[] = [];
     let finalWorkflowState: StreamingChunk | null = null;
+    let currentPhase: 'scraping' | 'analyzing' = 'scraping';
 
     // Phase timers for per-step durations
     const phaseStartTimes: {
@@ -652,6 +653,7 @@ class YouTubeApiClient {
         status: 'processing',
         message: 'Generating AI summary and analysis using Gemini...'
       });
+      currentPhase = 'analyzing';
 
       // Convert "auto" to null for backend compatibility
       const targetLanguage = options?.targetLanguage === "auto" ? null : options?.targetLanguage;
@@ -874,6 +876,14 @@ class YouTubeApiClient {
                   });
                   // Start timing for first quality check
                   phaseStartTimes.qualityStart = Date.now();
+                  // Emit a processing state for quality check so UI shows spinner even if quality arrives only at the end
+                  onProgress?.({
+                    step: 'quality_check',
+                    stepName: 'Quality Assessment',
+                    status: 'processing',
+                    message: 'Evaluating analysis quality and completeness',
+                    iterationCount: displayIteration
+                  });
                 } else if (chunksProcessed % 3 === 1) { // Update every 3rd chunk to avoid spam
                   onProgress?.({
                     step: 'analyzing',
@@ -908,7 +918,7 @@ class YouTubeApiClient {
                     status: 'completed',
                     message: 'Analysis completed successfully'
                   });
-                  return; // Early return for completion
+                  continue;
                 }
 
                 // Limit logging for large chunks to reduce console spam
@@ -978,6 +988,9 @@ class YouTubeApiClient {
           const qualityEmoji = qualityScore >= 80 ? '🌟' : qualityScore >= 60 ? '⭐' : '🔄';
           streamingLogs.push(`[${timestamp}] ${qualityEmoji} Final quality score: ${qualityScore}%`);
         }
+
+        // Emit final logs to UI
+        onLogUpdate?.([...streamingLogs]);
       }
 
       // Debug: Log final result
@@ -1015,12 +1028,15 @@ class YouTubeApiClient {
       streamingLogs.push(`[${errorTimestamp}] Total processing time: ${totalTime}`);
 
       onProgress?.({
-        step: 'analyzing',
-        stepName: 'Processing',
+        step: currentPhase === 'scraping' ? 'scraping' : 'analyzing',
+        stepName: currentPhase === 'scraping' ? 'Scraping Video' : 'Processing',
         status: 'error',
         message: apiError.message,
         error: apiError
       });
+
+      // Surface logs in UI on error
+      onLogUpdate?.([...streamingLogs]);
 
       return {
         success: false,

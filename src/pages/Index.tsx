@@ -41,7 +41,6 @@ const Index = () => {
     { step: 'analysis_generation', name: "Analysis Generation", description: "Generating initial AI analysis with Gemini model" },
     { step: 'quality_check', name: "Quality Assessment", description: "Evaluating analysis quality and completeness" },
     { step: 'refinement', name: "Analysis Refinement", description: "Refining analysis based on quality feedback" },
-    { step: 'complete', name: "Complete", description: "Analysis completed successfully" },
   ];
 
 
@@ -189,7 +188,7 @@ const Index = () => {
             }
 
             return updated.sort((a, b) => {
-              const order = ['scraping', 'analysis_generation', 'quality_check', 'refinement', 'complete'];
+              const order = ['scraping', 'analysis_generation', 'quality_check', 'refinement'];
               return order.indexOf(a.step) - order.indexOf(b.step);
             });
           });
