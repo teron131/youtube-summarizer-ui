@@ -15,8 +15,12 @@
  *   - Run from the project root directory
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Configuration
 const EXAMPLE_DATA_PATH = path.join(__dirname, '..', 'src', 'services', 'example-data.ts');
@@ -245,8 +249,9 @@ function main() {
 }
 
 // Run if called directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   main();
 }
 
-module.exports = { updateExampleData, isValidYouTubeUrl, extractVideoId };
+export { extractVideoId, isValidYouTubeUrl, updateExampleData };
+

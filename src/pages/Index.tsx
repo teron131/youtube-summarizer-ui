@@ -126,6 +126,7 @@ const Index = () => {
             structure: { rate: 'Pass', reason: 'Well structured' },
             grammar: { rate: 'Pass', reason: 'Good grammar' },
             no_garbage: { rate: 'Pass', reason: 'No promotional content' },
+            meta_language_avoidance: { rate: 'Pass', reason: 'No meta-language phrases' },
             useful_keywords: { rate: 'Pass', reason: 'Keywords are relevant and useful for highlighting key concepts' },
             correct_language: { rate: 'Pass', reason: 'Appropriate language' },
             total_score: 12,
@@ -529,7 +530,9 @@ const Index = () => {
                     )}
                   </Button>
                   <div className="px-6 pb-6 pt-0 space-y-4">
-                    {progressStates.map((state, index) => (
+                    {progressStates
+                      .filter((s) => s.step !== 'complete')
+                      .map((state, index) => (
                       <div key={index} className="bg-muted/20 rounded-lg p-4 border border-muted/30">
                         <div className="flex items-center gap-3 mb-2">
                           <CheckCircle className="w-5 h-5 text-green-500" />

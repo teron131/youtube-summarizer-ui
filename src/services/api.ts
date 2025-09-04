@@ -206,6 +206,7 @@ export interface QualityData {
   structure: QualityRate;            // Organization and formatting
   grammar: QualityRate;              // Language quality and correctness
   no_garbage: QualityRate;           // Removal of promotional content
+  meta_language_avoidance: QualityRate; // Avoidance of meta-language phrases
   useful_keywords: QualityRate;      // Usefulness of keywords for analysis highlighting
   correct_language: QualityRate;     // Language consistency and quality
 
