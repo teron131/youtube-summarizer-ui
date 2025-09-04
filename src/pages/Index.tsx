@@ -516,6 +516,13 @@ const Index = () => {
                         <span className="text-muted-foreground">Processing steps and timing</span>
                       </div>
                     </div>
+                    {analysisResult?.totalTime && (
+                      <div className="ml-auto">
+                        <span className="text-sm font-medium text-red-500 bg-red-500/10 px-3 py-1 rounded-full">
+                          Total: {analysisResult.totalTime}
+                        </span>
+                      </div>
+                    )}
                   </Button>
                   <div className="px-6 pb-6 pt-0 space-y-4">
                     {progressStates.map((state, index) => (

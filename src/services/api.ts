@@ -599,6 +599,15 @@ class YouTubeApiClient {
     const streamingLogs: string[] = [];
     let finalWorkflowState: StreamingChunk | null = null;
 
+    // Phase timers for per-step durations
+    const phaseStartTimes: {
+      analysisStart?: number;
+      qualityStart?: number;
+      refinementStart?: number;
+    } = {};
+    let refinementInProgress = false;
+    const msToSecondsString = (ms: number) => `${(ms / 1000).toFixed(1)}s`;
+
     try {
       // Step 1: Scrap video info and transcript
       onProgress?.({
@@ -654,6 +663,14 @@ class YouTubeApiClient {
         quality_model: options?.qualityModel || 'google/gemini-2.5-flash',
         target_language: targetLanguage,
       });
+
+      // Log analysis start and set timer
+      phaseStartTimes.analysisStart = Date.now();
+      {
+        const timestamp = new Date().toLocaleTimeString();
+        streamingLogs.push(`[${timestamp}] 🚀 Starting AI analysis with ${options?.analysisModel || 'google/gemini-2.5-pro'} model...`);
+        onLogUpdate?.([...streamingLogs]);
+      }
 
       const reader = stream.getReader();
       const decoder = new TextDecoder();
@@ -739,7 +756,8 @@ class YouTubeApiClient {
                 } else if (data.analysis && data.iteration_count !== undefined && data.iteration_count === 1 && !data.quality) {
                   // Initial analysis generation (iteration 1 in backend)
                   const chaptersCount = data.analysis.chapters?.length || 0;
-                  logMessage = `📝 Initial analysis generated with ${chaptersCount} chapters`;
+                  const duration = phaseStartTimes.analysisStart ? msToSecondsString(Date.now() - phaseStartTimes.analysisStart) : undefined;
+                  logMessage = duration ? `📝 Initial analysis generated with ${chaptersCount} chapters (${duration})` : `📝 Initial analysis generated with ${chaptersCount} chapters`;
                 } else if (data.analysis && data.iteration_count !== undefined && data.iteration_count > 1 && !data.quality) {
                   // Analysis refinement
                   const chaptersCount = data.analysis.chapters?.length || 0;
@@ -770,25 +788,55 @@ class YouTubeApiClient {
                       : '✅ Analysis completed successfully',
                     iterationCount: displayIteration,
                     qualityScore: typeof data.quality?.percentage_score === 'number' ? data.quality?.percentage_score : undefined,
-                    chunkCount: chunksProcessed
+                    chunkCount: chunksProcessed,
+                    processingTime: msToSecondsString(Date.now() - startTime)
                   });
                 } else if (data.quality && data.iteration_count !== undefined) {
                   // Quality check phase
                   const qualityScore = typeof data.quality.percentage_score === 'number' ? data.quality.percentage_score : undefined;
                   const isAcceptable = data.quality.is_acceptable ?? (typeof qualityScore === 'number' ? qualityScore >= 90 : false);
 
+                  // If a refinement was running, close it now
+                  if (refinementInProgress) {
+                    const refineDuration = phaseStartTimes.refinementStart ? msToSecondsString(Date.now() - phaseStartTimes.refinementStart) : undefined;
+                    onProgress?.({
+                      step: 'refinement',
+                      stepName: 'Analysis Refinement',
+                      status: 'completed',
+                      message: `🔧 Refinement complete (iteration ${displayIteration})`,
+                      iterationCount: displayIteration,
+                      chunkCount: chunksProcessed,
+                      processingTime: refineDuration
+                    });
+                    refinementInProgress = false;
+                    phaseStartTimes.refinementStart = undefined;
+                  }
+
+                  const qcDuration = phaseStartTimes.qualityStart ? msToSecondsString(Date.now() - phaseStartTimes.qualityStart) : undefined;
+
                   onProgress?.({
                     step: 'quality_check',
                     stepName: 'Quality Assessment',
-                    status: 'processing',
+                    status: 'completed',
                     message: isAcceptable ?
                       (typeof qualityScore === 'number' ? `🎯 Quality check passed (${qualityScore}%)` : '🎯 Quality check passed') :
                       (typeof qualityScore === 'number' ? `🔄 Quality check: ${qualityScore}% - Starting refinement` : '🔄 Quality check: needs refinement - Starting refinement'),
                     iterationCount: displayIteration,
-                    qualityScore: qualityScore
+                    qualityScore: qualityScore,
+                    processingTime: qcDuration
                   });
+
+                  // If not acceptable, next phase is refinement
+                  if (!isAcceptable) {
+                    phaseStartTimes.refinementStart = Date.now();
+                    refinementInProgress = true;
+                  }
                 } else if (data.analysis && data.iteration_count !== undefined && data.iteration_count > 1 && !data.quality) {
                   // Refinement phase
+                  if (!refinementInProgress) {
+                    phaseStartTimes.refinementStart = Date.now();
+                    refinementInProgress = true;
+                  }
                   onProgress?.({
                     step: 'refinement',
                     stepName: 'Analysis Refinement',
@@ -799,13 +847,17 @@ class YouTubeApiClient {
                   });
                 } else if (data.analysis && data.iteration_count === 1 && !data.quality) {
                   // Initial analysis generation
+                  const duration = phaseStartTimes.analysisStart ? msToSecondsString(Date.now() - phaseStartTimes.analysisStart) : undefined;
                   onProgress?.({
                     step: 'analysis_generation',
                     stepName: 'Analysis Generation',
-                    status: 'processing',
-                    message: '📝 Generating initial analysis',
-                    iterationCount: displayIteration
+                    status: 'completed',
+                    message: '📝 Initial analysis generated',
+                    iterationCount: displayIteration,
+                    processingTime: duration
                   });
+                  // Start timing for first quality check
+                  phaseStartTimes.qualityStart = Date.now();
                 } else if (chunksProcessed % 3 === 1) { // Update every 3rd chunk to avoid spam
                   onProgress?.({
                     step: 'analyzing',
