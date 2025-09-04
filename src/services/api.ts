@@ -791,6 +791,22 @@ class YouTubeApiClient {
                     chunkCount: chunksProcessed,
                     processingTime: msToSecondsString(Date.now() - startTime)
                   });
+
+                  // Ensure we also emit a quality_check completion if the only quality data arrives on the final chunk
+                  if (data.quality) {
+                    const qualityScore = typeof data.quality.percentage_score === 'number' ? data.quality.percentage_score : undefined;
+                    const qcDuration = phaseStartTimes.qualityStart ? msToSecondsString(Date.now() - phaseStartTimes.qualityStart) : undefined;
+
+                    onProgress?.({
+                      step: 'quality_check',
+                      stepName: 'Quality Assessment',
+                      status: 'completed',
+                      message: qualityScore !== undefined ? `🎯 Quality check passed (${qualityScore}%)` : '🎯 Quality check completed',
+                      iterationCount: displayIteration,
+                      qualityScore,
+                      processingTime: qcDuration
+                    });
+                  }
                 } else if (data.quality && data.iteration_count !== undefined) {
                   // Quality check phase
                   const qualityScore = typeof data.quality.percentage_score === 'number' ? data.quality.percentage_score : undefined;

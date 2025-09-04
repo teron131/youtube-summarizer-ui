@@ -168,19 +168,24 @@ const Index = () => {
           console.log('Progress update:', progressState);
 
           // Update current step and stage
-          const stepIndex = progressSteps.findIndex(s => s.step === progressState.step);
+          // Normalize transient step names so UI doesn't flicker between states
+          const normalizedStep: StreamingProgressState['step'] = progressState.step === 'analyzing'
+            ? 'analysis_generation'
+            : progressState.step;
+
+          const stepIndex = progressSteps.findIndex(s => s.step === normalizedStep);
           setCurrentStep(stepIndex >= 0 ? stepIndex : 0);
           setCurrentStage(progressState.message);
 
           // Update progress states array
           setProgressStates(prev => {
             const updated = [...prev];
-            const existingIndex = updated.findIndex(s => s.step === progressState.step);
+            const existingIndex = updated.findIndex(s => s.step === normalizedStep);
 
             if (existingIndex >= 0) {
-              updated[existingIndex] = progressState;
+              updated[existingIndex] = { ...progressState, step: normalizedStep };
             } else {
-              updated.push(progressState);
+              updated.push({ ...progressState, step: normalizedStep });
             }
 
             return updated.sort((a, b) => {
@@ -190,7 +195,7 @@ const Index = () => {
           });
 
           // If scraping completed, surface video info immediately
-          if (progressState.step === 'scraping' && progressState.status === 'completed') {
+          if (normalizedStep === 'scraping' && progressState.status === 'completed') {
             type ScrapeDataPayload = { videoInfo?: VideoInfoResponse; transcript?: string };
             const data = (progressState as unknown as { data?: ScrapeDataPayload }).data;
             if (data && data.videoInfo) {
