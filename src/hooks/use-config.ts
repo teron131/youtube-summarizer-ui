@@ -4,19 +4,24 @@
  *
  * Provides centralized access to application configuration
  * with backend synchronization and local fallback.
+ *
+ * Key Features:
+ * - Meta-language avoidance: Clean, direct configuration without verbose descriptions
+ * - Backend synchronization with automatic fallback to local config
+ * - Type-safe configuration management
  */
 
 import { ConfigurationResponse, getConfigurationWithFallback } from '@/services/api';
 import {
-    AVAILABLE_MODELS,
-    AVAILABLE_MODELS_LIST,
-    DEFAULT_ANALYSIS_MODEL,
-    DEFAULT_QUALITY_MODEL,
-    DEFAULT_TARGET_LANGUAGE,
-    SUPPORTED_LANGUAGES,
-    SUPPORTED_LANGUAGES_LIST,
-    type AvailableModel,
-    type SupportedLanguage,
+  AVAILABLE_MODELS,
+  AVAILABLE_MODELS_LIST,
+  DEFAULT_ANALYSIS_MODEL,
+  DEFAULT_QUALITY_MODEL,
+  DEFAULT_TARGET_LANGUAGE,
+  SUPPORTED_LANGUAGES,
+  SUPPORTED_LANGUAGES_LIST,
+  type AvailableModel,
+  type SupportedLanguage,
 } from '@/services/config';
 import { useEffect, useState } from 'react';
 

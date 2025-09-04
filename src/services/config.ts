@@ -33,7 +33,7 @@ export const SUPPORTED_LANGUAGES = {
   "de": "German",
 } as const;
 
-export const DEFAULT_TARGET_LANGUAGE = "auto";
+export const DEFAULT_TARGET_LANGUAGE = null;
 
 // ================================
 // QUALITY THRESHOLDS

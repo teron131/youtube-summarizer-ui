@@ -42,7 +42,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
     e.preventDefault();
     const trimmedUrl = url.trim();
 
-    // Prepare options - don't pass targetLanguage if it's "auto"
+    // Prepare options - convert "auto" to null for backend (auto-detect)
     const options: {
       targetLanguage?: string;
       analysisModel?: string;

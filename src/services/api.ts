@@ -1,25 +1,34 @@
 /**
  * YouTube Summarizer API Service
  * ===============================
- * 
+ *
  * Optimized API client for the YouTube Summarizer backend.
  * Aligned with youtube-summarizer/app.py v3.0.0 implementation.
- * 
+ *
+ * ## Key Features
+ *
+ * - **Meta-language avoidance**: Clean, direct AI responses without meta-descriptive language
+ * - **Advanced LangGraph workflow**: Multi-step analysis with quality control and self-refinement
+ * - **Real-time streaming**: Progress updates during processing
+ * - **Multi-model support**: Gemini, Claude, and GPT models
+ * - **Translation support**: Multiple language options
+ *
  * ## URL Configuration
- * 
+ *
  * **Development**: Uses Vite proxy `/api` → `localhost:8080`
  * **Production**: Set `VITE_API_BASE_URL=https://youtube-summarizer-teron131.up.railway.app` (no `/api` suffix)
- * 
+ *
  * ## Processing Workflow
  *
  * The backend uses an advanced LangGraph workflow with multiple processing options:
  * - **Step 1**: `/scrap` - Extract video info and transcript using Apify
  * - **Step 2**: `/summarize` or `/stream-summarize` - Generate AI analysis with:
- *   - Model selection (Gemini, Claude, GPT models)
- *   - Translation support (multiple languages)
- *   - Quality control and self-refinement
+ *   - Model selection (Gemini 2.5 Pro/Flash, Claude Sonnet 4)
+ *   - Translation support (Chinese, English, Japanese, Korean, German, Russian)
+ *   - Quality assessment with automatic refinement
+ *   - Meta-language avoidance for cleaner output
  *   - Real-time streaming progress updates
- * 
+ *
  * ## Available Endpoints
  *
  * - `/` - API information and health check
@@ -71,7 +80,7 @@ export interface VideoInfoResponse {
 }
 
 export interface ScrapRequest {
-  url: string;
+  url: string; // min_length=10, max_length=2048
 }
 
 export interface ScrapResponse {
@@ -93,16 +102,15 @@ export interface ScrapResponse {
 }
 
 export interface SummarizeRequest {
-  content: string;
-  content_type?: 'url' | 'transcript';
+  content: string; // min_length=10, max_length=50000
+  content_type?: 'url' | 'transcript'; // pattern=r"^(url|transcript)$"
 
   // Model selection
-  analysis_model?: string;
-  quality_model?: string;
+  analysis_model?: string; // default="google/gemini-2.5-pro"
+  quality_model?: string; // default="google/gemini-2.5-flash"
 
   // Translation options
-  enable_translation?: boolean;
-  target_language?: string;
+  target_language?: string | null; // Target language for translation (None for auto-detect, "auto" gets converted to null)
 
 
 }
@@ -115,26 +123,26 @@ export interface SummarizeResponse {
   analysis: AnalysisData;
   quality?: QualityData;
   processing_time: string;
-  iteration_count?: number;
+  iteration_count: number; // default=1
 
   // Model metadata
-  analysis_model?: string;
-  quality_model?: string;
+  analysis_model: string; // Model used for analysis
+  quality_model: string; // Model used for quality evaluation
 
   // Translation metadata
-  target_language?: string | null;
-  enable_translation?: boolean;
+  target_language?: string | null; // Target language used for translation
+
 }
 
 // Configuration Response
 export interface ConfigurationResponse {
   status: string;
   message: string;
-  available_models: Record<string, string>;
-  supported_languages: Record<string, string>;
-  default_analysis_model: string;
-  default_quality_model: string;
-  default_target_language: string;
+  available_models: Record<string, string>; // Available models for selection
+  supported_languages: Record<string, string>; // Supported languages for translation
+  default_analysis_model: string; // Default analysis model
+  default_quality_model: string; // Default quality model
+  default_target_language: string; // Default target language
 }
 
 // ================================
@@ -578,7 +586,7 @@ class YouTubeApiClient {
     options?: {
       analysisModel?: string;
       qualityModel?: string;
-      targetLanguage?: string;
+      targetLanguage?: string; // "auto" gets converted to null for backend
     }
   ): Promise<StreamingProcessingResult> {
     const startTime = Date.now();
@@ -636,12 +644,15 @@ class YouTubeApiClient {
         message: 'Generating AI summary and analysis using Gemini...'
       });
 
+      // Convert "auto" to null for backend compatibility
+      const targetLanguage = options?.targetLanguage === "auto" ? null : options?.targetLanguage;
+
       const stream = await this.streamSummarizeContent({
         content: transcript,
         content_type: 'transcript',
-        analysis_model: options?.analysisModel,
-        quality_model: options?.qualityModel,
-        target_language: options?.targetLanguage,
+        analysis_model: options?.analysisModel || 'google/gemini-2.5-pro',
+        quality_model: options?.qualityModel || 'google/gemini-2.5-flash',
+        target_language: targetLanguage,
       });
 
       const reader = stream.getReader();
