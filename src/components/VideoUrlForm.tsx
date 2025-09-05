@@ -125,7 +125,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
                 </div>
               </div>
 
-              <Select value={preferences.analysisModel} onValueChange={(value) => updatePreferences({ analysisModel: value })}>
+              <Select value={preferences.analysisModel} onValueChange={(value) => updatePreferences({ analysisModel: value, qualityModel: value })}>
                 <SelectTrigger className="w-full sm:w-64 h-8 bg-red-800 text-white border-red-500/30 hover:bg-red-800">
                   <SelectValue />
                 </SelectTrigger>
@@ -248,24 +248,6 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
                 </span>
               </>
             )}
-          </Button>
-
-          {/* Reset Preferences Button */}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              updatePreferences({
-                analysisModel: 'google/gemini-2.5-pro',
-                qualityModel: 'google/gemini-2.5-flash',
-                targetLanguage: 'auto',
-              });
-            }}
-            className="ml-2 text-xs"
-            title="Reset to default preferences"
-          >
-            🔄 Reset
           </Button>
         </form>
 

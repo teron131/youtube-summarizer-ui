@@ -1,5 +1,7 @@
 # YouTube Summarizer UI
 
+![YouTube Summarizer UI](ui.png)
+
 A modern, full-stack application that transforms YouTube videos into concise, AI-powered summaries with transcripts. Built with React, TypeScript, Tailwind CSS, and FastAPI.
 
 ## 🚀 Features
@@ -275,22 +277,3 @@ uv run python -m uvicorn app:app --host 0.0.0.0 --port 8001 --reload
 - Check Railway environment variables are set
 - Verify backend health at `https://your-domain.railway.app/docs`
 - Review Railway deployment logs
-
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 📞 Support
-
-For issues and questions:
-- Create an issue on GitHub
-- Check the troubleshooting section
-- Review API documentation
