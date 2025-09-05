@@ -956,9 +956,20 @@ class YouTubeApiClient {
         }
         
         if (quality) {
-          const qualityScore = quality.percentage_score ?? 0;
-          const qualityEmoji = qualityScore >= 80 ? '🌟' : qualityScore >= 60 ? '⭐' : '🔄';
-          streamingLogs.push(`[${timestamp}] ${qualityEmoji} Final quality score: ${qualityScore}%`);
+          // Prefer percentage_score; if missing, derive from total/max
+          let finalQualityScore: number | undefined =
+            typeof quality.percentage_score === 'number' ? quality.percentage_score : undefined;
+
+          const totalScore: number | undefined = typeof quality.total_score === 'number' ? quality.total_score : undefined;
+          const maxPossible: number | undefined = typeof quality.max_possible_score === 'number' ? quality.max_possible_score : undefined;
+          if (finalQualityScore === undefined && totalScore !== undefined && maxPossible && maxPossible > 0) {
+            finalQualityScore = Math.round((totalScore / maxPossible) * 100);
+          }
+
+        if (finalQualityScore !== undefined) {
+            const qualityEmoji = finalQualityScore >= 80 ? '🌟' : finalQualityScore >= 60 ? '⭐' : '🔄';
+            streamingLogs.push(`[${timestamp}] ${qualityEmoji} Final quality score: ${finalQualityScore}%`);
+          }
         }
 
         // Emit final logs to UI
