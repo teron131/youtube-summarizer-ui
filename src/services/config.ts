@@ -11,11 +11,12 @@
 // ================================
 
 export const AVAILABLE_MODELS = {
-  "google/gemini-2.5-pro": "Gemini 2.5 Pro",
-  "google/gemini-2.5-flash": "Gemini 2.5 Flash",
-  "openai/gpt-4o": "GPT-4o",
-  "anthropic/claude-sonnet-4": "Claude Sonnet 4",
-  "x-ai/grok-4": "Grok 4",
+  "google/gemini-2.5-pro": "Google Gemini 2.5 Pro",
+  "google/gemini-2.5-flash": "Google Gemini 2.5 Flash",
+  "openai/gpt-5": "OpenAI GPT-5",
+  "anthropic/claude-sonnet-4": "Anthropic Claude Sonnet 4",
+  "x-ai/grok-4": "xAI Grok 4",
+  "x-ai/grok-code-fast-1": "xAI Grok Code Fast 1",
 } as const;
 
 export const DEFAULT_ANALYSIS_MODEL = "google/gemini-2.5-pro";
