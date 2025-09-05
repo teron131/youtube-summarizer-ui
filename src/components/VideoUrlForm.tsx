@@ -112,7 +112,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
               </div>
 
               <Select value={model} onValueChange={setModel}>
-                <SelectTrigger className="w-full sm:w-44 h-8 bg-red-800 text-white border-red-500/30 hover:bg-red-800">
+                <SelectTrigger className="w-full sm:w-64 h-8 bg-red-800 text-white border-red-500/30 hover:bg-red-800">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-red-800 border-red-800/30">
@@ -155,7 +155,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
               </div>
 
               <Select value={language} onValueChange={setLanguage}>
-                <SelectTrigger className="w-full sm:w-44 h-8 bg-red-800 text-white border-red-500/30 hover:bg-red-800">
+                <SelectTrigger className="w-full sm:w-64 h-8 bg-red-800 text-white border-red-500/30 hover:bg-red-800">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-red-800 border-red-800/30">
