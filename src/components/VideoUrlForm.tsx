@@ -154,7 +154,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
 
             {/* Language Selection */}
             <div className="flex items-center gap-4 w-full sm:w-auto">
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center group relative">
+              <div className="w-10 h-8 bg-primary rounded-full flex items-center justify-center group relative">
                 <Languages className="w-4 h-4 text-white" />
                 {/* Tooltip on hover */}
                 <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded border border-gray-300/25 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
