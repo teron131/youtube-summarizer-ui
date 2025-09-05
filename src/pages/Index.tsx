@@ -508,20 +508,20 @@ const Index = () => {
                     variant="ghost"
                     className="w-full p-8 h-auto justify-between hover:bg-primary/5 transition-all duration-300"
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center">
-                        <CheckCircle className="w-6 h-6 text-white" />
-                      </div>
-                      <div className="text-left">
-                        <span className="text-2xl font-bold text-foreground block">Process Overview</span>
-                        <span className="text-muted-foreground">
-                          {analysisResult?.iterationCount
-                            ? `${analysisResult.iterationCount} iteration${analysisResult.iterationCount > 1 ? 's' : ''} completed`
-                            : 'Processing steps and timing'
-                          }
-                        </span>
-                      </div>
-                    </div>
+                     <div className="flex items-center gap-4 min-w-0 flex-1">
+                       <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center flex-shrink-0">
+                         <CheckCircle className="w-6 h-6 text-white" />
+                       </div>
+                       <div className="text-left min-w-0 flex-1">
+                         <span className="text-lg sm:text-2xl font-bold text-foreground block break-words">Process Overview</span>
+                         <span className="text-sm sm:text-base text-muted-foreground block break-words">
+                           {analysisResult?.iterationCount
+                             ? `${analysisResult.iterationCount} iteration${analysisResult.iterationCount > 1 ? 's' : ''} completed`
+                             : 'Processing steps and timing'
+                           }
+                         </span>
+                       </div>
+                     </div>
                     {!isExampleMode && analysisResult?.totalTime && (
                       <div className="ml-auto">
                         <span className="text-sm font-medium text-red-500 bg-red-500/10 px-3 py-1 rounded-full">
@@ -590,17 +590,17 @@ const Index = () => {
                           className="w-full p-6 h-auto justify-between hover:bg-primary/5 transition-all duration-300"
                           onClick={() => setShowLogs(!showLogs)}
                         >
-                          <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
-                              <FileText className="w-5 h-5 text-white" />
-                            </div>
-                            <div className="text-left">
-                              <span className="text-xl font-bold text-foreground block">Real-time Logs</span>
-                              <span className="text-muted-foreground">
-                                Live processing updates with iteration details ({streamingLogs.length} entries)
-                              </span>
-                            </div>
-                          </div>
+                           <div className="flex items-center gap-4 min-w-0 flex-1">
+                             <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                               <FileText className="w-5 h-5 text-white" />
+                             </div>
+                             <div className="text-left min-w-0 flex-1">
+                               <span className="text-lg sm:text-xl font-bold text-foreground block break-words">Real-time Logs</span>
+                               <span className="text-sm sm:text-base text-muted-foreground block break-words">
+                                 Live processing updates with iteration details ({streamingLogs.length} entries)
+                               </span>
+                             </div>
+                           </div>
                           {showLogs ? (
                             <ChevronUp className="w-6 h-6 text-primary" />
                           ) : (
