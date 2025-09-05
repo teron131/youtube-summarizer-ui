@@ -27,6 +27,7 @@ const Index = () => {
   const [progressStates, setProgressStates] = useState<StreamingProgressState[]>([]);
   const [streamingLogs, setStreamingLogs] = useState<string[]>([]);
   const [showLogs, setShowLogs] = useState(false);
+  const [isExampleMode, setIsExampleMode] = useState(false);
 
   // Consolidated state for the response data
   const [analysisResult, setAnalysisResult] = useState<StreamingProcessingResult | null>(null);
@@ -45,6 +46,7 @@ const Index = () => {
 
   // Helper: load example data into UI (used for empty URL or error fallback)
   const loadExampleData = () => {
+    setIsExampleMode(true);
     setCurrentStage("Loading example...");
 
     const exampleProgressStates: StreamingProgressState[] = [
@@ -125,6 +127,7 @@ const Index = () => {
 
     setScrapedVideoInfo(exampleResult.videoInfo || null);
     setAnalysisResult(exampleResult);
+    setStreamingLogs(exampleResult.logs || []);
     setCurrentStep(4);
     setCurrentStage("Example ready");
     setIsLoading(false);
@@ -146,6 +149,7 @@ const Index = () => {
     setShowLogs(false);
     setScrapedVideoInfo(null);
     setScrapedTranscript(null);
+    setIsExampleMode(false);
     
     try {
       const finalUrl = url;
@@ -321,7 +325,7 @@ const Index = () => {
       <div className="container mx-auto px-4 py-12 bg-background">
         <div className="max-w-5xl mx-auto space-y-8 bg-background">
           {/* Show Video Info as soon as scraping completes, even while loading */}
-          {(scrapedVideoInfo || (analysisResult && analysisResult.videoInfo)) && (
+          {!isExampleMode && (scrapedVideoInfo || (analysisResult && analysisResult.videoInfo)) && (
             <VideoInfo
               url={(analysisResult?.videoInfo || scrapedVideoInfo)!.url}
               title={(analysisResult?.videoInfo || scrapedVideoInfo)!.title}
@@ -335,12 +339,12 @@ const Index = () => {
           )}
 
           {/* Show Transcript as soon as it's scraped, even while analysis continues */}
-          {(scrapedTranscript || (analysisResult && analysisResult.transcript)) && (
+          {!isExampleMode && (scrapedTranscript || (analysisResult && analysisResult.transcript)) && (
             <TranscriptPanel transcript={(analysisResult?.transcript || scrapedTranscript) as string} />
           )}
 
           {/* Show AI Analysis after transcript when available */}
-          {analysisResult?.analysis && (
+          {!isExampleMode && analysisResult?.analysis && (
             <AnalysisPanel
               analysis={analysisResult.analysis}
               quality={analysisResult.quality}
@@ -515,7 +519,7 @@ const Index = () => {
                         </span>
                       </div>
                     </div>
-                    {analysisResult?.totalTime && (
+                    {!isExampleMode && analysisResult?.totalTime && (
                       <div className="ml-auto">
                         <span className="text-sm font-medium text-red-500 bg-red-500/10 px-3 py-1 rounded-full">
                           Total: {analysisResult.totalTime}
