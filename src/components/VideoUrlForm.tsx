@@ -93,10 +93,10 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
       <div className="space-y-8">
         
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Options Section - Moved above input */}
-          <div className="grid grid-cols-2 gap-6 pb-6 border-b border-muted">
+          {/* Options Section - Responsive (stacks on small screens) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pb-6 border-b border-muted">
             {/* Left Column - Model Selection */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 w-1/2">
               <div className="flex items-center gap-2 group relative">
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                   <Bot className="w-4 h-4 text-white" />
@@ -108,7 +108,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
               </div>
 
               <Select value={model} onValueChange={setModel}>
-                <SelectTrigger className="w-40 h-8 bg-primary text-white border-primary/30 hover:bg-primary/90">
+                <SelectTrigger className="w-full h-8 bg-primary text-white border-primary/30 hover:bg-primary/90">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-primary border-primary/30">
@@ -126,33 +126,31 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
             </div>
 
             {/* Right Column - Language Selection */}
-            <div className="flex items-center gap-4 flex-wrap">
-              <div className="flex items-center gap-4">
-                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center group relative">
-                  <Languages className="w-4 h-4 text-white" />
-                  {/* Tooltip on hover */}
-                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded border border-gray-300/25 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-                    Language
-                  </div>
+            <div className="flex items-center gap-4 w-1/2">
+              <div className="w-10 h-8 bg-primary rounded-full flex items-center justify-center group relative">
+                <Languages className="w-4 h-4 text-white" />
+                {/* Tooltip on hover */}
+                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded border border-gray-300/25 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                  Language
                 </div>
-
-                <Select value={language} onValueChange={setLanguage}>
-                  <SelectTrigger className="w-40 h-8 bg-primary text-white border-primary/30 hover:bg-primary/90">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-primary border-primary/30">
-                    {languages.map((lang) => (
-                      <SelectItem
-                        key={lang.key}
-                        value={lang.key}
-                        className="text-white hover:bg-primary/80"
-                      >
-                        {lang.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
+
+              <Select value={language} onValueChange={setLanguage}>
+                <SelectTrigger className="w-full h-8 bg-primary text-white border-primary/30 hover:bg-primary/90">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-primary border-primary/30">
+                  {languages.map((lang) => (
+                    <SelectItem
+                      key={lang.key}
+                      value={lang.key}
+                      className="text-white hover:bg-primary/80"
+                    >
+                      {lang.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
