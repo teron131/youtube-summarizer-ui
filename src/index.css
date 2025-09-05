@@ -260,3 +260,27 @@ All colors MUST be HSL.
 .stagger-2 { animation-delay: 0.4s; }
 .stagger-3 { animation-delay: 0.6s; }
 .stagger-4 { animation-delay: 0.8s; }
+
+/* Glowing red timeline styles */
+.timeline-track {
+  background: hsl(var(--youtube-red) / 0.15);
+}
+
+.timeline-fill {
+  background-image: linear-gradient(90deg, hsl(var(--youtube-red)), hsl(350 100% 55%));
+  box-shadow: 0 0 24px hsl(var(--youtube-red) / 0.6), 0 0 48px hsl(var(--youtube-red) / 0.4);
+  height: 100%;
+  border-radius: 9999px;
+  animation: timelineGlow 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes timelineGlow {
+  from {
+    box-shadow: 0 0 16px hsl(var(--youtube-red) / 0.35), 0 0 32px hsl(var(--youtube-red) / 0.2);
+    filter: saturate(1) brightness(1);
+  }
+  to {
+    box-shadow: 0 0 28px hsl(var(--youtube-red) / 0.75), 0 0 64px hsl(var(--youtube-red) / 0.5);
+    filter: saturate(1.15) brightness(1.15);
+  }
+}

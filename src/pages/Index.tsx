@@ -16,7 +16,7 @@ import {
   VideoInfoResponse,
 } from "@/services/api";
 import { exampleData } from "@/services/example-data";
-import { AlertCircle, CheckCircle, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import { AlertCircle, CheckCircle, ChevronDown, ChevronUp, FileText, Loader2 } from "lucide-react";
 import { useState } from "react";
 
 const Index = () => {
@@ -43,6 +43,93 @@ const Index = () => {
     { step: 'refinement', name: "Analysis Refinement", description: "Refining analysis based on quality feedback" },
   ];
 
+  // Helper: load example data into UI (used for empty URL or error fallback)
+  const loadExampleData = () => {
+    setCurrentStage("Loading example...");
+
+    const exampleProgressStates: StreamingProgressState[] = [
+      {
+        step: 'scraping',
+        stepName: "Scraping Video",
+        status: "completed",
+        message: "Video scraped: The Trillion Dollar Equation",
+        processingTime: "0.1s"
+      },
+      {
+        step: 'analysis_generation',
+        stepName: "Analysis Generation",
+        status: "completed",
+        message: "📝 Initial analysis generated with 3 chapters",
+        iterationCount: 1
+      },
+      {
+        step: 'quality_check',
+        stepName: "Quality Assessment",
+        status: "completed",
+        message: "🎯 Quality check passed with 100% score - Analysis meets requirements",
+        qualityScore: 100
+      },
+      {
+        step: 'complete',
+        stepName: "Analysis Complete",
+        status: "completed",
+        message: "✅ Analysis completed successfully with 100% quality score",
+        processingTime: "0.2s",
+        chunkCount: 5,
+        iterationCount: 1,
+        qualityScore: 100
+      }
+    ];
+
+    setProgressStates(exampleProgressStates);
+
+    const exampleResult: StreamingProcessingResult = {
+      success: true,
+      videoInfo: exampleData.videoInfo,
+      transcript: exampleData.transcript || '',
+      analysis: exampleData.analysis || {
+        title: 'Example Analysis',
+        summary: 'This is example analysis data for demonstration purposes.',
+        chapters: [],
+        key_facts: [],
+        takeaways: [],
+        keywords: []
+      },
+      quality: {
+        completeness: { rate: 'Pass', reason: 'Complete analysis provided' },
+        structure: { rate: 'Pass', reason: 'Well structured' },
+        grammar: { rate: 'Pass', reason: 'Good grammar' },
+        no_garbage: { rate: 'Pass', reason: 'No promotional content' },
+        meta_language_avoidance: { rate: 'Pass', reason: 'No meta-language phrases' },
+        useful_keywords: { rate: 'Pass', reason: 'Keywords are relevant and useful for highlighting key concepts' },
+        correct_language: { rate: 'Pass', reason: 'Appropriate language' },
+        total_score: 12,
+        max_possible_score: 12,
+        percentage_score: 100,
+        is_acceptable: true
+      },
+      totalTime: '0.2s',
+      iterationCount: 1,
+      chunksProcessed: 5,
+      logs: [
+        '[10:00:00] 🚀 Starting AI analysis with Gemini model...',
+        '[10:00:01] 📝 Initial analysis generated with 3 chapters',
+        '[10:00:01] 🎯 Quality check passed with 100% score - Analysis meets requirements',
+        '[10:00:02] ✅ Analysis completed successfully! Generated 3 chapters with 100% quality score',
+        '[10:00:02] 🏁 Workflow completed successfully in 0.2s',
+        '[10:00:02] Summary: 1 iterations processed',
+        '[10:00:02] 📚 Generated 3 video chapters',
+        '[10:00:02] 🌟 Final quality score: 100%'
+      ]
+    };
+
+    setScrapedVideoInfo(exampleResult.videoInfo || null);
+    setAnalysisResult(exampleResult);
+    setCurrentStep(4);
+    setCurrentStage("Example ready");
+    setIsLoading(false);
+  };
+
   const handleVideoSubmit = async (url: string, options?: {
     analysisModel?: string;
     qualityModel?: string;
@@ -65,93 +152,7 @@ const Index = () => {
       
       // Use local example data if URL is empty
       if (!url.trim()) {
-        setCurrentStage("Loading example...");
-        
-        // Create example progress states to show the Process Logs card
-        const exampleProgressStates: StreamingProgressState[] = [
-          {
-            step: 'scraping',
-            stepName: "Scraping Video",
-            status: "completed",
-            message: "Video scraped: The Trillion Dollar Equation",
-            processingTime: "0.1s"
-          },
-          {
-            step: 'analysis_generation',
-            stepName: "Analysis Generation",
-            status: "completed",
-            message: "📝 Initial analysis generated with 3 chapters",
-            iterationCount: 1
-          },
-          {
-            step: 'quality_check',
-            stepName: "Quality Assessment",
-            status: "completed",
-            message: "🎯 Quality check passed with 100% score - Analysis meets requirements",
-            qualityScore: 100
-          },
-          {
-            step: 'complete',
-            stepName: "Analysis Complete",
-            status: "completed",
-            message: "✅ Analysis completed successfully with 100% quality score",
-            processingTime: "0.2s",
-            chunkCount: 5,
-            iterationCount: 1,
-            qualityScore: 100
-          }
-        ];
-        
-        setProgressStates(exampleProgressStates);
-        
-        // Simulate loading for example
-        const exampleResult: StreamingProcessingResult = {
-          success: true,
-          videoInfo: exampleData.videoInfo,
-          transcript: exampleData.transcript || '',
-          analysis: exampleData.analysis || {
-            title: 'Example Analysis',
-            summary: 'This is example analysis data for demonstration purposes.',
-            chapters: [],
-            key_facts: [],
-            takeaways: [],
-            keywords: []
-          },
-          quality: {
-            completeness: { rate: 'Pass', reason: 'Complete analysis provided' },
-            structure: { rate: 'Pass', reason: 'Well structured' },
-            grammar: { rate: 'Pass', reason: 'Good grammar' },
-            no_garbage: { rate: 'Pass', reason: 'No promotional content' },
-            meta_language_avoidance: { rate: 'Pass', reason: 'No meta-language phrases' },
-            useful_keywords: { rate: 'Pass', reason: 'Keywords are relevant and useful for highlighting key concepts' },
-            correct_language: { rate: 'Pass', reason: 'Appropriate language' },
-            total_score: 12,
-            max_possible_score: 12,
-            percentage_score: 100,
-            is_acceptable: true
-          },
-          totalTime: '0.2s',
-          iterationCount: 1,
-          chunksProcessed: 5,
-          logs: [
-            '[10:00:00] 🚀 Starting AI analysis with Gemini model...',
-            '[10:00:01] 📝 Initial analysis generated with 3 chapters',
-            '[10:00:01] 🎯 Quality check passed with 100% score - Analysis meets requirements',
-            '[10:00:02] ✅ Analysis completed successfully! Generated 3 chapters with 100% quality score',
-            '[10:00:02] 🏁 Workflow completed successfully in 0.2s',
-            '[10:00:02] Summary: 1 iterations processed',
-            '[10:00:02] 📚 Generated 3 video chapters',
-            '[10:00:02] 🌟 Final quality score: 100%'
-          ]
-        };
-        setScrapedVideoInfo(exampleResult.videoInfo || null);
-        setAnalysisResult(exampleResult);
-
-        setCurrentStep(4);
-        setCurrentStage("Example ready");
-        setIsLoading(false);
-        
-        // Removed success toast notification
+        loadExampleData();
         return;
       }
 
@@ -161,7 +162,7 @@ const Index = () => {
       const result = await streamingProcessing(
         finalUrl,
         (progressState: StreamingProgressState) => {
-          console.log('Progress update:', progressState);
+          // Silent update; avoid noisy logs in production UI
 
           // Update current step and stage
           // Normalize transient step names so UI doesn't flicker between states
@@ -364,58 +365,43 @@ const Index = () => {
                   <h3 className="text-2xl font-bold text-foreground">Processing Video</h3>
                   <p className="text-lg text-muted-foreground">{currentStage}</p>
                   
-                  {/* Streaming Steps */}
-                  <div className="space-y-4 mt-8">
-                    {progressSteps.map((step, index) => {
-                      const stepState = progressStates.find(s => s.step === step.step);
-                      const isActive = index === currentStep;
-                      const isCompleted = stepState?.status === 'completed';
-                      const isError = stepState?.status === 'error';
+                  {/* Glowing horizontal timeline (no numbered nodes) */}
+                  {(() => {
+                    // Stage anchors: 0 Start, 1 Scrap, 2 Analysis, 3 Quality, 4 Finish
+                    const has = (step: StreamingProgressState['step']) => progressStates.some(s => s.step === step);
+                    const finished = has('complete');
 
-                      return (
-                        <div key={step.step} className="flex items-center gap-4 p-4 rounded-lg bg-muted/20 border border-muted/30">
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                            isCompleted ? 'bg-green-500' :
-                            isError ? 'bg-red-500' :
-                            isActive ? 'bg-primary animate-pulse' :
-                            'bg-muted'
-                          }`}>
-                            {isCompleted ? (
-                              <CheckCircle className="w-5 h-5 text-white" />
-                            ) : isError ? (
-                              <AlertCircle className="w-5 h-5 text-white" />
-                            ) : isActive ? (
-                              <Loader2 className="w-5 h-5 text-white animate-spin" />
-                            ) : (
-                              <span className="text-white text-base font-bold">{index + 1}</span>
-                            )}
-                          </div>
+                    // Map currentStep (0..3 from progressSteps) to anchor index
+                    const mapCurrentToAnchor = (stepIdx: number): number => {
+                      if (stepIdx <= -1) return 0;       // Start
+                      if (stepIdx === 0) return 1;       // Scraping
+                      if (stepIdx === 1) return 2;       // Analysis generation
+                      if (stepIdx === 2) return 3;       // Quality check
+                      return 2;                          // Refinement -> Analysis side
+                    };
 
-                          <div className="flex-1 text-left">
-                            <h4 className="font-semibold text-foreground">{step.name}</h4>
-                            <p className="text-base text-muted-foreground">
-                              {stepState?.message || step.description}
-                            </p>
-                            {stepState?.processingTime && (
-                              <div className="flex justify-end mt-2">
-                                <span className="text-xs font-medium text-red-500 bg-red-500/10 px-3 py-1 rounded-full">
-                                  {stepState.processingTime}
-                                </span>
-                              </div>
-                            )}
-                          </div>
+                    const activeAnchor = finished
+                      ? 4
+                      : (progressStates.length === 0 ? 0 : mapCurrentToAnchor(currentStep));
+
+                    const progressPercent = (activeAnchor / 4) * 100;
+                    const stageText = ['Start', 'Scrap', 'Analysis', 'Quality', 'Finish'][activeAnchor] || 'Processing';
+
+                    return (
+                      <div className="space-y-3 mt-8">
+                        <div className="relative h-2 rounded-full timeline-track">
+                          <div
+                            className="timeline-fill transition-all duration-500 ease-out"
+                            style={{ width: `${progressPercent}%` }}
+                          />
                         </div>
-                      );
-                    })}
-                  </div>
-                  
-                  {/* Overall Progress Bar */}
-                  <div className="w-full bg-muted/30 rounded-full h-3 mt-6">
-                    <div
-                      className="bg-gradient-primary h-3 rounded-full transition-all duration-500 ease-out"
-                      style={{width: `${(currentStep / 4) * 100}%`}}
-                    ></div>
-                  </div>
+                        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                          <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                          <span>Now: <span className="text-foreground font-semibold">{stageText}</span></span>
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
             </Card>
@@ -493,6 +479,13 @@ const Index = () => {
                       </p>
                     </div>
                   )}
+
+                  {/* Fallback: Use example data */}
+                  <div className="mt-4 flex gap-3">
+                    <Button onClick={loadExampleData} className="bg-primary text-white">
+                      Load example data
+                    </Button>
+                  </div>
                 </div>
               </div>
             </Card>
@@ -501,7 +494,7 @@ const Index = () => {
           {/* Success State (post-processing UI blocks, excludes Analysis/Transcript to avoid duplicates) */}
           {!isLoading && !error && analysisResult && analysisResult.success && (
             <>
-              {/* Process Logs (with optional nested real-time Logs) */}
+              {/* Simple Horizontal Timeline + Terminal Logs */}
               {progressStates.length > 0 && (
                 <Card className="bg-gradient-card border border-red-500/30 shadow-card backdrop-blur-sm">
                   <Button
@@ -513,8 +506,13 @@ const Index = () => {
                         <CheckCircle className="w-6 h-6 text-white" />
                       </div>
                       <div className="text-left">
-                        <span className="text-2xl font-bold text-foreground block">Process Logs</span>
-                        <span className="text-muted-foreground">Processing steps and timing</span>
+                        <span className="text-2xl font-bold text-foreground block">Process Overview</span>
+                        <span className="text-muted-foreground">
+                          {analysisResult?.iterationCount
+                            ? `${analysisResult.iterationCount} iteration${analysisResult.iterationCount > 1 ? 's' : ''} completed`
+                            : 'Processing steps and timing'
+                          }
+                        </span>
                       </div>
                     </div>
                     {analysisResult?.totalTime && (
@@ -525,25 +523,56 @@ const Index = () => {
                       </div>
                     )}
                   </Button>
-                  <div className="px-6 pb-6 pt-0 space-y-4">
-                    {progressStates
-                      .filter((s) => s.step !== 'complete')
-                      .map((state, index) => (
-                      <div key={index} className="bg-muted/20 rounded-lg p-4 border border-muted/30">
-                        <div className="flex items-center gap-3 mb-2">
-                          <CheckCircle className="w-5 h-5 text-green-500" />
-                          <span className="font-semibold text-foreground">{state.stepName}</span>
-                        </div>
-                        <p className="text-base text-muted-foreground mb-2">{state.message}</p>
-                        {state.processingTime && (
-                          <div className="flex justify-end">
-                            <span className="text-base font-medium text-red-500 bg-red-500/10 px-3 py-1 rounded-full">
-                              {state.processingTime}
-                            </span>
+                  <div className="px-6 pb-6 pt-0 space-y-6">
+                    {/* Simple Horizontal Timeline */}
+                    {(() => {
+                      const stages = [
+                        { key: 'start', label: 'Start' },
+                        { key: 'scraping', label: 'Scrap' },
+                        { key: 'analysis_generation', label: 'Analysis' },
+                        { key: 'quality_check', label: 'Quality' },
+                        { key: 'finish', label: 'Finish' },
+                      ];
+
+                      const has = (step: StreamingProgressState['step']) => progressStates.some(s => s.step === step);
+                      const isCompleted = (step: StreamingProgressState['step']) => progressStates.some(s => s.step === step && s.status === 'completed');
+                      const isProcessing = (step: StreamingProgressState['step']) => progressStates.some(s => s.step === step && s.status === 'processing');
+
+                      const finished = has('complete');
+                      const completedIndex = finished
+                        ? 4
+                        : Math.max(
+                            0,
+                            [
+                              isCompleted('scraping') ? 1 : 0,
+                              isCompleted('analysis_generation') ? 2 : 0,
+                              isCompleted('quality_check') ? 3 : 0,
+                            ].reduce((a, b) => Math.max(a, b), 0)
+                          );
+
+                      const activeIndex = (() => {
+                        if (finished) return 4;
+                        if (isProcessing('quality_check')) return 3;
+                        if (isProcessing('analysis_generation') || has('analyzing')) return 2;
+                        if (!isCompleted('scraping') && has('scraping')) return 1;
+                        return completedIndex;
+                      })();
+
+                      // After finishing, show full bar
+                      const progressPercent = finished ? 100 : (activeIndex / 4) * 100;
+
+                      return (
+                        <div className="space-y-4">
+                          {/* Progress Bar with glow */}
+                          <div className="relative h-2 rounded-full timeline-track">
+                            <div
+                              className="timeline-fill transition-all duration-500 ease-out"
+                              style={{ width: `${progressPercent}%` }}
+                            />
                           </div>
-                        )}
-                      </div>
-                    ))}
+                        </div>
+                      );
+                    })()}
 
                     {/* Nested Logs inside Process Logs */}
                     {streamingLogs.length > 0 && (
@@ -555,9 +584,14 @@ const Index = () => {
                           onClick={() => setShowLogs(!showLogs)}
                         >
                           <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
+                              <FileText className="w-5 h-5 text-white" />
+                            </div>
                             <div className="text-left">
-                              <span className="text-2xl font-bold text-foreground block">Logs</span>
-                              <span className="text-muted-foreground">Real-time processing updates and quality checks ({streamingLogs.length} entries)</span>
+                              <span className="text-xl font-bold text-foreground block">Real-time Logs</span>
+                              <span className="text-muted-foreground">
+                                Live processing updates with iteration details ({streamingLogs.length} entries)
+                              </span>
                             </div>
                           </div>
                           {showLogs ? (
@@ -569,12 +603,25 @@ const Index = () => {
                         {showLogs && (
                           <div className="px-2 pb-2 pt-0 space-y-4">
                             <div className="bg-muted/20 rounded-lg p-4 border border-muted/30 max-h-96 overflow-y-auto">
-                              <div className="space-y-2 font-mono text-sm text-left">
-                                {streamingLogs.map((log, index) => (
-                                  <div key={index} className="text-foreground">
-                                    {log}
-                                  </div>
-                                ))}
+                              <div className="space-y-1 font-mono text-xs text-left">
+                                {streamingLogs.map((log, index) => {
+                                  const isIterationLog = log.includes('iteration') || log.includes('Iteration');
+                                  const isQualityLog = log.includes('quality') || log.includes('Quality');
+                                  const isErrorLog = log.includes('❌') || log.includes('failed');
+                                  const isSuccessLog = log.includes('✅') || log.includes('completed');
+
+                                  let logClass = "text-foreground";
+                                  if (isErrorLog) logClass = "text-red-400";
+                                  else if (isSuccessLog) logClass = "text-green-400";
+                                  else if (isQualityLog) logClass = "text-blue-400";
+                                  else if (isIterationLog) logClass = "text-purple-400 font-semibold";
+
+                                  return (
+                                    <div key={index} className={`${logClass} leading-relaxed`}>
+                                      {log}
+                                    </div>
+                                  );
+                                })}
                               </div>
                             </div>
                           </div>
