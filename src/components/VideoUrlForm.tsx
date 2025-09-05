@@ -219,10 +219,12 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
                       onClick={() => handleExampleClick(exampleUrl)}
                       className="text-left p-3 rounded-lg border border-primary/20 hover:border-primary/40 hover:bg-primary/5 transition-all duration-300"
                     >
-                      <div className="flex items-center gap-2">
-                        <ExternalLink className="w-3 h-3 text-primary" />
-                        <code className="text-sm text-muted-foreground">{exampleUrl}</code>
-                      </div>
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          <ExternalLink className="w-3 h-3 text-primary flex-shrink-0" />
+                          <code className="text-sm text-muted-foreground break-all">
+                            {exampleUrl}
+                          </code>
+                        </div>
                     </button>
                   ))}
                 </div>
