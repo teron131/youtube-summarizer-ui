@@ -42,6 +42,7 @@ const Index = () => {
     { step: 'analysis_generation', name: "Analysis Generation", description: "Generating initial AI analysis with Gemini model" },
     { step: 'quality_check', name: "Quality Assessment", description: "Evaluating analysis quality and completeness" },
     { step: 'refinement', name: "Analysis Refinement", description: "Refining analysis based on quality feedback" },
+    { step: 'complete', name: "Complete", description: "Analysis completed successfully" },
   ];
 
   // Helper: load example data into UI (used for empty URL or error fallback)
@@ -190,7 +191,7 @@ const Index = () => {
             }
 
             return updated.sort((a, b) => {
-              const order = ['scraping', 'analysis_generation', 'quality_check', 'refinement'];
+              const order = ['scraping', 'analysis_generation', 'quality_check', 'refinement', 'complete'];
               return order.indexOf(a.step) - order.indexOf(b.step);
             });
           });
@@ -375,13 +376,15 @@ const Index = () => {
                     const has = (step: StreamingProgressState['step']) => progressStates.some(s => s.step === step);
                     const finished = has('complete');
 
-                    // Map currentStep (0..3 from progressSteps) to anchor index
+                    // Map currentStep (0..4 from progressSteps) to anchor index
                     const mapCurrentToAnchor = (stepIdx: number): number => {
                       if (stepIdx <= -1) return 0;       // Start
                       if (stepIdx === 0) return 1;       // Scraping
                       if (stepIdx === 1) return 2;       // Analysis generation
                       if (stepIdx === 2) return 3;       // Quality check
-                      return 2;                          // Refinement -> Analysis side
+                      if (stepIdx === 3) return 3;       // Refinement -> Quality side
+                      if (stepIdx === 4) return 4;       // Complete -> 100%
+                      return 2;                          // Default -> Analysis side
                     };
 
                     const activeAnchor = finished
