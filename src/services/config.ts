@@ -13,6 +13,7 @@
 export const AVAILABLE_MODELS = {
   "google/gemini-2.5-pro": "Gemini 2.5 Pro",
   "google/gemini-2.5-flash": "Gemini 2.5 Flash",
+  "openai/gpt-4o": "GPT-4o",
   "anthropic/claude-sonnet-4": "Claude Sonnet 4",
   "x-ai/grok-4": "Grok 4",
 } as const;

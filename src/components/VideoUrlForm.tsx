@@ -1,3 +1,7 @@
+import AnthropicLogo from "@/assets/logos/anthropic.svg";
+import GoogleLogo from "@/assets/logos/google.svg";
+import OpenAILogo from "@/assets/logos/openai.svg";
+import XaiLogo from "@/assets/logos/xai.svg";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -93,10 +97,10 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
       <div className="space-y-8">
         
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Options Section - Responsive (stacks on small screens) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pb-6 border-b border-muted">
-            {/* Left Column - Model Selection */}
-            <div className="flex items-center gap-4 w-1/2">
+          {/* Options Section - Centered with equal gaps */}
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-6 sm:gap-24 pb-6 border-b border-muted">
+            {/* Model Selection */}
+            <div className="flex items-center gap-4 w-3/5 sm:w-auto">
               <div className="flex items-center gap-2 group relative">
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                   <Bot className="w-4 h-4 text-white" />
@@ -108,25 +112,40 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
               </div>
 
               <Select value={model} onValueChange={setModel}>
-                <SelectTrigger className="w-full h-8 bg-primary text-white border-primary/30 hover:bg-primary/90">
+                <SelectTrigger className="w-full sm:w-44 h-8 bg-red-800 text-white border-red-500/30 hover:bg-red-800">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-primary border-primary/30">
-                  {models.map((modelOption) => (
-                    <SelectItem
-                      key={modelOption.key}
-                      value={modelOption.key}
-                      className="text-white hover:bg-primary/80"
-                    >
-                      {modelOption.label}
-                    </SelectItem>
-                  ))}
+                <SelectContent className="bg-red-800 border-red-800/30">
+                  {models.map((modelOption) => {
+                    const provider = modelOption.provider;
+                    const Logo = provider === 'google'
+                      ? GoogleLogo
+                      : provider === 'anthropic'
+                      ? AnthropicLogo
+                      : provider === 'openai'
+                      ? OpenAILogo
+                      : provider === 'x-ai'
+                      ? XaiLogo
+                      : null;
+                    return (
+                      <SelectItem
+                        key={modelOption.key}
+                        value={modelOption.key}
+                        className="text-white hover:bg-red-700"
+                      >
+                        <span className="flex items-center gap-2">
+                          {Logo ? <img src={Logo as unknown as string} alt={provider} className="w-4 h-4" /> : <span className="w-4 h-4" />}
+                          {modelOption.label}
+                        </span>
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Right Column - Language Selection */}
-            <div className="flex items-center gap-4 w-1/2">
+            {/* Language Selection */}
+            <div className="flex items-center gap-4 w-3/5 sm:w-auto">
               <div className="w-10 h-8 bg-primary rounded-full flex items-center justify-center group relative">
                 <Languages className="w-4 h-4 text-white" />
                 {/* Tooltip on hover */}
@@ -136,15 +155,15 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
               </div>
 
               <Select value={language} onValueChange={setLanguage}>
-                <SelectTrigger className="w-full h-8 bg-primary text-white border-primary/30 hover:bg-primary/90">
+                <SelectTrigger className="w-full sm:w-44 h-8 bg-red-800 text-white border-red-500/30 hover:bg-red-800">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-primary border-primary/30">
+                <SelectContent className="bg-red-800 border-red-800/30">
                   {languages.map((lang) => (
                     <SelectItem
                       key={lang.key}
                       value={lang.key}
-                      className="text-white hover:bg-primary/80"
+                      className="text-white hover:bg-red-800"
                     >
                       {lang.label}
                     </SelectItem>
