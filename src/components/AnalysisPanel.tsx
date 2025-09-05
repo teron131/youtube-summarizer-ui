@@ -10,19 +10,27 @@ interface AnalysisPanelProps {
   videoUrl?: string;
 }
 
-// Helper component to render text strings
-interface TextRendererProps {
-  text: string;
-  className?: string;
+// Helper function to render text
+const renderText = (text: string, className = "") => (
+  <span className={`text-foreground leading-7 md:leading-8 text-sm md:text-base ${className}`}>
+    {text}
+  </span>
+);
+
+// Helper component for section headers
+interface SectionHeaderProps {
+  icon: React.ReactNode;
+  title: string;
 }
 
-const TextRenderer = ({ text, className = "" }: TextRendererProps) => {
-  return (
-    <span className={`text-foreground leading-7 md:leading-8 text-sm md:text-base ${className}`}>
-      {text}
-    </span>
-  );
-};
+const SectionHeader = ({ icon, title }: SectionHeaderProps) => (
+  <div className="flex items-center gap-3">
+    <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+      {icon}
+    </div>
+    <h4 className="text-base md:text-lg font-bold text-primary">{title}</h4>
+  </div>
+);
 
 export const AnalysisPanel = ({ analysis, quality, videoUrl }: AnalysisPanelProps) => {
   const { toast } = useToast();
@@ -127,12 +135,7 @@ export const AnalysisPanel = ({ analysis, quality, videoUrl }: AnalysisPanelProp
         {/* Summary Section */}
         {analysis.summary && (
           <div className="space-y-1.5 md:space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-white" />
-              </div>
-              <h4 className="text-base md:text-lg font-bold text-primary">Summary</h4>
-            </div>
+            <SectionHeader icon={<Sparkles className="w-4 h-4 md:w-5 md:h-5 text-white" />} title="Summary" />
             <div className="pl-2 md:pl-3">
               <p className="text-foreground leading-7 md:leading-8 text-sm md:text-base">
                 {analysis.summary}
@@ -144,18 +147,13 @@ export const AnalysisPanel = ({ analysis, quality, videoUrl }: AnalysisPanelProp
         {/* Key Takeaways Section */}
         {analysis.takeaways && analysis.takeaways.length > 0 && (
           <div className="space-y-1.5 md:space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <Lightbulb className="w-4 h-4 md:w-5 md:h-5 text-white" />
-              </div>
-              <h4 className="text-base md:text-lg font-bold text-primary">Key Takeaways</h4>
-            </div>
+            <SectionHeader icon={<Lightbulb className="w-4 h-4 md:w-5 md:h-5 text-white" />} title="Key Takeaways" />
             <div className="pl-2 md:pl-3">
               <ul className="space-y-1 md:space-y-1.5">
                 {analysis.takeaways.map((takeaway, index) => (
                   <li key={index} className="flex items-start gap-2 md:gap-3">
                     <span className="text-primary font-bold mt-0.5 text-sm md:text-base">•</span>
-                    <TextRenderer text={takeaway} />
+                    {renderText(takeaway)}
                   </li>
                 ))}
               </ul>
@@ -166,18 +164,13 @@ export const AnalysisPanel = ({ analysis, quality, videoUrl }: AnalysisPanelProp
         {/* Key Facts Section */}
         {analysis.key_facts && analysis.key_facts.length > 0 && (
           <div className="space-y-1.5 md:space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <FileText className="w-4 h-4 md:w-5 md:h-5 text-white" />
-              </div>
-              <h4 className="text-base md:text-lg font-bold text-primary">Key Facts</h4>
-            </div>
+            <SectionHeader icon={<FileText className="w-4 h-4 md:w-5 md:h-5 text-white" />} title="Key Facts" />
             <div className="pl-2 md:pl-3">
               <ul className="space-y-1 md:space-y-1.5">
                 {analysis.key_facts.map((fact, index) => (
                   <li key={index} className="flex items-start gap-2 md:gap-3">
                     <span className="text-primary font-bold mt-0.5 text-sm md:text-base">•</span>
-                    <TextRenderer text={fact} />
+                    {renderText(fact)}
                   </li>
                 ))}
               </ul>
@@ -188,12 +181,7 @@ export const AnalysisPanel = ({ analysis, quality, videoUrl }: AnalysisPanelProp
         {/* Video Chapters Section */}
         {analysis.chapters && analysis.chapters.length > 0 && (
           <div className="space-y-1.5 md:space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <BookOpen className="w-4 h-4 md:w-5 md:h-5 text-white" />
-              </div>
-              <h4 className="text-base md:text-lg font-bold text-primary">Video Chapters</h4>
-            </div>
+            <SectionHeader icon={<BookOpen className="w-4 h-4 md:w-5 md:h-5 text-white" />} title="Video Chapters" />
             
             <div className="pl-2 md:pl-3 space-y-2 md:space-y-3">
               {analysis.chapters.map((chapter, index) => (
@@ -221,12 +209,7 @@ export const AnalysisPanel = ({ analysis, quality, videoUrl }: AnalysisPanelProp
         {/* Keywords Section - now from Analysis model */}
         {analysis.keywords && analysis.keywords.length > 0 && (
           <div className="space-y-1.5 md:space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm md:text-base">#</span>
-              </div>
-              <h4 className="text-base md:text-lg font-bold text-primary">Keywords</h4>
-            </div>
+            <SectionHeader icon={<span className="text-white font-bold text-sm md:text-base">#</span>} title="Keywords" />
             <div className="pl-2 md:pl-3">
               <div className="flex flex-wrap gap-2">
                 {analysis.keywords.map((keyword, index) => (

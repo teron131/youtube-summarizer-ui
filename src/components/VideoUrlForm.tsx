@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useLanguageSelection, useModelSelection } from "@/hooks/use-config";
 import { AlertCircle, Bot, ExternalLink, Languages, Loader2, Play, Youtube } from "lucide-react";
 import { useState } from "react";
- 
+
 interface VideoUrlFormProps {
   onSubmit: (url: string, options?: {
     targetLanguage?: string;
@@ -20,6 +20,17 @@ interface VideoUrlFormProps {
   isLoading: boolean;
 }
  
+// Utility function to get provider logo
+const getProviderLogo = (provider: string) => {
+  const logoMap = {
+    google: GoogleLogo,
+    anthropic: AnthropicLogo,
+    openai: OpenAILogo,
+    'x-ai': XaiLogo,
+  };
+  return logoMap[provider as keyof typeof logoMap] || null;
+};
+
 export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
   const [url, setUrl] = useState("");
   const [validationError, setValidationError] = useState<string>("");
@@ -31,7 +42,14 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
 
   const [language, setLanguage] = useState(defaultLanguage || "auto");
   const [model, setModel] = useState(defaultModel || "google/gemini-2.5-pro");
- 
+
+  // Helper function to validate form
+  const isFormValid = (inputUrl: string) => {
+    const trimmedUrl = inputUrl.trim();
+    return trimmedUrl.length === 0 ||
+           (trimmedUrl.length > 10 && (trimmedUrl.includes("youtube.com") || trimmedUrl.includes("youtu.be")));
+  };
+
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newUrl = e.target.value;
     setUrl(newUrl);
@@ -76,8 +94,6 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
     setValidationError("");
     onSubmit(trimmedUrl, options);
   };
- 
-  const isFormValid = url.trim().length === 0 || (url.trim().length > 10 && (url.includes("youtube.com") || url.includes("youtu.be")));
 
   // Example URLs for demonstration
   const exampleUrls = [
@@ -100,7 +116,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
           {/* Options Section - Centered with equal gaps */}
           <div className="flex flex-col sm:flex-row justify-center items-center gap-6 sm:gap-24 pb-6 border-b border-muted">
             {/* Model Selection */}
-            <div className="flex items-center gap-4 w-3/5 sm:w-auto">
+            <div className="flex items-center gap-4 w-full sm:w-auto">
               <div className="flex items-center gap-2 group relative">
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                   <Bot className="w-4 h-4 text-white" />
@@ -118,15 +134,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
                 <SelectContent className="bg-red-800 border-red-800/30">
                   {models.map((modelOption) => {
                     const provider = modelOption.provider;
-                    const Logo = provider === 'google'
-                      ? GoogleLogo
-                      : provider === 'anthropic'
-                      ? AnthropicLogo
-                      : provider === 'openai'
-                      ? OpenAILogo
-                      : provider === 'x-ai'
-                      ? XaiLogo
-                      : null;
+                    const Logo = getProviderLogo(provider);
                     return (
                       <SelectItem
                         key={modelOption.key}
@@ -145,8 +153,8 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
             </div>
 
             {/* Language Selection */}
-            <div className="flex items-center gap-4 w-3/5 sm:w-auto">
-              <div className="w-10 h-8 bg-primary rounded-full flex items-center justify-center group relative">
+            <div className="flex items-center gap-4 w-full sm:w-auto">
+              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center group relative">
                 <Languages className="w-4 h-4 text-white" />
                 {/* Tooltip on hover */}
                 <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded border border-gray-300/25 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
@@ -165,7 +173,10 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
                       value={lang.key}
                       className="text-white hover:bg-red-800"
                     >
-                      {lang.label}
+                      <span className="flex items-center gap-2">
+                        {lang.flag && <span className="text-lg leading-none">{lang.flag}</span>}
+                        {lang.label}
+                      </span>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -223,7 +234,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
           
           <Button
             type="submit"
-            disabled={isLoading || !isFormValid}
+            disabled={isLoading || !isFormValid(url)}
             className="w-full h-16 text-lg bg-primary text-white font-bold hover:shadow-button transition-all duration-500 hover:scale-[1.02] youtube-pulse rounded-2xl disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none border border-primary/30 hover:bg-primary/90"
           >
             {isLoading ? (

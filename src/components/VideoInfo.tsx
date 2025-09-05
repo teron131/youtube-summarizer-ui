@@ -1,5 +1,21 @@
 import { Card } from "@/components/ui/card";
 import { CalendarDays, Clock, Eye, ThumbsUp, User } from "lucide-react";
+import { ReactNode } from "react";
+
+// Helper component for info items
+interface InfoItemProps {
+  icon: ReactNode;
+  value: string;
+}
+
+const InfoItem = ({ icon, value }: InfoItemProps) => (
+  <div className="flex items-center gap-2">
+    <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+      {icon}
+    </div>
+    <span className="font-medium">{value}</span>
+  </div>
+);
 
 interface VideoInfoProps {
   url?: string;
@@ -51,15 +67,6 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
   const displayDuration = formatDuration(duration || undefined);
   const hasMetrics = view_count !== undefined || like_count !== undefined;
   
-  // Debug logging to see what we're receiving
-  console.log('VideoInfo Debug:', {
-    upload_date,
-    upload_date_type: typeof upload_date,
-    formatted_date: formatDate(upload_date),
-    like_count,
-    view_count
-  });
-  
   const cleanVideoUrl = (input?: string): string | null => {
     if (!input) return null;
     try {
@@ -86,11 +93,11 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
     <Card className="p-8 modern-blur shadow-glass hover-lift overflow-hidden">
       <div className="flex flex-col sm:flex-row gap-6">
         <div className="flex-shrink-0 relative" style={{ aspectRatio: "16 / 9" }}>
-                      <img
-              src={thumbnail || "/placeholder.svg"}
-              alt={title}
-              className="w-full sm:w-64 md:w-80 h-full object-cover rounded-xl shadow-lg border-2 border-primary/20"
-            />
+          <img
+            src={thumbnail || "/placeholder.svg"}
+            alt={title}
+            className="w-full sm:w-64 md:w-80 h-full object-cover rounded-xl shadow-lg border-2 border-primary/20"
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
         </div>
         
@@ -110,49 +117,24 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
           )}
           
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                <User className="w-4 h-4 text-primary" />
-              </div>
-              <span className="font-medium">{author}</span>
-            </div>
-            
+            <InfoItem icon={<User className="w-4 h-4 text-primary" />} value={author} />
+
             {displayDuration && (
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                  <Clock className="w-4 h-4 text-primary" />
-                </div>
-                <span className="font-medium">{displayDuration}</span>
-              </div>
+              <InfoItem icon={<Clock className="w-4 h-4 text-primary" />} value={displayDuration} />
             )}
 
             {upload_date && (
-                <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                        <CalendarDays className="w-4 h-4 text-primary" />
-                    </div>
-                    <span className="font-medium">{formatDate(upload_date)}</span>
-                </div>
+              <InfoItem icon={<CalendarDays className="w-4 h-4 text-primary" />} value={formatDate(upload_date)!} />
             )}
 
             {hasMetrics && <div className="basis-full" />}
-            
+
             {view_count !== undefined && (
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                  <Eye className="w-4 h-4 text-primary" />
-                </div>
-                <span className="font-medium">{view_count.toLocaleString()}</span>
-              </div>
+              <InfoItem icon={<Eye className="w-4 h-4 text-primary" />} value={view_count.toLocaleString()} />
             )}
 
             {like_count !== undefined && (
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                  <ThumbsUp className="w-4 h-4 text-primary" />
-                </div>
-                <span className="font-medium">{like_count.toLocaleString()}</span>
-              </div>
+              <InfoItem icon={<ThumbsUp className="w-4 h-4 text-primary" />} value={like_count.toLocaleString()} />
             )}
           </div>
         </div>

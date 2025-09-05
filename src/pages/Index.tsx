@@ -43,10 +43,6 @@ const Index = () => {
     { step: 'refinement', name: "Analysis Refinement", description: "Refining analysis based on quality feedback" },
   ];
 
-
-
-
-
   const handleVideoSubmit = async (url: string, options?: {
     analysisModel?: string;
     qualityModel?: string;

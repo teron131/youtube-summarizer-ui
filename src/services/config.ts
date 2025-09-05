@@ -11,12 +11,13 @@
 // ================================
 
 export const AVAILABLE_MODELS = {
-  "google/gemini-2.5-pro": "Google Gemini 2.5 Pro",
-  "google/gemini-2.5-flash": "Google Gemini 2.5 Flash",
-  "openai/gpt-5": "OpenAI GPT-5",
-  "anthropic/claude-sonnet-4": "Anthropic Claude Sonnet 4",
-  "x-ai/grok-4": "xAI Grok 4",
-  "x-ai/grok-code-fast-1": "xAI Grok Code Fast 1",
+  "google/gemini-2.5-pro": "Gemini 2.5 Pro",
+  "google/gemini-2.5-flash": "Gemini 2.5 Flash",
+  "openai/gpt-5": "GPT-5",
+  "openai/gpt-5-mini": "GPT-5 Mini",
+  "anthropic/claude-sonnet-4": "Claude Sonnet 4",
+  "x-ai/grok-4": "Grok 4",
+  "x-ai/grok-code-fast-1": "Grok Code Fast 1",
 } as const;
 
 export const DEFAULT_ANALYSIS_MODEL = "google/gemini-2.5-pro";
@@ -27,12 +28,12 @@ export const DEFAULT_QUALITY_MODEL = "google/gemini-2.5-flash";
 // ================================
 
 export const SUPPORTED_LANGUAGES = {
-  "auto": "Auto",
-  "en": "English",
-  "zh-TW": "Chinese",
-  "ja": "Japanese",
-  "ko": "Korean",
-  "de": "German",
+  "auto": "🌐 Auto",
+  "en": "🇺🇸 English",
+  "zh-TW": "🇭🇰 Chinese",
+  "ja": "🇯🇵 Japanese",
+  "ko": "🇰🇷 Korean",
+  "de": "🇩🇪 German",
 } as const;
 
 export const DEFAULT_TARGET_LANGUAGE = null;
@@ -108,11 +109,19 @@ export const AVAILABLE_MODELS_LIST: AvailableModel[] = Object.entries(AVAILABLE_
 );
 
 export const SUPPORTED_LANGUAGES_LIST: SupportedLanguage[] = Object.entries(SUPPORTED_LANGUAGES).map(
-  ([key, label]) => ({
-    key: key as LanguageKey,
-    label,
-    flag: "",
-  })
+  ([key, label]) => {
+    // Extract flag emoji from the beginning of the label
+    const flagRegex = /^([\u{1F1E6}-\u{1F1FF}🌐]+)/u;
+    const flagMatch = label.match(flagRegex);
+    const flag = flagMatch ? flagMatch[1] : "";
+    const cleanLabel = label.replace(flag, "").trim();
+
+    return {
+      key: key as LanguageKey,
+      label: cleanLabel,
+      flag,
+    };
+  }
 );
 
 // ================================

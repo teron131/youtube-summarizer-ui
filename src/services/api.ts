@@ -360,13 +360,6 @@ class YouTubeApiClient {
           detail: response.statusText
         }));
         
-        // Debug logging
-        console.log('🔍 Error Response Debug:', {
-          status: response.status,
-          statusText: response.statusText,
-          errorData,
-          endpoint: url
-        });
         
         // Handle nested error structures from backend
         let errorMessage = `Request failed with status ${response.status}`;
@@ -395,8 +388,6 @@ class YouTubeApiClient {
         } else if (errorMessage.includes('quota')) {
           errorMessage = ERROR_MESSAGES.API_QUOTA_EXCEEDED;
         }
-        
-        console.log('🔍 Extracted Error Message:', errorMessage);
         
         const apiError: ApiError = {
           message: errorMessage,
@@ -696,8 +687,6 @@ class YouTubeApiClient {
                   continue;
                 }
 
-                // Debug: Log the raw chunk data
-                console.log('🔍 Processing chunk:', jsonData.substring(0, 200) + (jsonData.length > 200 ? '...' : ''));
 
                 // Try to parse the JSON chunk
                 const data = JSON.parse(jsonData) as StreamingChunk;
@@ -709,11 +698,9 @@ class YouTubeApiClient {
                 // Extract data from the workflow state
                 if (data.analysis) {
                   analysis = data.analysis;
-                  console.log('Analysis extracted:', !!analysis);
                 }
                 if (data.quality) {
                   quality = data.quality;
-                  console.log('Quality extracted:', !!quality);
                 }
                 if (data.iteration_count !== undefined) {
                   iterationCount = data.iteration_count;
@@ -726,14 +713,6 @@ class YouTubeApiClient {
                 // Convert to 1-based iteration count for display
                 const displayIteration = (data.iteration_count ?? 0) + 1;
 
-                // Debug: Log chunk processing
-                console.log('📦 Processing chunk:', {
-                  hasAnalysis: !!data.analysis,
-                  hasQuality: !!data.quality,
-                  iterationCount: displayIteration,
-                  isComplete: data.is_complete,
-                  chunkNumber: data.chunk_number
-                });
 
                 if (data.is_complete && data.analysis && data.quality) {
                   // Final completion message - handle missing percentage_score
@@ -927,14 +906,6 @@ class YouTubeApiClient {
                   return; // Skip logging every chunk to reduce overhead
                 }
 
-                // Debug: Log the problematic line (optimized)
-                console.log('❌ Failed to parse chunk:', {
-                  error: errorDetails,
-                  lineLength: line.length,
-                  isLargeChunk,
-                  hasTranscript,
-                  isCompleteChunk
-                });
 
                 if (isLargeChunk && hasTranscript) {
                   // Optimized extraction for large transcript chunks
@@ -994,18 +965,6 @@ class YouTubeApiClient {
         onLogUpdate?.([...streamingLogs]);
       }
 
-      // Debug: Log final result
-      console.log('🏁 Final streaming result:', {
-        success: true,
-        hasVideoInfo: !!videoInfo,
-        hasTranscript: !!transcript,
-        hasAnalysis: !!analysis,
-        hasQuality: !!quality,
-        analysisChapters: analysis?.chapters?.length || 0,
-        qualityScore: quality?.percentage_score || 0,
-        iterationCount,
-        chunksProcessed
-      });
 
       return {
         success: true,
