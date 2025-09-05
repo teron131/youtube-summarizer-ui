@@ -2,7 +2,7 @@ import { StreamingProcessingResult } from "./api";
 
 export const exampleData: StreamingProcessingResult = {
   success: true,
-  totalTime: "11.6s",
+  totalTime: "11.5s",
   videoInfo: {
     url: "https://www.youtube.com/watch?v=P_fHJIYENdI",
     title: "AlphaFold - The Most Useful Thing AI Has Ever Done",
@@ -10,8 +10,8 @@ export const exampleData: StreamingProcessingResult = {
     author: "Veritasium",
     duration: "00:24:52",
     upload_date: "Feb 10, 2025",
-    view_count: 9451441,
-    like_count: 302238,
+    view_count: 9458566,
+    like_count: 302348,
   },
   transcript: "## How to determine protein structures\n\n## Why are proteins so complicated?\n\n## The CASP Competition and Deep Mind\n\n## How does Alphafold work?\n\n## 3 ways to get better AI\n\n## What is a Transformer in AI?\n\n## The Structure Module\n\n## Alphafold 2 wins the Nobel Prize\n\n## Designing New Proteins - RF Diffusion\n\n## The Future of AI",
   analysis: {
@@ -122,14 +122,14 @@ export const exampleData: StreamingProcessingResult = {
   iterationCount: 1,
   chunksProcessed: 12,
   logs: [
-    '[4:05:02 AM] Starting AI analysis with Gemini LLM...',
-    '[4:05:02 AM] Detected YouTube URL, scraping to get chapters...',
-    '[4:05:02 AM] Found 5 chapters in YouTube video',
-    '[4:05:02 AM] Processing 329 characters of transcript',
-    '[4:05:02 AM] Including 5 video chapters in Gemini analysis',
-    '[4:05:02 AM] Generated analysis (iteration 1)',
-    '[4:05:02 AM] Quality check passed with 100% score',
-    '[4:05:02 AM] Analysis completed successfully! Generated 5 chapters'
+    '[7:18:46 AM] Starting AI analysis with Gemini LLM...',
+    '[7:18:46 AM] Detected YouTube URL, scraping to get chapters...',
+    '[7:18:46 AM] Found 5 chapters in YouTube video',
+    '[7:18:46 AM] Processing 329 characters of transcript',
+    '[7:18:46 AM] Including 5 video chapters in Gemini analysis',
+    '[7:18:46 AM] Generated analysis (iteration 1)',
+    '[7:18:46 AM] Quality check passed with 100% score',
+    '[7:18:46 AM] Analysis completed successfully! Generated 5 chapters'
   ],
 };
 
