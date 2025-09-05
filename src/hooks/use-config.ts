@@ -20,6 +20,8 @@ import {
   DEFAULT_TARGET_LANGUAGE,
   SUPPORTED_LANGUAGES,
   SUPPORTED_LANGUAGES_LIST,
+  isValidLanguage,
+  isValidModel,
   type AvailableModel,
   type SupportedLanguage,
 } from '@/services/config';
@@ -152,5 +154,102 @@ export function useTranslationSettings() {
     isValidLanguage,
     defaultLanguage: DEFAULT_TARGET_LANGUAGE,
     supportsTranslation: languages.length > 0,
+  };
+}
+
+// ================================
+// COOKIE-BASED USER PREFERENCES
+// ================================
+
+interface UserPreferences {
+  analysisModel: string;
+  qualityModel: string;
+  targetLanguage: string;
+}
+
+const COOKIE_NAME = 'youtube-summarizer-prefs';
+const COOKIE_EXPIRY_DAYS = 365; // 1 year
+
+/**
+ * Cookie utility functions
+ */
+function setCookie(name: string, value: string, days: number = COOKIE_EXPIRY_DAYS) {
+  const expires = new Date();
+  expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+  document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
+}
+
+function getCookie(name: string): string | null {
+  const nameEQ = name + '=';
+  const ca = document.cookie.split(';');
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) === 0) {
+      return decodeURIComponent(c.substring(nameEQ.length, c.length));
+    }
+  }
+  return null;
+}
+
+function deleteCookie(name: string) {
+  document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;SameSite=Lax`;
+}
+
+/**
+ * Hook for managing user preferences with cookie persistence
+ */
+export function useUserPreferences() {
+  // Default preferences
+  const defaultPreferences: UserPreferences = {
+    analysisModel: DEFAULT_ANALYSIS_MODEL,
+    qualityModel: DEFAULT_QUALITY_MODEL,
+    targetLanguage: DEFAULT_TARGET_LANGUAGE || 'auto',
+  };
+
+  const [preferences, setPreferences] = useState<UserPreferences>(() => {
+    // Load preferences from cookies on initialization
+    try {
+      const cookieData = getCookie(COOKIE_NAME);
+      if (cookieData) {
+        const parsed = JSON.parse(cookieData);
+
+        // Validate that the stored preferences are still valid
+        const validated: UserPreferences = {
+          analysisModel: isValidModel(parsed.analysisModel) ? parsed.analysisModel : defaultPreferences.analysisModel,
+          qualityModel: isValidModel(parsed.qualityModel) ? parsed.qualityModel : defaultPreferences.qualityModel,
+          targetLanguage: isValidLanguage(parsed.targetLanguage) ? parsed.targetLanguage : defaultPreferences.targetLanguage,
+        };
+
+        return validated;
+      }
+    } catch (error) {
+      console.warn('Failed to load user preferences from cookie:', error);
+    }
+    return defaultPreferences;
+  });
+
+  // Save preferences to cookies whenever they change
+  useEffect(() => {
+    try {
+      setCookie(COOKIE_NAME, JSON.stringify(preferences));
+    } catch (error) {
+      console.warn('Failed to save user preferences to cookie:', error);
+    }
+  }, [preferences]);
+
+  const updatePreferences = (updates: Partial<UserPreferences>) => {
+    setPreferences(prev => ({ ...prev, ...updates }));
+  };
+
+  const resetPreferences = () => {
+    setPreferences(defaultPreferences);
+    deleteCookie(COOKIE_NAME);
+  };
+
+  return {
+    preferences,
+    updatePreferences,
+    resetPreferences,
   };
 }

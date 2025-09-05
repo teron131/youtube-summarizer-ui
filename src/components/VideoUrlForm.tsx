@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useLanguageSelection, useModelSelection } from "@/hooks/use-config";
+import { useLanguageSelection, useModelSelection, useUserPreferences } from "@/hooks/use-config";
 import { AlertCircle, Bot, ExternalLink, Languages, Loader2, Play, Youtube } from "lucide-react";
 import { useState } from "react";
 
@@ -37,11 +37,9 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
   const [showExamples, setShowExamples] = useState(false);
 
   // Use configuration hooks
-  const { languages, defaultLanguage } = useLanguageSelection();
-  const { models, defaultModel } = useModelSelection();
-
-  const [language, setLanguage] = useState(defaultLanguage || "auto");
-  const [model, setModel] = useState(defaultModel || "google/gemini-2.5-pro");
+  const { languages } = useLanguageSelection();
+  const { models } = useModelSelection();
+  const { preferences, updatePreferences } = useUserPreferences();
 
   // Helper function to validate form
   const isFormValid = (inputUrl: string) => {
@@ -70,12 +68,12 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
       analysisModel?: string;
       qualityModel?: string;
     } = {
-      analysisModel: model,
-      qualityModel: model, // Use same model for both analysis and quality
+      analysisModel: preferences.analysisModel,
+      qualityModel: preferences.qualityModel,
     };
 
-    if (language !== "auto") {
-      options.targetLanguage = language;
+    if (preferences.targetLanguage !== "auto") {
+      options.targetLanguage = preferences.targetLanguage;
     }
 
     // Allow empty input for example output
@@ -127,7 +125,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
                 </div>
               </div>
 
-              <Select value={model} onValueChange={setModel}>
+              <Select value={preferences.analysisModel} onValueChange={(value) => updatePreferences({ analysisModel: value })}>
                 <SelectTrigger className="w-full sm:w-64 h-8 bg-red-800 text-white border-red-500/30 hover:bg-red-800">
                   <SelectValue />
                 </SelectTrigger>
@@ -162,7 +160,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
                 </div>
               </div>
 
-              <Select value={language} onValueChange={setLanguage}>
+              <Select value={preferences.targetLanguage} onValueChange={(value) => updatePreferences({ targetLanguage: value })}>
                 <SelectTrigger className="w-full sm:w-64 h-8 bg-red-800 text-white border-red-500/30 hover:bg-red-800">
                   <SelectValue />
                 </SelectTrigger>
@@ -250,6 +248,24 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
                 </span>
               </>
             )}
+          </Button>
+
+          {/* Reset Preferences Button */}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              updatePreferences({
+                analysisModel: 'google/gemini-2.5-pro',
+                qualityModel: 'google/gemini-2.5-flash',
+                targetLanguage: 'auto',
+              });
+            }}
+            className="ml-2 text-xs"
+            title="Reset to default preferences"
+          >
+            🔄 Reset
           </Button>
         </form>
 
