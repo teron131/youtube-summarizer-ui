@@ -610,26 +610,26 @@ const Index = () => {
                         {showLogs && (
                           <div className="px-2 pb-2 pt-0 space-y-4">
                             <div className="bg-muted/20 rounded-lg p-4 border border-muted/30 max-h-96 overflow-y-auto">
-                              <div className="space-y-1 font-mono text-xs text-left">
-                                {streamingLogs.map((log, index) => {
-                                  const isIterationLog = log.includes('iteration') || log.includes('Iteration');
-                                  const isQualityLog = log.includes('quality') || log.includes('Quality');
-                                  const isErrorLog = log.includes('❌') || log.includes('failed');
-                                  const isSuccessLog = log.includes('✅') || log.includes('completed');
+                               <div className="space-y-1 font-mono text-xs text-left">
+                                 {streamingLogs.map((log, index) => {
+                                   const isIterationLog = log.includes('iteration') || log.includes('Iteration');
+                                   const isQualityLog = log.includes('quality') || log.includes('Quality');
+                                   const isErrorLog = log.includes('❌') || log.includes('failed');
+                                   const isSuccessLog = log.includes('✅') || log.includes('completed');
 
-                                  let logClass = "text-foreground";
-                                  if (isErrorLog) logClass = "text-red-400";
-                                  else if (isSuccessLog) logClass = "text-green-400";
-                                  else if (isQualityLog) logClass = "text-blue-400";
-                                  else if (isIterationLog) logClass = "text-purple-400 font-semibold";
+                                   let logClass = "text-foreground";
+                                   if (isErrorLog) logClass = "text-red-400";
+                                   else if (isSuccessLog) logClass = "text-green-400";
+                                   else if (isQualityLog) logClass = "text-blue-400";
+                                   else if (isIterationLog) logClass = "text-purple-400 font-semibold";
 
-                                  return (
-                                    <div key={index} className={`${logClass} leading-relaxed`}>
-                                      {log}
-                                    </div>
-                                  );
-                                })}
-                              </div>
+                                   return (
+                                     <div key={index} className={`${logClass} leading-relaxed break-words whitespace-pre-wrap`}>
+                                       {log}
+                                     </div>
+                                   );
+                                 })}
+                               </div>
                             </div>
                           </div>
                         )}
