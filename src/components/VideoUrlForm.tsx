@@ -237,13 +237,13 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
           >
             {isLoading ? (
               <>
-                <Loader2 className="w-6 h-6 mr-3 animate-spin" />
-                <span className="font-bold">Processing Video...</span>
+                <Loader2 className="w-6 h-6 mr-3 animate-spin flex-shrink-0" />
+                <span className="font-bold text-sm sm:text-lg break-words">Processing Video...</span>
               </>
             ) : (
               <>
-                <Play className="w-6 h-6 mr-3" />
-                <span className="font-bold">
+                <Play className="w-6 h-6 mr-3 flex-shrink-0" />
+                <span className="font-bold text-sm sm:text-lg break-words">
                   {url.trim().length === 0 ? "See Example" : "Summarize Video"}
                 </span>
               </>
