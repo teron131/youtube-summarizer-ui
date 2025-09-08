@@ -8,12 +8,12 @@ import { VideoInfo } from "@/components/VideoInfo";
 import { VideoUrlForm } from "@/components/VideoUrlForm";
 import { useToast } from "@/hooks/use-toast";
 import {
-    ApiError,
-    handleApiError,
-    streamingProcessing,
-    StreamingProcessingResult,
-    StreamingProgressState,
-    VideoInfoResponse,
+  ApiError,
+  handleApiError,
+  streamingProcessing,
+  StreamingProcessingResult,
+  StreamingProgressState,
+  VideoInfoResponse,
 } from "@/services/api";
 import { exampleData } from "@/services/example-data";
 import { AlertCircle, CheckCircle, ChevronDown, ChevronUp, FileText, Loader2 } from "lucide-react";
@@ -38,7 +38,7 @@ const Index = () => {
 
   // Progress steps configuration (detailed workflow)
   const progressSteps = [
-    { step: 'scraping', name: "Scraping Video", description: "Extracting video info and transcript using Apify" },
+    { step: 'scraping', name: "Scraping Video", description: "Extracting video info and transcript using Scrape Creators" },
     { step: 'analysis_generation', name: "Analysis Generation", description: "Generating initial AI analysis with Gemini model" },
     { step: 'quality_check', name: "Quality Assessment", description: "Evaluating analysis quality and completeness" },
     { step: 'refinement', name: "Analysis Refinement", description: "Refining analysis based on quality feedback" },
@@ -282,7 +282,7 @@ const Index = () => {
             <div className="fade-in-up">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full mb-2">
                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                <span className="text-primary text-base font-medium">Powered by Gemini, Apify, Fal</span>
+                <span className="text-primary text-base font-medium">Powered by Gemini, Scrape Creators, Fal</span>
               </div>
             </div>
             
@@ -472,7 +472,7 @@ const Index = () => {
                   {error.message.includes('SCRAPECREATORS_API_KEY') && (
                     <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                       <p className="text-base text-blue-800">
-                        <strong>Configuration Issue:</strong> The Apify API key is not configured on the backend server. 
+                        <strong>Configuration Issue:</strong> The Scrape Creators API key is not configured on the backend server. 
                         Please contact the administrator to configure the required API keys.
                       </p>
                     </div>

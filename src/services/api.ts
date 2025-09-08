@@ -21,7 +21,7 @@
  * ## Processing Workflow
  *
  * The backend uses an advanced LangGraph workflow with multiple processing options:
- * - **Step 1**: `/scrap` - Extract video info and transcript using Apify
+ * - **Step 1**: `/scrap` - Extract video info and transcript using Scrape Creators
  * - **Step 2**: `/summarize` or `/stream-summarize` - Generate AI analysis with:
  *   - Model selection (Gemini 2.5 Pro/Flash, Claude Sonnet 4)
  *   - Translation support (Chinese, English, Japanese, Korean, German, Russian)
@@ -257,7 +257,7 @@ export interface HealthCheckResponse {
   version: string;
   environment: {
     gemini_configured: boolean;
-    apify_configured: boolean;
+    scrapecreators_configured: boolean;
   };
 }
 
@@ -490,7 +490,7 @@ class YouTubeApiClient {
   }
 
   /**
-   * Scrap video info and transcript using Apify
+   * Scrap video info and transcript using Scrape Creators
    */
   async scrapVideo(request: ScrapRequest): Promise<ScrapResponse> {
     return this.makeRequest('/scrap', {
@@ -607,7 +607,7 @@ class YouTubeApiClient {
         step: 'scraping',
         stepName: 'Scraping Video',
         status: 'processing',
-        message: 'Extracting video info and transcript using Apify...'
+        message: 'Extracting video info and transcript using Scrape Creators...'
       });
 
       const scrapResponse = await this.scrapVideo({ url });
