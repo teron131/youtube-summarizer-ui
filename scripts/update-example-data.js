@@ -11,7 +11,7 @@
  *   node scripts/update-example-data.js "https://www.youtube.com/watch?v=YOUR_VIDEO_ID"
  *
  * Prerequisites:
- *   - Set environment variables: GEMINI_API_KEY, APIFY_API_KEY
+ *   - Set environment variables: GEMINI_API_KEY, SCRAPECREATORS_API_KEY
  *   - Run from the project root directory
  */
 
@@ -197,8 +197,8 @@ async function updateExampleData(url) {
       throw new Error('GEMINI_API_KEY environment variable is required');
     }
 
-    if (!process.env.APIFY_API_KEY) {
-      throw new Error('APIFY_API_KEY environment variable is required');
+    if (!process.env.SCRAPECREATORS_API_KEY) {
+      throw new Error('SCRAPECREATORS_API_KEY environment variable is required');
     }
 
     // Fetch data
@@ -239,7 +239,7 @@ function main() {
     console.log('');
     console.log('Prerequisites:');
     console.log('  - Set GEMINI_API_KEY environment variable');
-    console.log('  - Set APIFY_API_KEY environment variable');
+    console.log('  - Set SCRAPECREATORS_API_KEY environment variable');
     console.log('  - Backend server must be running on localhost:8080 (or set BACKEND_URL)');
     process.exit(1);
   }

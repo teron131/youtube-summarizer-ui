@@ -8,12 +8,12 @@ import { VideoInfo } from "@/components/VideoInfo";
 import { VideoUrlForm } from "@/components/VideoUrlForm";
 import { useToast } from "@/hooks/use-toast";
 import {
-  ApiError,
-  handleApiError,
-  streamingProcessing,
-  StreamingProcessingResult,
-  StreamingProgressState,
-  VideoInfoResponse,
+    ApiError,
+    handleApiError,
+    streamingProcessing,
+    StreamingProcessingResult,
+    StreamingProgressState,
+    VideoInfoResponse,
 } from "@/services/api";
 import { exampleData } from "@/services/example-data";
 import { AlertCircle, CheckCircle, ChevronDown, ChevronUp, FileText, Loader2 } from "lucide-react";
@@ -469,7 +469,7 @@ const Index = () => {
                   )}
                   
                   {/* Show helpful suggestions for common errors */}
-                  {error.message.includes('APIFY_API_KEY') && (
+                  {error.message.includes('SCRAPECREATORS_API_KEY') && (
                     <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                       <p className="text-base text-blue-800">
                         <strong>Configuration Issue:</strong> The Apify API key is not configured on the backend server. 

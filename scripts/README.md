@@ -57,7 +57,7 @@ node scripts/update-example-data.js "https://www.youtube.com/watch?v=YOUR_VIDEO_
 **Prerequisites:**
 - Backend server running on `localhost:8080`
 - `GEMINI_API_KEY` environment variable set
-- `APIFY_API_KEY` environment variable set
+- `SCRAPECREATORS_API_KEY` environment variable set
 
 **What it does:**
 1. Scrapes video information from the YouTube URL
@@ -95,7 +95,7 @@ Make sure these are set in your `.env` file or exported:
 
 ```bash
 GEMINI_API_KEY=your_gemini_api_key
-APIFY_API_KEY=your_apify_api_key
+SCRAPECREATORS_API_KEY=your_apify_api_key
 BACKEND_URL=http://localhost:8080  # Optional, defaults to localhost:8080
 ```
 

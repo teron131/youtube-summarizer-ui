@@ -29,10 +29,10 @@ if [ -z "$GEMINI_API_KEY" ]; then
     exit 1
 fi
 
-if [ -z "$APIFY_API_KEY" ]; then
-    echo "❌ APIFY_API_KEY environment variable not set"
+if [ -z "$SCRAPECREATORS_API_KEY" ]; then
+    echo "❌ SCRAPECREATORS_API_KEY environment variable not set"
     echo "Please set it in your .env file or export it:"
-    echo "  export APIFY_API_KEY=your_key_here"
+    echo "  export SCRAPECREATORS_API_KEY=your_key_here"
     exit 1
 fi
 
