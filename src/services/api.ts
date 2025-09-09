@@ -80,7 +80,7 @@ export interface VideoInfoResponse {
 }
 
 export interface ScrapRequest {
-  url: string; // min_length=10, max_length=2048
+  url: string;
 }
 
 export interface ScrapResponse {
@@ -102,8 +102,8 @@ export interface ScrapResponse {
 }
 
 export interface SummarizeRequest {
-  content: string; // min_length=10, max_length=50000
-  content_type?: 'url' | 'transcript'; // pattern=r"^(url|transcript)$"
+  content: string;
+  content_type?: 'url' | 'transcript';
 
   // Model selection
   analysis_model?: string; // default="google/gemini-2.5-pro"

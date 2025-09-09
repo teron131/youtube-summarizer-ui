@@ -45,7 +45,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
   const isFormValid = (inputUrl: string) => {
     const trimmedUrl = inputUrl.trim();
     return trimmedUrl.length === 0 ||
-           (trimmedUrl.length > 10 && (trimmedUrl.includes("youtube.com") || trimmedUrl.includes("youtu.be")));
+           (trimmedUrl.length > 0 && (trimmedUrl.includes("youtube.com") || trimmedUrl.includes("youtu.be")));
   };
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
