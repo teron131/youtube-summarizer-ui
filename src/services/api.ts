@@ -612,6 +612,11 @@ class YouTubeApiClient {
 
       const scrapResponse = await this.scrapVideo({ url });
 
+      // Defensive check for scrapResponse
+      if (!scrapResponse) {
+        throw new Error('Scraping failed: No response received from server');
+      }
+
       if (scrapResponse.status === 'error') {
         throw new Error(scrapResponse.message);
       }

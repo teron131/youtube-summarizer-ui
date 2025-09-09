@@ -219,6 +219,11 @@ const Index = () => {
         } : undefined
       );
 
+      // Defensive check for result object
+      if (!result) {
+        throw new Error('Processing failed: No result returned from streaming processing');
+      }
+
       if (result.success) {
         console.log('🎉 Streaming completed successfully:', {
           hasVideoInfo: !!result.videoInfo,
