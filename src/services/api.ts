@@ -70,9 +70,9 @@ if (import.meta.env.DEV) {
 // Basic Video Info
 export interface VideoInfoResponse {
   url: string;
-  title: string;
+  title: string | null;
   thumbnail?: string;
-  author: string;
+  author: string | null;
   duration?: string;
   upload_date?: string;
   view_count?: number;
@@ -87,14 +87,14 @@ export interface ScrapResponse {
   status: string;
   message: string;
   timestamp: string;
-  transcript: string;
+  transcript: string | null;
   processing_time: string;
 
   // Video data in consistent order
   url: string;
-  title: string;
+  title: string | null;
   thumbnail?: string;
-  author: string;
+  author: string | null;
   duration?: string;
   upload_date?: string;
   view_count?: number;
@@ -655,9 +655,14 @@ class YouTubeApiClient {
       // Convert "auto" to null for backend compatibility
       const targetLanguage = options?.targetLanguage === "auto" ? null : options?.targetLanguage;
 
+      // If no transcript available, send URL for Gemini analysis
+      const hasTranscript = transcript && transcript.trim() !== '';
+      const content = hasTranscript ? transcript : url;
+      const contentType = hasTranscript ? 'transcript' : 'url';
+
       const stream = await this.streamSummarizeContent({
-        content: transcript,
-        content_type: 'transcript',
+        content: content,
+        content_type: contentType,
         analysis_model: options?.analysisModel || 'google/gemini-2.5-pro',
         quality_model: options?.qualityModel || 'google/gemini-2.5-flash',
         target_language: targetLanguage,
@@ -888,7 +893,6 @@ class YouTubeApiClient {
 
                 // Early detection patterns for better performance
                 const isCompleteChunk = line.includes('"type": "complete"') || line.includes('"is_complete": true');
-                const isLargeChunk = line.length > 10000;
                 const hasTranscript = line.includes('"transcript_or_url"');
 
                 // Handle completion chunks that might be malformed (highest priority)
@@ -906,37 +910,10 @@ class YouTubeApiClient {
                   continue;
                 }
 
-                // Limit logging for large chunks to reduce console spam
-                if (isLargeChunk && chunksProcessed % 10 !== 0) {
-                  return; // Skip logging every chunk to reduce overhead
-                }
 
-
-                if (isLargeChunk && hasTranscript) {
-                  // Optimized extraction for large transcript chunks
-                  const timestamp = new Date().toLocaleTimeString();
-
-                  // Use more efficient regex patterns
-                  const iterationMatch = line.match(/"iteration_count":\s*(\d+)/);
-                  const qualityMatch = line.match(/"percentage_score":\s*(\d+(?:\.\d+)?)/);
-
-                  if (iterationMatch) {
-                    const extractedIteration = parseInt(iterationMatch[1], 10);
-                    iterationCount = Math.max(iterationCount, extractedIteration);
-
-                    if (qualityMatch) {
-                      streamingLogs.push(`[${timestamp}] Quality score: ${qualityMatch[1]}% (iteration ${extractedIteration})`);
-                    } else {
-                      streamingLogs.push(`[${timestamp}] Processing analysis (iteration ${extractedIteration})`);
-                    }
-                  } else {
-                    streamingLogs.push(`[${timestamp}] Large data chunk processed`);
-                  }
-                } else {
-                  // Standard malformed chunk handling with reduced logging
-                  const timestamp = new Date().toLocaleTimeString();
-                  streamingLogs.push(`[${timestamp}] Malformed chunk skipped`);
-                }
+                // Standard malformed chunk handling
+                const timestamp = new Date().toLocaleTimeString();
+                streamingLogs.push(`[${timestamp}] Malformed chunk skipped`);
 
                 // Update logs callback even for errors
                 onLogUpdate?.([...streamingLogs]);
@@ -1168,15 +1145,29 @@ export const handleApiError = (error: unknown): ApiError => {
   if (isApiError(error)) {
     return error;
   }
-  
+
   if (error instanceof Error) {
+    // Determine error type based on message content
+    let errorType: ApiError['type'] = 'unknown';
+    const message = error.message.toLowerCase();
+
+    if (message.includes('unable to connect') || message.includes('fetch') || message.includes('network')) {
+      errorType = 'network';
+    } else if (message.includes('invalid') || message.includes('validation') || message.includes('bad request')) {
+      errorType = 'validation';
+    } else if (message.includes('too long') || message.includes('processing failed') || message.includes('too large')) {
+      errorType = 'processing';
+    } else if (message.includes('server error') || message.includes('internal server error')) {
+      errorType = 'server';
+    }
+
     return {
       message: error.message,
-      type: 'unknown',
+      type: errorType,
       details: error.stack,
     };
   }
-  
+
   return {
     message: 'An unknown error occurred',
     type: 'unknown',
@@ -1256,5 +1247,5 @@ export const ERROR_MESSAGES = {
 } as const;
 
 // Export everything for convenient imports
-export { apiClient };
+export { apiClient, YouTubeApiClient };
 export default apiClient;
