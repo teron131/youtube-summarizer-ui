@@ -2,7 +2,7 @@ import { StreamingProcessingResult } from "./api";
 
 export const exampleData: StreamingProcessingResult = {
   success: true,
-  totalTime: "11.5s",
+  totalTime: "16.1s",
   videoInfo: {
     url: "https://www.youtube.com/watch?v=P_fHJIYENdI",
     title: "AlphaFold - The Most Useful Thing AI Has Ever Done",
@@ -10,81 +10,89 @@ export const exampleData: StreamingProcessingResult = {
     author: "Veritasium",
     duration: "00:24:52",
     upload_date: "Feb 10, 2025",
-    view_count: 9458566,
-    like_count: 302348,
+    view_count: 9496071,
+    like_count: 303014,
   },
-  transcript: "## How to determine protein structures\n\n## Why are proteins so complicated?\n\n## The CASP Competition and Deep Mind\n\n## How does Alphafold work?\n\n## 3 ways to get better AI\n\n## What is a Transformer in AI?\n\n## The Structure Module\n\n## Alphafold 2 wins the Nobel Prize\n\n## Designing New Proteins - RF Diffusion\n\n## The Future of AI",
+  transcript: "What if, all of the world's biggest problems from climate change, to curing diseases, to disposal of plastic waste, what if they all had the same solution? A solution so tiny it would be invisible. I'm inclined to believe this is possible, thanks to a recent breakthrough that solved one of the biggest problems of the last century. How to determine the structure of a protein? - It's been described to me as equivalent to Fermat's last theorem, but for biology. - Over six decades, tens of thousands[truncated for example]",
   analysis: {
-  "title": "How to Determine Protein Structures",
-  "summary": "Proteins are complex molecules essential for life, composed of amino acid chains that fold into specific 3D structures. Determining these structures is crucial for understanding their function and for drug discovery. Traditional methods like X-ray crystallography and cryo-electron microscopy are time-consuming and expensive. The CASP competition, a biennial event, evaluates the accuracy of computational methods for protein structure prediction. DeepMind's AlphaFold, particularly AlphaFold 2, achieved groundbreaking accuracy in CASP, demonstrating the power of AI in this field. AlphaFold utilizes a transformer-based neural network architecture, similar to those used in large language models, to predict protein structures from amino acid sequences. It processes information about amino acid relationships and distances, iteratively refining its predictions. The success of AlphaFold has opened new avenues for protein design, exemplified by tools like RF Diffusion, which can generate novel protein structures with desired properties. This advancement signifies a paradigm shift in biology, accelerating research in medicine, biotechnology, and materials science.",
+  "title": "The AI Revolution in Protein Folding and Beyond",
+  "summary": "The video explores the groundbreaking advancements in protein structure prediction, primarily driven by artificial intelligence. It details the historical challenges of determining protein structures, from early X-ray crystallography methods that took years to resolve a single protein, to the computational approaches that emerged. A significant portion focuses on DeepMind's AlphaFold, an AI system that dramatically accelerated protein structure prediction, achieving accuracy comparable to experimental methods. The narrative highlights the evolution of AlphaFold from its first iteration to AlphaFold 2, emphasizing the role of advanced AI algorithms, particularly the transformer architecture and the EvoFormer. The video also discusses the work of David Baker, who used generative AI to design novel proteins from scratch, opening up possibilities for new vaccines, therapies, and materials. The broader implications of these AI-driven scientific breakthroughs are explored, suggesting their potential to solve major global challenges like climate change, disease, and waste disposal by enabling rapid discovery and iteration in fields like materials science and biochemistry.",
   "takeaways": [
-    "Protein structure prediction is a fundamental challenge in biology with significant implications for drug discovery and understanding biological processes.",
-    "AlphaFold, developed by DeepMind, has revolutionized protein structure prediction by achieving near-experimental accuracy using AI.",
-    "The success of AlphaFold highlights the potential of transformer-based neural networks and large datasets in solving complex scientific problems.",
-    "AI-driven protein design tools like RF Diffusion enable the creation of novel proteins with tailored functions, opening new possibilities in biotechnology.",
-    "The integration of AI into biological research is accelerating scientific discovery and has the potential to transform various industries."
+    "AI has revolutionized protein structure prediction, significantly accelerating scientific discovery in biology and related fields.",
+    "The ability to accurately predict and design protein structures has vast implications for medicine, including vaccine development, disease treatment, and the creation of new therapies.",
+    "Generative AI can design entirely new proteins with specific functions, offering solutions for challenges like venom neutralization, greenhouse gas capture, and plastic degradation.",
+    "AI-driven scientific breakthroughs, exemplified by AlphaFold and RF Diffusion, represent a 'step function change' in the pace of research, enabling discoveries previously thought impossible.",
+    "The methodologies developed for protein folding are transferable to other scientific domains, such as materials science, leading to the discovery of new stable materials."
   ],
   "key_facts": [
-    "Proteins are made of 20 different amino acids, and their function is determined by their 3D structure.",
-    "The CASP competition has been evaluating protein structure prediction methods since 1994.",
-    "AlphaFold 2 achieved a median accuracy of 92.4 GDT_TS in CASP14, comparable to experimental methods.",
-    "AlphaFold's architecture includes a transformer-based neural network and an 'EvoFormer' module for processing evolutionary information.",
-    "RF Diffusion is a generative AI model that can design new protein structures by reversing the diffusion process."
+    "Before AI, tens of thousands of biologists painstakingly worked out the structure of 150,000 proteins over six decades.",
+    "DeepMind's AlphaFold determined the structure of 200 million proteins in just a few years, covering nearly every protein known in nature.",
+    "John Kendrew took 12 years to determine the first protein structure (myoglobin) using X-ray crystallography.",
+    "Cyrus Levinthal calculated that a short protein chain with 35 amino acids could fold in an astronomical number of ways, taking 200 times the age of the universe for a computer to find the correct structure by brute force.",
+    "AlphaFold 2 achieved a score of 90, the gold standard for accuracy, in the CASP 14 competition, making its predictions virtually indistinguishable from actual structures.",
+    "John Jumper and Demis Hassabis received half of the 2024 Nobel Prize in Chemistry for AlphaFold, while David Baker received the other half for designing new proteins."
   ],
   "chapters": [
     {
-      "header": "The Complexity of Protein Structures",
-      "summary": "Proteins are fundamental to life, performing a vast array of functions within organisms. Their functionality is intrinsically linked to their precise three-dimensional structure, which is determined by the sequence of their constituent amino acids. There are 20 different amino acids, and the way they fold into a specific shape is crucial. Understanding these structures is vital for drug discovery, as many drugs work by interacting with specific protein structures. Traditional methods for determining protein structures, such as X-ray crystallography and cryo-electron microscopy, are often time-consuming, expensive, and not always successful, especially for complex proteins.",
+      "header": "The Protein Folding Problem: A Historical Challenge",
+      "summary": "Proteins, fundamental to life, begin as amino acid strings that fold into complex 3D structures, which dictate their function. Determining these structures was historically a monumental challenge. Early methods, like X-ray crystallography, were time-consuming and expensive; John Kendrew's pioneering work on myoglobin took 12 years. The complexity of protein folding, with an astronomical number of possible configurations, made computational prediction seem impossible, as illustrated by Levinthal's paradox. This led to the establishment of the CASP competition in 1994 to foster computational solutions.",
       "key_points": [
-        "Proteins are essential for biological functions, and their 3D structure dictates their function.",
-        "The sequence of 20 amino acids determines a protein's folded structure.",
-        "Determining protein structures is critical for drug development.",
-        "Traditional methods like X-ray crystallography and cryo-electron microscopy are resource-intensive and have limitations."
+        "Proteins are strings of amino acids that fold into specific 3D shapes, crucial for their function.",
+        "Early protein structure determination relied on X-ray crystallography, a slow and costly process.",
+        "John Kendrew spent 12 years to determine the first protein structure, myoglobin.",
+        "Levinthal's paradox highlighted the immense computational difficulty of predicting protein folding, with a short protein having an astronomical number of possible configurations.",
+        "The CASP competition was initiated in 1994 to encourage the development of computational models for protein structure prediction."
       ]
     },
     {
-      "header": "The CASP Competition and AlphaFold's Breakthrough",
-      "summary": "The Critical Assessment of protein Structure Prediction (CASP) is a biennial competition established in 1994 to evaluate the accuracy of computational methods for predicting protein structures. Participants are given amino acid sequences and must predict their 3D structures, which are then compared against experimentally determined structures. DeepMind's AlphaFold, particularly AlphaFold 2, achieved a significant breakthrough in CASP14, demonstrating unprecedented accuracy in protein structure prediction. Its performance was so remarkable that it was considered to have largely solved the protein folding problem, achieving results comparable to experimental methods.",
+      "header": "Early Computational Approaches and Crowdsourcing",
+      "summary": "Initial computational efforts to predict protein structures, such as the Rosetta algorithm, struggled to achieve high accuracy in the CASP competition. David Baker, a key figure in this field, innovated by pooling computing power from idle computers through 'Rosetta at Home.' Recognizing the human intuition for spatial puzzles, Baker then developed 'Fold It,' a video game that allowed human players to manipulate protein structures. This crowdsourcing approach proved remarkably successful, with gamers deciphering an HIV-related enzyme structure that was later confirmed experimentally, demonstrating the potential of collective intelligence in scientific discovery.",
       "key_points": [
-        "CASP is a biennial competition evaluating computational protein structure prediction methods.",
-        "DeepMind's AlphaFold 2 achieved near-experimental accuracy in CASP14.",
-        "AlphaFold's success marked a major advancement in solving the protein folding problem."
+        "Early computational algorithms like Rosetta faced challenges in accurately predicting protein structures.",
+        "David Baker utilized distributed computing with 'Rosetta at Home' to increase computational power.",
+        "The 'Fold It' video game leveraged human intuition for spatial puzzles to solve protein folding problems.",
+        "Gamers successfully deciphered the structure of an HIV-related enzyme, which was confirmed by X-ray crystallography.",
+        "The success of 'Fold It' highlighted the value of crowdsourcing and human pattern recognition in scientific research."
       ]
     },
     {
-      "header": "How AlphaFold Works",
-      "summary": "AlphaFold's success stems from its innovative use of a transformer-based neural network architecture, similar to those employed in large language models. It processes the amino acid sequence of a protein and predicts the distances and angles between amino acids, which are then used to construct the 3D structure. The model iteratively refines its predictions, learning from a vast dataset of known protein structures. A key component is the 'EvoFormer' module, which leverages evolutionary information from multiple sequence alignments to infer relationships between amino acids. This allows AlphaFold to capture complex interactions and dependencies within the protein sequence, leading to highly accurate structural predictions.",
+      "header": "AlphaFold's Breakthrough: AI Revolutionizes Prediction",
+      "summary": "Demis Hassabis, inspired by his experience with Fold It, initiated DeepMind's AlphaFold project to tackle the protein folding problem using AI. AlphaFold 1, a deep neural network, used amino acid sequences and evolutionary information (co-evolution) as input to predict a 2D pair representation of the protein structure. This initial version showed promise at CASP 13 but did not meet the 90-point accuracy threshold. AlphaFold 2, under John Jumper's leadership, significantly improved accuracy by integrating advanced AI algorithms, particularly the transformer architecture (EvoFormer), and leveraging Google's immense computing power. The EvoFormer's two-tower design (biology and geometry) and iterative information exchange refined predictions, leading to a major breakthrough.",
       "key_points": [
-        "AlphaFold uses a transformer-based neural network architecture.",
-        "It predicts amino acid distances and angles to construct 3D protein structures.",
-        "The model refines predictions iteratively using large datasets of known structures.",
-        "The 'EvoFormer' module utilizes evolutionary information for improved accuracy."
+        "DeepMind's AlphaFold project, led by Demis Hassabis, aimed to solve protein folding using AI.",
+        "AlphaFold 1 used deep neural networks, amino acid sequences, and evolutionary data to predict 2D protein representations.",
+        "AlphaFold 2, led by John Jumper, achieved a significant accuracy boost through advanced AI algorithms and Google's computing resources.",
+        "The EvoFormer, a transformer-based architecture, was central to AlphaFold 2's success, processing both evolutionary and geometric information.",
+        "AlphaFold 2's iterative refinement process, including triangular attention and a structure module, enabled highly accurate 3D protein predictions."
       ]
     },
     {
-      "header": "Designing New Proteins with AI",
-      "summary": "The advancements in protein structure prediction have paved the way for designing novel proteins with specific functions. RF Diffusion is an example of a generative AI model that can create new protein structures. Unlike AlphaFold, which predicts the structure of an existing sequence, RF Diffusion works by reversing a diffusion process, starting from random noise and iteratively refining it into a stable, functional protein structure. This capability allows researchers to design proteins for various applications, such as new enzymes, therapeutics, or materials, by specifying desired properties or functions. This represents a significant leap from simply predicting structures to actively engineering them.",
+      "header": "Impact and Future of AI in Protein Science",
+      "summary": "AlphaFold 2's success at CASP 14, achieving near-perfect accuracy, marked a pivotal moment, effectively solving the long-standing protein folding problem. This breakthrough has rapidly advanced biological research, contributing to malaria vaccine development, combating antibiotic resistance, and understanding disease mechanisms. John Jumper and Demis Hassabis were awarded the Nobel Prize for their work on AlphaFold. Concurrently, David Baker's 'RF Diffusion' uses generative AI to design entirely new proteins from scratch, akin to image generation AI. This capability has led to the creation of human-compatible antibodies for snake venom neutralization and holds promise for designing proteins for vaccines, cancer therapies, autoimmune diseases, and environmental solutions like capturing greenhouse gases and breaking down plastics. The rapid iteration enabled by 'Cowboy Biochemistry' signifies a new era of accelerated scientific discovery.",
       "key_points": [
-        "AI enables the design of novel proteins with specific functions.",
-        "RF Diffusion is a generative AI model that creates new protein structures.",
-        "It works by reversing a diffusion process to generate stable protein folds.",
-        "This technology allows for the engineering of proteins for diverse applications like enzymes and therapeutics."
+        "AlphaFold 2's high accuracy at CASP 14 effectively solved the protein folding problem.",
+        "The breakthrough has accelerated research in vaccine development, antibiotic resistance, and disease understanding.",
+        "John Jumper and Demis Hassabis received the Nobel Prize for AlphaFold's contributions.",
+        "David Baker's 'RF Diffusion' uses generative AI to design novel proteins with specific functions.",
+        "Designed proteins have applications in anti-venom, vaccines, cancer, autoimmune diseases, and environmental solutions.",
+        "The rapid design and testing of proteins, termed 'Cowboy Biochemistry,' signifies a new pace of scientific discovery."
       ]
     },
     {
-      "header": "The Future of AI in Biology",
-      "summary": "The success of AlphaFold and similar AI models signifies a transformative era for biological research. AI is accelerating the pace of discovery by providing tools that can rapidly analyze complex biological data, predict molecular interactions, and design new biological entities. This integration of AI is not limited to protein folding but extends to drug discovery, materials science, and understanding fundamental biological processes. The ability to accurately predict and design protein structures will lead to faster development of new medicines, more efficient industrial enzymes, and novel biomaterials, fundamentally changing how scientific research is conducted and applied.",
+      "header": "Broader Implications of AI in Scientific Discovery",
+      "summary": "The success of AI in protein science, particularly with AlphaFold and RF Diffusion, serves as a powerful indicator of its transformative potential across various scientific disciplines. AI's ability to accelerate discovery by orders of magnitude, as seen in protein folding, suggests it can unlock fundamental problems that have historically hindered human progress. For instance, DeepMind's GNoME program has already discovered millions of new crystals, including stable materials with potential applications in superconductors and batteries. This demonstrates that AI is not merely providing incremental improvements but enabling 'step function changes' in scientific understanding and technological development, opening up previously impossible opportunities for addressing global challenges.",
       "key_points": [
-        "AI is accelerating biological research and discovery.",
-        "AI tools can analyze complex biological data and predict molecular interactions.",
-        "The integration of AI extends beyond protein folding to drug discovery and materials science.",
-        "Accurate protein prediction and design will lead to advancements in medicine, enzymes, and biomaterials."
+        "AI's success in protein science indicates its broad applicability across scientific fields.",
+        "AI can accelerate scientific discovery by orders of magnitude, fundamentally changing research approaches.",
+        "DeepMind's GNoME program discovered millions of new crystals, including stable materials for future technologies.",
+        "AI is enabling 'step function changes' in scientific understanding, not just incremental improvements.",
+        "The advancements open up new opportunities for solving major global challenges, such as climate change and disease."
       ]
     }
   ],
   "keywords": [
     "AlphaFold",
-    "Protein Structure",
+    "protein folding",
     "AI"
   ],
   "target_language": "en"
@@ -92,19 +100,19 @@ export const exampleData: StreamingProcessingResult = {
   quality: {
   "completeness": {
     "rate": "Pass",
-    "reason": "The analysis covers all aspects of the provided content, including protein structure complexity, CASP competition, AlphaFold's mechanism, AI in protein design, and the future of AI in biology."
+    "reason": "The analysis covers all key aspects of the provided content, from historical challenges to modern AI breakthroughs and future implications."
   },
   "structure": {
     "rate": "Pass",
-    "reason": "The output perfectly adheres to the required schema, including title, summary, chapters with headers and key points, takeaways, key facts, and keywords, all formatted correctly as arrays where specified."
+    "reason": "The output perfectly adheres to the specified schema, including the correct formatting for title, summary, chapters, takeaways, key facts, and keywords. Takeaways and key facts are simple arrays as requested."
   },
   "grammar": {
     "rate": "Pass",
-    "reason": "The analysis is free of typos and grammatical errors. The wording is professional and appropriate for an article-like tone."
+    "reason": "The text is free of typos and grammatical errors. The wording is appropriate and professional throughout."
   },
   "no_garbage": {
     "rate": "Pass",
-    "reason": "No promotional or meaningless content is present in the analysis. The content is focused and informative."
+    "reason": "No promotional or meaningless content is present in the analysis. It focuses solely on the scientific and historical aspects of protein folding and AI."
   },
   "meta_language_avoidance": {
     "rate": "Pass",
@@ -112,24 +120,24 @@ export const exampleData: StreamingProcessingResult = {
   },
   "useful_keywords": {
     "rate": "Pass",
-    "reason": "The keywords 'AlphaFold', 'Protein Structure', and 'AI' are highly relevant and effectively highlight the core topics of the analysis."
+    "reason": "The keywords 'AlphaFold', 'protein folding', and 'AI' are highly relevant and useful for highlighting the core topics of the analysis."
   },
   "correct_language": {
     "rate": "Pass",
-    "reason": "The content is properly translated to English with natural fluency and maintained quality, as requested by the 'target_language': 'en' field."
+    "reason": "The content is entirely in English, matching the requested target language and maintaining natural fluency."
   }
 },
   iterationCount: 1,
   chunksProcessed: 12,
   logs: [
-    '[7:18:46 AM] Starting AI analysis with Gemini LLM...',
-    '[7:18:46 AM] Detected YouTube URL, scraping to get chapters...',
-    '[7:18:46 AM] Found 5 chapters in YouTube video',
-    '[7:18:46 AM] Processing 329 characters of transcript',
-    '[7:18:46 AM] Including 5 video chapters in Gemini analysis',
-    '[7:18:46 AM] Generated analysis (iteration 1)',
-    '[7:18:46 AM] Quality check passed with 100% score',
-    '[7:18:46 AM] Analysis completed successfully! Generated 5 chapters'
+    '[3:57:28 AM] Starting AI analysis with Gemini LLM...',
+    '[3:57:28 AM] Detected YouTube URL, scraping to get chapters...',
+    '[3:57:28 AM] Found 5 chapters in YouTube video',
+    '[3:57:28 AM] Processing 24123 characters of transcript',
+    '[3:57:28 AM] Including 5 video chapters in Gemini analysis',
+    '[3:57:28 AM] Generated analysis (iteration 1)',
+    '[3:57:28 AM] Quality check passed with 100% score',
+    '[3:57:28 AM] Analysis completed successfully! Generated 5 chapters'
   ],
 };
 

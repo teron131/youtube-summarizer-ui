@@ -47,91 +47,59 @@ const Index = () => {
 
   // Helper: load example data into UI (used for empty URL or error fallback)
   const loadExampleData = () => {
-    setIsExampleMode(true);
+    setIsExampleMode(false); // Don't set to true so results will display
     setCurrentStage("Loading example...");
 
+    // Create realistic progress states based on the actual example data
     const exampleProgressStates: StreamingProgressState[] = [
       {
         step: 'scraping',
         stepName: "Scraping Video",
         status: "completed",
-        message: "Video scraped: The Trillion Dollar Equation",
+        message: `Video scraped: ${exampleData.videoInfo.title}`,
         processingTime: "0.1s"
       },
       {
         step: 'analysis_generation',
         stepName: "Analysis Generation",
         status: "completed",
-        message: "📝 Initial analysis generated with 3 chapters",
-        iterationCount: 1
+        message: `📝 Initial analysis generated with ${exampleData.analysis?.chapters?.length || 0} chapters`,
+        iterationCount: exampleData.iterationCount
       },
       {
         step: 'quality_check',
         stepName: "Quality Assessment",
         status: "completed",
-        message: "🎯 Quality check passed with 100% score - Analysis meets requirements",
-        qualityScore: 100
+        message: exampleData.quality?.percentage_score
+          ? `🎯 Quality check passed with ${exampleData.quality.percentage_score}% score - Analysis meets requirements`
+          : `🎯 Quality check passed - Analysis meets requirements`,
+        qualityScore: exampleData.quality?.percentage_score || 100
       },
       {
         step: 'complete',
         stepName: "Analysis Complete",
         status: "completed",
-        message: "✅ Analysis completed successfully with 100% quality score",
-        processingTime: "0.2s",
-        chunkCount: 5,
-        iterationCount: 1,
-        qualityScore: 100
+        message: exampleData.quality?.percentage_score
+          ? `✅ Analysis completed successfully with ${exampleData.quality.percentage_score}% quality score`
+          : `✅ Analysis completed successfully`,
+        processingTime: exampleData.totalTime,
+        chunkCount: exampleData.chunksProcessed,
+        iterationCount: exampleData.iterationCount,
+        qualityScore: exampleData.quality?.percentage_score || 100
       }
     ];
 
     setProgressStates(exampleProgressStates);
 
-    const exampleResult: StreamingProcessingResult = {
-      success: true,
-      videoInfo: exampleData.videoInfo,
-      transcript: exampleData.transcript || '',
-      analysis: exampleData.analysis || {
-        title: 'Example Analysis',
-        summary: 'This is example analysis data for demonstration purposes.',
-        chapters: [],
-        key_facts: [],
-        takeaways: [],
-        keywords: []
-      },
-      quality: {
-        completeness: { rate: 'Pass', reason: 'Complete analysis provided' },
-        structure: { rate: 'Pass', reason: 'Well structured' },
-        grammar: { rate: 'Pass', reason: 'Good grammar' },
-        no_garbage: { rate: 'Pass', reason: 'No promotional content' },
-        meta_language_avoidance: { rate: 'Pass', reason: 'No meta-language phrases' },
-        useful_keywords: { rate: 'Pass', reason: 'Keywords are relevant and useful for highlighting key concepts' },
-        correct_language: { rate: 'Pass', reason: 'Appropriate language' },
-        total_score: 12,
-        max_possible_score: 12,
-        percentage_score: 100,
-        is_acceptable: true
-      },
-      totalTime: '0.2s',
-      iterationCount: 1,
-      chunksProcessed: 5,
-      logs: [
-        '[10:00:00] 🚀 Starting AI analysis with Gemini model...',
-        '[10:00:01] 📝 Initial analysis generated with 3 chapters',
-        '[10:00:01] 🎯 Quality check passed with 100% score - Analysis meets requirements',
-        '[10:00:02] ✅ Analysis completed successfully! Generated 3 chapters with 100% quality score',
-        '[10:00:02] 🏁 Workflow completed successfully in 0.2s',
-        '[10:00:02] Summary: 1 iterations processed',
-        '[10:00:02] 📚 Generated 3 video chapters',
-        '[10:00:02] 🌟 Final quality score: 100%'
-      ]
-    };
-
-    setScrapedVideoInfo(exampleResult.videoInfo || null);
-    setAnalysisResult(exampleResult);
-    setStreamingLogs(exampleResult.logs || []);
+    // Use the actual imported example data
+    setScrapedVideoInfo(exampleData.videoInfo || null);
+    setScrapedTranscript(exampleData.transcript || null);
+    setAnalysisResult(exampleData);
+    setStreamingLogs(exampleData.logs || []);
     setCurrentStep(4);
     setCurrentStage("Example ready");
     setIsLoading(false);
+
   };
 
   const handleVideoSubmit = async (url: string, options?: {
@@ -387,8 +355,8 @@ const Index = () => {
                       if (stepIdx === 0) return 1;       // Scraping
                       if (stepIdx === 1) return 2;       // Analysis generation
                       if (stepIdx === 2) return 3;       // Quality check
-                      if (stepIdx === 3) return 3;       // Refinement -> Quality side
-                      if (stepIdx === 4) return 4;       // Complete -> 100%
+                      if (stepIdx === 3) return 2;       // Refinement -> Quality side
+                      if (stepIdx >= 4) return 4;        // Complete -> 100% (changed from === to >=)
                       return 2;                          // Default -> Analysis side
                     };
 
@@ -398,6 +366,7 @@ const Index = () => {
 
                     const progressPercent = (activeAnchor / 4) * 100;
                     const stageText = ['Start', 'Scrap', 'Analysis', 'Quality', 'Finish'][activeAnchor] || 'Processing';
+
 
                     return (
                       <div className="space-y-3 mt-8">
