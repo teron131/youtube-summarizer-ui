@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import { s2tw } from "@/lib/utils";
 import { CalendarDays, Clock, Eye, ThumbsUp, User } from "lucide-react";
 import { ReactNode } from "react";
 
@@ -66,6 +67,12 @@ const formatDuration = (duration?: string): string | null => {
 export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like_count, upload_date, url }: VideoInfoProps) => {
   const displayDuration = formatDuration(duration || undefined);
   const hasMetrics = view_count !== undefined || like_count !== undefined;
+
+  // Convert Chinese characters in video info before displaying
+  const convertedInfo = {
+    title: title ? s2tw(title) : title,
+    author: author ? s2tw(author) : author,
+  };
   
   const cleanVideoUrl = (input?: string): string | null => {
     if (!input) return null;
@@ -103,7 +110,7 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
         
         <div className="flex-1 space-y-4">
           <h3 className="text-2xl font-bold text-foreground line-clamp-2 leading-tight">
-            {title || "Title not available"}
+            {convertedInfo.title || "Title not available"}
           </h3>
           {cleanedUrl && (
             <a
@@ -117,7 +124,7 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
           )}
           
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-muted-foreground">
-            <InfoItem icon={<User className="w-4 h-4 text-primary" />} value={author || "Author not available"} />
+            <InfoItem icon={<User className="w-4 h-4 text-primary" />} value={convertedInfo.author || "Author not available"} />
 
             {displayDuration && (
               <InfoItem icon={<Clock className="w-4 h-4 text-primary" />} value={displayDuration} />
