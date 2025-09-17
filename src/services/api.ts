@@ -705,15 +705,19 @@ class YouTubeApiClient {
                 // Store the complete workflow state for final results
                 finalWorkflowState = data;
 
-                // Extract data from the workflow state
-                if (data.analysis) {
-                  analysis = data.analysis;
-                }
-                if (data.quality) {
-                  quality = data.quality;
-                }
-                if (data.iteration_count !== undefined) {
-                  iterationCount = data.iteration_count;
+                // Extract data from the workflow state (handles both regular and completion chunks)
+                const extractWorkflowData = (chunk: StreamingChunk) => {
+                  if (chunk.analysis) analysis = chunk.analysis;
+                  if (chunk.quality) quality = chunk.quality;
+                  if (chunk.iteration_count !== undefined) iterationCount = chunk.iteration_count;
+                };
+
+                // Extract data based on chunk type
+                extractWorkflowData(data);
+
+                // Handle completion chunks - mark as complete for progress tracking
+                if (data.type === 'complete') {
+                  data.is_complete = true;
                 }
 
                 // Generate user-friendly log messages with detailed workflow steps
