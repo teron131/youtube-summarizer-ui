@@ -49,16 +49,16 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
     // Add video info if available
     if (videoInfo) {
       if (videoInfo.url) {
-        markdown += `url: ${videoInfo.url}\n`;
+        markdown += `URL: ${videoInfo.url}\n`;
       }
       if (videoInfo.title) {
-        markdown += `title: ${videoInfo.title}\n`;
+        markdown += `Title: ${videoInfo.title}\n`;
       }
       if (videoInfo.thumbnail) {
-        markdown += `thumbnail: ${videoInfo.thumbnail}\n`;
+        markdown += `Thumbnail: ${videoInfo.thumbnail}\n`;
       }
       if (videoInfo.author) {
-        markdown += `channel: ${videoInfo.author}\n`;
+        markdown += `Channel: ${videoInfo.author}\n`;
       }
       if (markdown) {
         markdown += "\n";
@@ -151,7 +151,7 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
             className="gap-3 h-12 px-6 border-primary/30 hover:bg-primary/10 hover:border-primary transition-all duration-300"
           >
             <Copy className="w-5 h-5" />
-            Copy All
+            Copy
           </Button>
         </div>
 
