@@ -19,14 +19,14 @@ const InfoItem = ({ icon, value }: InfoItemProps) => (
 );
 
 interface VideoInfoProps {
-  url?: string;
-  title: string | null;
-  thumbnail?: string;
-  author: string | null;
-  duration?: string;
-  view_count?: number;
-  like_count?: number;
-  upload_date?: string;
+  url?: string | null;
+  title?: string | null;
+  thumbnail?: string | null;
+  author?: string | null;
+  duration?: string | null;
+  view_count?: number | null;
+  like_count?: number | null;
+  upload_date?: string | null;
 }
 
 const formatDate = (dateStr?: string): string | null => {

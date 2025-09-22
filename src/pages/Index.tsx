@@ -300,16 +300,21 @@ const Index = () => {
         <div className="max-w-5xl mx-auto space-y-8 bg-background">
           {/* Show Video Info as soon as scraping completes, even while loading */}
           {!isExampleMode && (scrapedVideoInfo || (analysisResult && analysisResult.videoInfo)) && (
-            <VideoInfo
-              url={(analysisResult?.videoInfo || scrapedVideoInfo)!.url}
-              title={(analysisResult?.videoInfo || scrapedVideoInfo)!.title}
-              thumbnail={(analysisResult?.videoInfo || scrapedVideoInfo)!.thumbnail}
-              author={(analysisResult?.videoInfo || scrapedVideoInfo)!.author}
-              duration={(analysisResult?.videoInfo || scrapedVideoInfo)!.duration}
-              upload_date={(analysisResult?.videoInfo || scrapedVideoInfo)!.upload_date}
-              view_count={(analysisResult?.videoInfo || scrapedVideoInfo)!.view_count}
-              like_count={(analysisResult?.videoInfo || scrapedVideoInfo)!.like_count}
-            />
+            (() => {
+              const videoInfo = analysisResult?.videoInfo || scrapedVideoInfo;
+              return (
+                <VideoInfo
+                  url={videoInfo?.url}
+                  title={videoInfo?.title}
+                  thumbnail={videoInfo?.thumbnail}
+                  author={videoInfo?.author}
+                  duration={videoInfo?.duration}
+                  upload_date={videoInfo?.upload_date}
+                  view_count={videoInfo?.view_count}
+                  like_count={videoInfo?.like_count}
+                />
+              );
+            })()
           )}
 
           {/* Show Transcript as soon as it's scraped, even while analysis continues */}

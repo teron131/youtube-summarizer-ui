@@ -90,15 +90,15 @@ export interface ScrapResponse {
   transcript: string | null;
   processing_time: string;
 
-  // Video data in consistent order
-  url: string;
-  title: string | null;
-  thumbnail?: string;
-  author: string | null;
-  duration?: string;
-  upload_date?: string;
-  view_count?: number;
-  like_count?: number;
+  // Video data in consistent order - all optional
+  url?: string | null;
+  title?: string | null;
+  thumbnail?: string | null;
+  author?: string | null;
+  duration?: string | null;
+  upload_date?: string | null;
+  view_count?: number | null;
+  like_count?: number | null;
 }
 
 export interface SummarizeRequest {
@@ -621,16 +621,16 @@ class YouTubeApiClient {
         throw new Error(scrapResponse.message);
       }
 
-      // Convert flat response to VideoInfoResponse format
+      // Convert flat response to VideoInfoResponse format - all fields optional
       videoInfo = {
-        url: scrapResponse.url,
-        title: scrapResponse.title,
-        thumbnail: scrapResponse.thumbnail,
-        author: scrapResponse.author,
-        duration: scrapResponse.duration,
-        upload_date: scrapResponse.upload_date,
-        view_count: scrapResponse.view_count,
-        like_count: scrapResponse.like_count,
+        url: scrapResponse.url || undefined,
+        title: scrapResponse.title || undefined,
+        thumbnail: scrapResponse.thumbnail || undefined,
+        author: scrapResponse.author || undefined,
+        duration: scrapResponse.duration || undefined,
+        upload_date: scrapResponse.upload_date || undefined,
+        view_count: scrapResponse.view_count || undefined,
+        like_count: scrapResponse.like_count || undefined,
       };
       transcript = scrapResponse.transcript;
 
