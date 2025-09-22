@@ -327,7 +327,7 @@ const Index = () => {
             <AnalysisPanel
               analysis={analysisResult.analysis}
               quality={analysisResult.quality}
-              videoUrl={analysisResult.videoInfo?.url}
+              videoInfo={analysisResult.videoInfo}
             />
           )}
 

@@ -2,13 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { convertAnalysisChinese } from "@/lib/utils";
-import { AnalysisData, QualityData } from "@/services/api";
+import { AnalysisData, QualityData, VideoInfoResponse } from "@/services/api";
 import { BookOpen, Copy, FileText, Lightbulb, ListChecks, Sparkles } from "lucide-react";
 
 interface AnalysisPanelProps {
   analysis: AnalysisData;
   quality?: QualityData;
-  videoUrl?: string;
+  videoInfo?: VideoInfoResponse;
 }
 
 // Helper function to render text
@@ -33,7 +33,7 @@ const SectionHeader = ({ icon, title }: SectionHeaderProps) => (
   </div>
 );
 
-export const AnalysisPanel = ({ analysis, quality, videoUrl }: AnalysisPanelProps) => {
+export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelProps) => {
   const { toast } = useToast();
 
   if (!analysis) {
@@ -44,10 +44,29 @@ export const AnalysisPanel = ({ analysis, quality, videoUrl }: AnalysisPanelProp
   const convertedAnalysis = convertAnalysisChinese(analysis);
 
   const generateMarkdown = () => {
-    let markdown = "# AI Analysis\n\n";
+    let markdown = "";
 
+    // Add video info if available
+    if (videoInfo) {
+      if (videoInfo.url) {
+        markdown += `url: ${videoInfo.url}\n`;
+      }
+      if (videoInfo.title) {
+        markdown += `title: ${videoInfo.title}\n`;
+      }
+      if (videoInfo.thumbnail) {
+        markdown += `thumbnail: ${videoInfo.thumbnail}\n`;
+      }
+      if (videoInfo.author) {
+        markdown += `channel: ${videoInfo.author}\n`;
+      }
+      if (markdown) {
+        markdown += "\n";
+      }
+    }
+
+    // Add summary directly (remove AI Analysis header)
     if (convertedAnalysis.summary) {
-      markdown += "# Summary\n\n";
       markdown += `${convertedAnalysis.summary}\n\n`;
     }
 
@@ -99,7 +118,7 @@ export const AnalysisPanel = ({ analysis, quality, videoUrl }: AnalysisPanelProp
       await navigator.clipboard.writeText(markdown);
       toast({
         title: "Copied!",
-        description: "Analysis copied to clipboard in markdown format",
+        description: "Video info and analysis copied to clipboard",
       });
     } catch (error) {
       toast({
@@ -132,7 +151,7 @@ export const AnalysisPanel = ({ analysis, quality, videoUrl }: AnalysisPanelProp
             className="gap-3 h-12 px-6 border-primary/30 hover:bg-primary/10 hover:border-primary transition-all duration-300"
           >
             <Copy className="w-5 h-5" />
-            Copy
+            Copy All
           </Button>
         </div>
 
