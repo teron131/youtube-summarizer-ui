@@ -49,16 +49,16 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
     // Add video info if available
     if (videoInfo) {
       if (videoInfo.url) {
-        markdown += `**URL:** ${String(videoInfo.url)}\n`;
+        markdown += `**URL:** ${String(videoInfo.url)}\n\n`;
       }
       if (videoInfo.title) {
-        markdown += `**Title:** ${String(videoInfo.title)}\n`;
+        markdown += `**Title:** ${String(videoInfo.title)}\n\n`;
       }
       if (videoInfo.thumbnail) {
-        markdown += `**Thumbnail:** ${String(videoInfo.thumbnail)}\n`;
+        markdown += `**Thumbnail:** ${String(videoInfo.thumbnail)}\n\n`;
       }
       if (videoInfo.author) {
-        markdown += `**Channel:** ${String(videoInfo.author)}\n`;
+        markdown += `**Channel:** ${String(videoInfo.author)}\n\n`;
       }
       if (markdown) {
         markdown += "\n";
@@ -67,6 +67,7 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
 
     // Add summary directly (remove AI Analysis header)
     if (convertedAnalysis.summary) {
+      markdown += `# Summary\n\n`;
       markdown += `${convertedAnalysis.summary}\n\n`;
     }
 
