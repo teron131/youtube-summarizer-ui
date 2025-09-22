@@ -49,18 +49,17 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
     // Add video info if available
     if (videoInfo) {
       if (videoInfo.url) {
-        if (videoInfo.url) {
-          markdown += `**URL:** ${videoInfo.url}\n`;
-        }
-        if (videoInfo.title) {
-          markdown += `**Title:** ${videoInfo.title}\n`;
-        }
-        if (videoInfo.thumbnail) {
-          markdown += `**Thumbnail:** ${videoInfo.thumbnail}\n`;
-        }
-        if (videoInfo.author) {
-          markdown += `**Channel:** ${videoInfo.author}\n`;
-        }
+        markdown += `**URL:** ${String(videoInfo.url)}\n`;
+      }
+      if (videoInfo.title) {
+        markdown += `**Title:** ${String(videoInfo.title)}\n`;
+      }
+      if (videoInfo.thumbnail) {
+        markdown += `**Thumbnail:** ${String(videoInfo.thumbnail)}\n`;
+      }
+      if (videoInfo.author) {
+        markdown += `**Channel:** ${String(videoInfo.author)}\n`;
+      }
       if (markdown) {
         markdown += "\n";
       }
