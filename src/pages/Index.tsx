@@ -17,11 +17,12 @@ import {
 } from "@/services/api";
 import { exampleData } from "@/services/example-data";
 import { AlertCircle, CheckCircle, ChevronDown, ChevronUp, FileText, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
+  const [initialUrl, setInitialUrl] = useState<string>("");
     const [currentStep, setCurrentStep] = useState<number>(0);
   const [currentStage, setCurrentStage] = useState<string>("");
   const [progressStates, setProgressStates] = useState<StreamingProgressState[]>([]);
@@ -35,6 +36,16 @@ const Index = () => {
   const [scrapedTranscript, setScrapedTranscript] = useState<string | null>(null);
 
   const { toast } = useToast();
+
+  // Read URL parameter on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const urlParam = params.get('url');
+    
+    if (urlParam) {
+      setInitialUrl(urlParam);
+    }
+  }, []);
 
   // Progress steps configuration (detailed workflow)
   const progressSteps = [
@@ -290,7 +301,7 @@ const Index = () => {
           </div>
           
           <div className="max-w-5xl mx-auto fade-in-up stagger-4">
-            <VideoUrlForm onSubmit={handleVideoSubmit} isLoading={isLoading} />
+            <VideoUrlForm onSubmit={handleVideoSubmit} isLoading={isLoading} initialUrl={initialUrl} />
           </div>
         </div>
       </div>

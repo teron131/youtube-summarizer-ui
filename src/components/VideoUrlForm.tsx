@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLanguageSelection, useModelSelection, useUserPreferences } from "@/hooks/use-config";
 import { AlertCircle, Bot, ExternalLink, Languages, Loader2, Play, Youtube } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface VideoUrlFormProps {
   onSubmit: (url: string, options?: {
@@ -18,6 +18,7 @@ interface VideoUrlFormProps {
     qualityModel?: string;
   }) => void;
   isLoading: boolean;
+  initialUrl?: string;
 }
  
 // Utility function to get provider logo
@@ -31,8 +32,8 @@ const getProviderLogo = (provider: string) => {
   return logoMap[provider as keyof typeof logoMap] || null;
 };
 
-export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
-  const [url, setUrl] = useState("");
+export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormProps) => {
+  const [url, setUrl] = useState(initialUrl || "");
   const [validationError, setValidationError] = useState<string>("");
   const [showExamples, setShowExamples] = useState(false);
 
@@ -40,6 +41,13 @@ export const VideoUrlForm = ({ onSubmit, isLoading }: VideoUrlFormProps) => {
   const { languages } = useLanguageSelection();
   const { models } = useModelSelection();
   const { preferences, updatePreferences } = useUserPreferences();
+
+  // Update URL when initialUrl prop changes
+  useEffect(() => {
+    if (initialUrl) {
+      setUrl(initialUrl);
+    }
+  }, [initialUrl]);
 
   // Helper function to validate form
   const isFormValid = (inputUrl: string) => {
