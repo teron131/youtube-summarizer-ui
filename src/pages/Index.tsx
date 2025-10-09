@@ -21,12 +21,19 @@ import { useState } from "react";
 
 const Index = () => {
   // Read video ID parameter directly on initialization
-  const getInitialUrlFromParams = () => {
-    const params = new URLSearchParams(window.location.search);
-    const videoId = params.get('v');
-    if (videoId) {
-      return `https://www.youtube.com/watch?v=${videoId}`;
+  const getInitialUrlFromParams = (): string => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const videoId = params.get('v');
+      
+      // Validate video ID format (YouTube video IDs are typically 11 characters)
+      if (videoId && /^[\w-]{11}$/.test(videoId)) {
+        return `https://www.youtube.com/watch?v=${videoId}`;
+      }
+    } catch (error) {
+      console.error('Error parsing URL parameters:', error);
     }
+    
     return "";
   };
 

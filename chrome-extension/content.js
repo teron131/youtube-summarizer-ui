@@ -1,5 +1,14 @@
+// Configuration
+const SUMMARIZER_URL = 'https://youtube-summarizer-ui-teron131.up.railway.app';
+const DEBUG = false; // Set to true for console logs
+
+// Utility: Conditional logging
+const log = (...args) => DEBUG && console.log('[YT Summarizer]', ...args);
+
 // Extract video ID from YouTube URL
 function extractVideoId(url) {
+  if (!url) return null;
+  
   // Pattern for youtube.com/watch?v=VIDEO_ID
   const watchMatch = url.match(/youtube\.com\/watch\?v=([\w-]+)/);
   if (watchMatch) return watchMatch[1];
@@ -15,117 +24,127 @@ function extractVideoId(url) {
 function createSummarizeButton() {
   // Check if button already exists
   if (document.getElementById('yt-summarizer-btn')) {
-    return;
+    return false;
   }
 
-  // Wait for the actions menu to be available
-  const actionsMenu = document.querySelector('#top-level-buttons-computed');
-  if (!actionsMenu) {
-    console.log('[YT Summarizer] Actions menu not found, retrying...');
-    return;
+  // Wait for the subscribe button container to be available
+  const subscribeRenderer = document.querySelector('#owner ytd-subscribe-button-renderer');
+  if (!subscribeRenderer) {
+    log('Subscribe button not found');
+    return false;
   }
 
-  console.log('[YT Summarizer] Creating summarize button');
+  // Find the proper container for insertion
+  const subscribeWrapper = subscribeRenderer.closest('#subscribe-button') || subscribeRenderer.parentElement;
+  const bottomRow = subscribeWrapper?.parentElement;
+
+  if (!bottomRow) {
+    log('Bottom row container not found');
+    return false;
+  }
+
+  log('Creating summarize button');
 
   // Create button container (matches YouTube's button structure)
   const buttonContainer = document.createElement('div');
   buttonContainer.id = 'yt-summarizer-btn';
-  buttonContainer.className = 'yt-summarizer-container';
-  
-  // Set style directly to ensure proper display
-  buttonContainer.style.display = 'inline-flex';
-  buttonContainer.style.alignItems = 'center';
+  buttonContainer.className = 'yt-summarizer-container style-scope ytd-video-owner-renderer';
 
   // Create button with YouTube's style classes
   buttonContainer.innerHTML = `
-    <button class="yt-spec-button-shape-next yt-spec-button-shape-next--tonal yt-spec-button-shape-next--mono yt-spec-button-shape-next--size-m" 
+    <button class="yt-spec-button-shape-next yt-spec-button-shape-next--filled yt-spec-button-shape-next--mono yt-spec-button-shape-next--size-m" 
             aria-label="Summarize this video"
-            title="Summarize this video"
-            style="display: inline-flex; align-items: center;">
+            title="Summarize this video">
       <div class="yt-spec-button-shape-next__button-text-content">
         <svg viewBox="0 0 24 24" style="width: 24px; height: 24px; fill: currentColor;">
           <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
         </svg>
-        <span style="margin-left: 6px;">Summarize</span>
+        <span>Summarize</span>
       </div>
     </button>
   `;
 
   // Add click handler
   const button = buttonContainer.querySelector('button');
-  button.addEventListener('click', (e) => {
+  button?.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
     
-    const currentUrl = window.location.href;
-    const videoId = extractVideoId(currentUrl);
-    
-    console.log('[YT Summarizer] Button clicked, video ID:', videoId);
+    const videoId = extractVideoId(window.location.href);
+    log('Button clicked, video ID:', videoId);
     
     if (videoId) {
-      const targetUrl = `https://youtube-summarizer-ui-teron131.up.railway.app?v=${videoId}`;
-      console.log('[YT Summarizer] Opening:', targetUrl);
-      window.open(targetUrl, '_blank');
+      const targetUrl = `${SUMMARIZER_URL}?v=${videoId}`;
+      window.open(targetUrl, '_blank', 'noopener,noreferrer');
     }
   });
 
-  // Insert before the first button (like button)
-  actionsMenu.insertBefore(buttonContainer, actionsMenu.firstChild);
-  console.log('[YT Summarizer] Button inserted successfully');
+  // Insert after the subscribe button wrapper
+  bottomRow.insertBefore(buttonContainer, subscribeWrapper.nextSibling);
+  log('Button inserted successfully');
+  return true;
 }
 
 // Initialize and observe for YouTube's dynamic page updates
 function init() {
   const videoId = extractVideoId(window.location.href);
   if (!videoId) {
-    console.log('[YT Summarizer] Not a video page, skipping');
+    log('Not a video page, skipping');
     return;
   }
 
-  console.log('[YT Summarizer] Initializing on video page');
+  log('Initializing on video page');
 
-  // Initial injection with retry
+  // Initial injection with retry mechanism
   let retryCount = 0;
-  const maxRetries = 10;
+  const MAX_RETRIES = 10;
+  const RETRY_INTERVAL = 500;
+  
   const retryInterval = setInterval(() => {
+    // Stop if button exists
     if (document.getElementById('yt-summarizer-btn')) {
-      console.log('[YT Summarizer] Button already exists');
       clearInterval(retryInterval);
       return;
     }
     
-    if (document.querySelector('#top-level-buttons-computed')) {
-      createSummarizeButton();
+    // Try to create button
+    if (createSummarizeButton()) {
       clearInterval(retryInterval);
-    } else {
-      retryCount++;
-      if (retryCount >= maxRetries) {
-        console.log('[YT Summarizer] Max retries reached, giving up');
-        clearInterval(retryInterval);
-      }
+      return;
     }
-  }, 500);
+    
+    // Give up after max retries
+    retryCount++;
+    if (retryCount >= MAX_RETRIES) {
+      log('Max retries reached, giving up');
+      clearInterval(retryInterval);
+    }
+  }, RETRY_INTERVAL);
 
-  // YouTube is a SPA, so we need to observe navigation changes
+  // YouTube is a SPA, observe navigation changes
   let lastUrl = window.location.href;
   const observer = new MutationObserver(() => {
     const currentUrl = window.location.href;
+    
+    // Detect URL change
     if (currentUrl !== lastUrl) {
       lastUrl = currentUrl;
-      const videoId = extractVideoId(currentUrl);
-      if (videoId) {
-        console.log('[YT Summarizer] Navigation detected, recreating button');
-        // Remove old button if it exists
+      const newVideoId = extractVideoId(currentUrl);
+      
+      if (newVideoId) {
+        log('Navigation detected, recreating button');
+        
+        // Remove old button
         const oldButton = document.getElementById('yt-summarizer-btn');
-        if (oldButton) {
-          oldButton.remove();
-        }
-        // Wait a bit for YouTube to load the new page
+        oldButton?.remove();
+        
+        // Wait for YouTube to render new page, then inject button
         setTimeout(createSummarizeButton, 1000);
       }
     }
   });
 
+  // Start observing
   observer.observe(document.body, {
     childList: true,
     subtree: true

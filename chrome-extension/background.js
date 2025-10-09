@@ -1,5 +1,10 @@
+// Configuration
+const SUMMARIZER_URL = 'https://youtube-summarizer-ui-teron131.up.railway.app';
+
 // Extract video ID from YouTube URL
 function extractVideoId(url) {
+  if (!url) return null;
+  
   // Pattern for youtube.com/watch?v=VIDEO_ID
   const watchMatch = url.match(/youtube\.com\/watch\?v=([\w-]+)/);
   if (watchMatch) return watchMatch[1];
@@ -12,7 +17,6 @@ function extractVideoId(url) {
 }
 
 // Validate if URL is a YouTube video page (not Shorts, Home, etc)
-// Matches backend utils.py:is_youtube_url() patterns
 function isValidYouTubeVideoUrl(url) {
   return extractVideoId(url) !== null;
 }
@@ -30,12 +34,12 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 // Listen for extension icon clicks
 chrome.action.onClicked.addListener((tab) => {
-  if (tab.url) {
-    const videoId = extractVideoId(tab.url);
-    if (videoId) {
-      const targetUrl = `https://youtube-summarizer-ui-teron131.up.railway.app/?v=${videoId}`;
-      chrome.tabs.create({ url: targetUrl });
-    }
+  if (!tab.url) return;
+  
+  const videoId = extractVideoId(tab.url);
+  if (videoId) {
+    const targetUrl = `${SUMMARIZER_URL}?v=${videoId}`;
+    chrome.tabs.create({ url: targetUrl });
   }
 });
 

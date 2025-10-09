@@ -1,0 +1,11 @@
+# Build artifacts
+*.zip
+
+# Development
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*~
+
