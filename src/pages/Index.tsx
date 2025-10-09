@@ -37,12 +37,14 @@ const Index = () => {
 
   const { toast } = useToast();
 
-  // Read video ID parameter on mount and construct YouTube URL
+  // Read video ID from path and construct YouTube URL
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const videoId = params.get('v');
+    // Extract video ID from path (e.g., /dQw4w9WgXcQ)
+    const pathname = window.location.pathname;
+    const videoId = pathname.replace(/^\//, ''); // Remove leading slash
     
-    if (videoId) {
+    // Only process if it looks like a video ID (11 characters, alphanumeric)
+    if (videoId && videoId.length === 11 && /^[\w-]+$/.test(videoId)) {
       // Construct clean YouTube URL from video ID
       const youtubeUrl = `https://youtu.be/${videoId}`;
       setInitialUrl(youtubeUrl);

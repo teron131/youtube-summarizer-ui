@@ -15,7 +15,7 @@ Simple extension to send YouTube videos to your summarizer app.
 1. Navigate to a YouTube video (e.g., `https://youtube.com/watch?v=...`)
 2. Extension icon becomes enabled (colored)
 3. Click the icon
-4. New tab opens with the summarizer app and video ID passed as `?v=VIDEO_ID`
+4. New tab opens with the summarizer app with video ID in path: `/VIDEO_ID`
 5. The app constructs a clean YouTube URL: `https://youtu.be/VIDEO_ID`
 
 ## Testing
@@ -42,9 +42,10 @@ Simple extension to send YouTube videos to your summarizer app.
 
 1. Extension detects valid YouTube video pages (`youtube.com/watch?v=...` or `youtu.be/...`)
 2. Extracts the video ID from the URL
-3. Opens Railway app with clean parameter: `?v=VIDEO_ID` (no slash before `?`)
-4. Frontend reconstructs as: `https://youtu.be/VIDEO_ID`
-5. This clean URL is passed to the summarizer backend
+3. Opens Railway app with video ID in path: `/VIDEO_ID`
+4. Frontend reads the video ID from the URL path
+5. Frontend reconstructs as: `https://youtu.be/VIDEO_ID`
+6. This clean URL is passed to the summarizer backend
 
 ## Files
 
