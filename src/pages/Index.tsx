@@ -37,13 +37,15 @@ const Index = () => {
 
   const { toast } = useToast();
 
-  // Read URL parameter on mount
+  // Read video ID parameter on mount and construct YouTube URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const urlParam = params.get('url');
+    const videoId = params.get('v');
     
-    if (urlParam) {
-      setInitialUrl(urlParam);
+    if (videoId) {
+      // Construct clean YouTube URL from video ID
+      const youtubeUrl = `https://youtu.be/${videoId}`;
+      setInitialUrl(youtubeUrl);
     }
   }, []);
 

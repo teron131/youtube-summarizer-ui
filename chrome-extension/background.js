@@ -1,11 +1,20 @@
+// Extract video ID from YouTube URL
+function extractVideoId(url) {
+  // Pattern for youtube.com/watch?v=VIDEO_ID
+  const watchMatch = url.match(/youtube\.com\/watch\?v=([\w-]+)/);
+  if (watchMatch) return watchMatch[1];
+  
+  // Pattern for youtu.be/VIDEO_ID
+  const shortMatch = url.match(/youtu\.be\/([\w-]+)/);
+  if (shortMatch) return shortMatch[1];
+  
+  return null;
+}
+
 // Validate if URL is a YouTube video page (not Shorts, Home, etc)
 // Matches backend utils.py:is_youtube_url() patterns
 function isValidYouTubeVideoUrl(url) {
-  const patterns = [
-    /^https?:\/\/(www\.)?youtube\.com\/watch\?v=[\w-]+/,
-    /^https?:\/\/(www\.)?youtu\.be\/[\w-]+/
-  ];
-  return patterns.some(pattern => pattern.test(url));
+  return extractVideoId(url) !== null;
 }
 
 // Listen for tab updates to show/hide the extension icon
@@ -21,9 +30,12 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 // Listen for extension icon clicks
 chrome.action.onClicked.addListener((tab) => {
-  if (tab.url && isValidYouTubeVideoUrl(tab.url)) {
-    const targetUrl = `https://youtube-summarizer-ui-teron131.up.railway.app/?url=${encodeURIComponent(tab.url)}`;
-    chrome.tabs.create({ url: targetUrl });
+  if (tab.url) {
+    const videoId = extractVideoId(tab.url);
+    if (videoId) {
+      const targetUrl = `https://youtube-summarizer-ui-teron131.up.railway.app?v=${videoId}`;
+      chrome.tabs.create({ url: targetUrl });
+    }
   }
 });
 
