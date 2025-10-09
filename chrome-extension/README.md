@@ -1,6 +1,8 @@
 # YouTube Summarizer Chrome Extension
 
-Simple extension to send YouTube videos to your summarizer app.
+Extension to send YouTube videos to your summarizer app with **two ways to use it**:
+1. **Toolbar button** - Click extension icon in Chrome toolbar
+2. **YouTube UI button** - "Summarize" button directly on YouTube video pages
 
 ## Installation
 
@@ -8,15 +10,28 @@ Simple extension to send YouTube videos to your summarizer app.
 2. Enable **Developer mode** (toggle in top-right corner)
 3. Click **Load unpacked**
 4. Select the `chrome-extension/` directory
-5. The extension icon will appear in your toolbar (grayed out by default)
+5. The extension will be active on YouTube pages
 
-## Usage
+## Features
 
-1. Navigate to a YouTube video (e.g., `https://youtube.com/watch?v=...`)
-2. Extension icon becomes enabled (colored)
-3. Click the icon
-4. New tab opens with the summarizer app with video ID in path: `/VIDEO_ID`
-5. The app constructs a clean YouTube URL: `https://youtu.be/VIDEO_ID`
+### 🎯 Two Ways to Summarize
+
+#### Option 1: Toolbar Button (Page Action)
+1. Navigate to a YouTube video
+2. Extension icon in toolbar becomes enabled (colored)
+3. Click the toolbar icon
+4. New tab opens with the summarizer app
+
+#### Option 2: YouTube UI Button (Recommended)
+1. Navigate to a YouTube video
+2. Look for the **"Summarize"** button left of the like/dislike buttons
+3. Click the "Summarize" button
+4. New tab opens with the summarizer app
+
+Both methods:
+- Extract the video ID from the URL
+- Open the app with `?v=VIDEO_ID` parameter
+- Work with both light and dark YouTube themes
 
 ## Testing
 
@@ -40,19 +55,39 @@ Simple extension to send YouTube videos to your summarizer app.
 
 ## How It Works
 
-1. Extension detects valid YouTube video pages (`youtube.com/watch?v=...` or `youtu.be/...`)
-2. Extracts the video ID from the URL
-3. Opens Railway app with video ID in path: `/VIDEO_ID`
-4. Frontend reads the video ID from the URL path
-5. Frontend reconstructs as: `https://youtu.be/VIDEO_ID`
-6. This clean URL is passed to the summarizer backend
+### Toolbar Button (background.js)
+1. Listens for tab navigation to YouTube pages
+2. Enables/disables toolbar icon based on URL validity
+3. On click, extracts video ID and opens app
+
+### YouTube UI Button (content.js)
+1. Content script injects "Summarize" button into YouTube's DOM
+2. Positioned left of like/dislike buttons
+3. Styled to match YouTube's design (light/dark modes)
+4. Handles YouTube's SPA navigation with MutationObserver
+
+### Both Methods
+1. Extract video ID from URL (supports `watch?v=` and `youtu.be/` formats)
+2. Open Railway app: `https://youtube-summarizer-ui-teron131.up.railway.app?v=VIDEO_ID`
+3. Frontend reconstructs as: `https://youtu.be/VIDEO_ID`
+4. Clean URL is passed to the summarizer backend
 
 ## Files
 
-- `manifest.json` - Extension configuration
-- `background.js` - Service worker logic
+- `manifest.json` - Extension configuration with content scripts
+- `background.js` - Service worker for toolbar button (page action)
+- `content.js` - Content script for YouTube UI button injection
+- `content.css` - Styling for injected button (light/dark modes)
 - `icon-*.png` - Extension icons (16x16, 48x48, 128x128)
 - `youtube-icon-transparent.svg` - Source SVG icon
+
+## Important Notes
+
+**After updating the extension:**
+1. Go to `chrome://extensions/`
+2. Find "YouTube Summarizer"
+3. Click the **reload icon** (circular arrow)
+4. Refresh any open YouTube tabs to see the UI button
 
 ## Development
 

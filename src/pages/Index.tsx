@@ -17,13 +17,23 @@ import {
 } from "@/services/api";
 import { exampleData } from "@/services/example-data";
 import { AlertCircle, CheckCircle, ChevronDown, ChevronUp, FileText, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const Index = () => {
+  // Read video ID parameter directly on initialization
+  const getInitialUrlFromParams = () => {
+    const params = new URLSearchParams(window.location.search);
+    const videoId = params.get('v');
+    if (videoId) {
+      return `https://www.youtube.com/watch?v=${videoId}`;
+    }
+    return "";
+  };
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
-  const [initialUrl, setInitialUrl] = useState<string>("");
-    const [currentStep, setCurrentStep] = useState<number>(0);
+  const [initialUrl] = useState<string>(getInitialUrlFromParams());
+  const [currentStep, setCurrentStep] = useState<number>(0);
   const [currentStage, setCurrentStage] = useState<string>("");
   const [progressStates, setProgressStates] = useState<StreamingProgressState[]>([]);
   const [streamingLogs, setStreamingLogs] = useState<string[]>([]);
@@ -36,20 +46,6 @@ const Index = () => {
   const [scrapedTranscript, setScrapedTranscript] = useState<string | null>(null);
 
   const { toast } = useToast();
-
-  // Read video ID from path and construct YouTube URL
-  useEffect(() => {
-    // Extract video ID from path (e.g., /dQw4w9WgXcQ)
-    const pathname = window.location.pathname;
-    const videoId = pathname.replace(/^\//, ''); // Remove leading slash
-    
-    // Only process if it looks like a video ID (11 characters, alphanumeric)
-    if (videoId && videoId.length === 11 && /^[\w-]+$/.test(videoId)) {
-      // Construct clean YouTube URL from video ID
-      const youtubeUrl = `https://youtu.be/${videoId}`;
-      setInitialUrl(youtubeUrl);
-    }
-  }, []);
 
   // Progress steps configuration (detailed workflow)
   const progressSteps = [

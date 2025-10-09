@@ -33,7 +33,7 @@ chrome.action.onClicked.addListener((tab) => {
   if (tab.url) {
     const videoId = extractVideoId(tab.url);
     if (videoId) {
-      const targetUrl = `https://youtube-summarizer-ui-teron131.up.railway.app/${videoId}`;
+      const targetUrl = `https://youtube-summarizer-ui-teron131.up.railway.app/?v=${videoId}`;
       chrome.tabs.create({ url: targetUrl });
     }
   }

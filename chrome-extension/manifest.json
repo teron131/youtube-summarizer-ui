@@ -16,6 +16,17 @@
     },
     "default_title": "Summarize this video"
   },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://www.youtube.com/watch*",
+        "*://youtu.be/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
   "icons": {
     "16": "icon-16.png",
     "48": "icon-48.png",

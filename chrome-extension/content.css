@@ -1,0 +1,64 @@
+/* Container for the summarize button */
+.yt-summarizer-container {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* Button styling to match YouTube's design system */
+.yt-summarizer-container button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 18px;
+  font-family: "Roboto", "Arial", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 36px;
+  cursor: pointer;
+  transition: all 0.1s cubic-bezier(0.05, 0, 0, 1);
+  white-space: nowrap;
+}
+
+/* Light mode styling */
+.yt-summarizer-container button {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #0f0f0f;
+}
+
+.yt-summarizer-container button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.yt-summarizer-container button:active {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+/* Dark mode styling - YouTube uses [dark] attribute */
+html[dark] .yt-summarizer-container button,
+[dark] .yt-summarizer-container button {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #f1f1f1;
+}
+
+html[dark] .yt-summarizer-container button:hover,
+[dark] .yt-summarizer-container button:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+html[dark] .yt-summarizer-container button:active,
+[dark] .yt-summarizer-container button:active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Button content layout */
+.yt-spec-button-shape-next__button-text-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+

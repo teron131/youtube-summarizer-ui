@@ -42,7 +42,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
   const { models } = useModelSelection();
   const { preferences, updatePreferences } = useUserPreferences();
 
-  // Update URL when initialUrl prop changes
+  // Update URL when initialUrl prop changes (for extension use case)
   useEffect(() => {
     if (initialUrl) {
       setUrl(initialUrl);
