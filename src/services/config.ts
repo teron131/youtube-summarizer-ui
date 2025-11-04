@@ -12,6 +12,7 @@
 
 export const AVAILABLE_MODELS = {
   "x-ai/grok-code-fast-1": "Grok Code Fast 1",
+  "x-ai/grok-4-fast": "Grok 4 Fast",
   "google/gemini-2.5-flash-preview-09-2025": "Gemini 2.5 Flash",
 } as const;
 
@@ -26,9 +27,6 @@ export const SUPPORTED_LANGUAGES = {
   "auto": "🌐 Auto",
   "en": "🇺🇸 English",
   "zh-TW": "🇭🇰 Chinese",
-  "ja": "🇯🇵 Japanese",
-  "ko": "🇰🇷 Korean",
-  "de": "🇩🇪 German",
 } as const;
 
 export const DEFAULT_TARGET_LANGUAGE = null;
