@@ -11,13 +11,17 @@
 // ================================
 
 export const AVAILABLE_MODELS = {
-  "x-ai/grok-code-fast-1": "Grok Code Fast 1",
   "x-ai/grok-4-fast": "Grok 4 Fast",
-  "google/gemini-2.5-flash-preview-09-2025": "Gemini 2.5 Flash",
+  "x-ai/grok-code-fast-1": "Grok Code Fast 1",
+  "x-ai/grok-4": "Grok 4",
+  "google/gemini-2.5-flash": "Gemini 2.5 Flash",
+  "google/gemini-2.5-pro": "Gemini 2.5 Pro",
+  "openai/gpt-5": "GPT-5",
+  "anthropic/claude-sonnet-4.5": "Claude Sonnet 4.5",
 } as const;
 
-export const DEFAULT_ANALYSIS_MODEL = "x-ai/grok-code-fast-1";
-export const DEFAULT_QUALITY_MODEL = "x-ai/grok-code-fast-1";
+export const DEFAULT_ANALYSIS_MODEL = "x-ai/grok-4-fast";
+export const DEFAULT_QUALITY_MODEL = "x-ai/grok-4-fast";
 
 // ================================
 // LANGUAGE CONFIGURATION
