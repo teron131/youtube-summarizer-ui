@@ -15,6 +15,8 @@ import { ConfigurationResponse, getConfigurationWithFallback } from '@/services/
 import {
   AVAILABLE_MODELS,
   AVAILABLE_MODELS_LIST,
+  AVAILABLE_REFINER_MODELS_LIST,
+  AVAILABLE_SUMMARIZER_MODELS_LIST,
   DEFAULT_ANALYSIS_MODEL,
   DEFAULT_QUALITY_MODEL,
   DEFAULT_TARGET_LANGUAGE,
@@ -31,6 +33,8 @@ interface UseConfigReturn {
   // Configuration data
   config: ConfigurationResponse | null;
   models: AvailableModel[];
+  summarizerModels: AvailableModel[];
+  refinerModels: AvailableModel[];
   languages: SupportedLanguage[];
 
   // Loading states
@@ -99,6 +103,8 @@ export function useConfig(): UseConfigReturn {
   return {
     config,
     models: AVAILABLE_MODELS_LIST,
+    summarizerModels: AVAILABLE_SUMMARIZER_MODELS_LIST,
+    refinerModels: AVAILABLE_REFINER_MODELS_LIST,
     languages: SUPPORTED_LANGUAGES_LIST,
     isLoading,
     error,
@@ -118,13 +124,16 @@ export function useConfig(): UseConfigReturn {
  * Hook for model selection
  */
 export function useModelSelection() {
-  const { models, getModelByKey, isValidModel } = useConfig();
+  const { models, summarizerModels, refinerModels, getModelByKey, isValidModel } = useConfig();
 
   return {
     models,
+    summarizerModels,
+    refinerModels,
     getModelByKey,
     isValidModel,
     defaultModel: DEFAULT_ANALYSIS_MODEL,
+    defaultQualityModel: DEFAULT_QUALITY_MODEL,
   };
 }
 

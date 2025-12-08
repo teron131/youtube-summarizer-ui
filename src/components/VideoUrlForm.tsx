@@ -5,10 +5,10 @@ import XaiLogo from "@/assets/logos/xai.svg";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ComboboxOption, EditableCombobox } from "@/components/ui/editable-combobox";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLanguageSelection, useModelSelection, useUserPreferences } from "@/hooks/use-config";
-import { AlertCircle, Bot, ExternalLink, Languages, Loader2, Play, Youtube } from "lucide-react";
+import { AlertCircle, Bot, ExternalLink, Languages, Loader2, Play, Sparkles, Youtube } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface VideoUrlFormProps {
@@ -39,7 +39,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
 
   // Use configuration hooks
   const { languages } = useLanguageSelection();
-  const { models } = useModelSelection();
+  const { summarizerModels, refinerModels } = useModelSelection();
   const { preferences, updatePreferences } = useUserPreferences();
 
   // Update URL when initialUrl prop changes (for extension use case)
@@ -113,80 +113,97 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
     setShowExamples(false);
     setValidationError("");
   };
+
+  // Helper to render model options with icons
+  const renderModelOption = (option: ComboboxOption) => (
+    <>
+      {option.icon && <span className="mr-2 flex items-center justify-center w-4 h-4">{option.icon}</span>}
+      <span>{option.label}</span>
+    </>
+  );
+
+  // Prepare options for comboboxes
+  const summarizerOptions: ComboboxOption[] = summarizerModels.map(m => ({
+    value: m.key,
+    label: m.label,
+    icon: <img src={getProviderLogo(m.provider) as string} alt={m.provider} className="w-full h-full object-contain" />
+  }));
+
+  const refinerOptions: ComboboxOption[] = refinerModels.map(m => ({
+    value: m.key,
+    label: m.label,
+    icon: <img src={getProviderLogo(m.provider) as string} alt={m.provider} className="w-full h-full object-contain" />
+  }));
+
+  const languageOptions: ComboboxOption[] = languages.map(l => ({
+    value: l.key,
+    label: l.label,
+    icon: l.flag ? <span className="text-sm">{l.flag}</span> : undefined
+  }));
  
   return (
     <Card className="p-10 modern-blur shadow-glass hover-lift">
       <div className="space-y-8">
         
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Options Section - Centered with equal gaps */}
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-6 sm:gap-24 pb-6 border-b border-muted">
-            {/* Model Selection */}
-            <div className="flex items-center gap-4 w-full sm:w-auto">
+          {/* Options Section - Grid layout for 3 items */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-6 border-b border-muted">
+            
+            {/* Summarizer Model Selection */}
+            <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2 group relative">
-                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                  <Bot className="w-4 h-4 text-white" />
+                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                  <Bot className="w-3 h-3 text-white" />
                 </div>
-                {/* Tooltip on hover */}
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded border border-gray-300/25 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-                  Model
+                <span className="text-sm font-medium text-muted-foreground">Summarizer</span>
+              </div>
+              
+              <EditableCombobox
+                value={preferences.analysisModel}
+                onChange={(value) => updatePreferences({ analysisModel: value })}
+                options={summarizerOptions}
+                placeholder="Select summarizer..."
+                renderOption={renderModelOption}
+                inputClassName="bg-red-800 text-white border-red-500/30 hover:bg-red-800 focus:bg-red-800 placeholder:text-white/50"
+              />
+            </div>
+
+            {/* Refiner Model Selection */}
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2 group relative">
+                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                  <Sparkles className="w-3 h-3 text-white" />
                 </div>
+                <span className="text-sm font-medium text-muted-foreground">Refiner</span>
               </div>
 
-              <Select value={preferences.analysisModel} onValueChange={(value) => updatePreferences({ analysisModel: value, qualityModel: value })}>
-                <SelectTrigger className="w-full sm:w-64 h-8 bg-red-800 text-white border-red-500/30 hover:bg-red-800">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-red-800 border-red-800/30">
-                  {models.map((modelOption) => {
-                    const provider = modelOption.provider;
-                    const Logo = getProviderLogo(provider);
-                    return (
-                      <SelectItem
-                        key={modelOption.key}
-                        value={modelOption.key}
-                        className="text-white hover:bg-red-700"
-                      >
-                        <span className="flex items-center gap-2">
-                          {Logo ? <img src={Logo as unknown as string} alt={provider} className="w-4 h-4" /> : <span className="w-4 h-4" />}
-                          {modelOption.label}
-                        </span>
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
+              <EditableCombobox
+                value={preferences.qualityModel}
+                onChange={(value) => updatePreferences({ qualityModel: value })}
+                options={refinerOptions}
+                placeholder="Select refiner..."
+                renderOption={renderModelOption}
+                inputClassName="bg-red-800 text-white border-red-500/30 hover:bg-red-800 focus:bg-red-800 placeholder:text-white/50"
+              />
             </div>
 
             {/* Language Selection */}
-            <div className="flex items-center gap-4 w-full sm:w-auto">
-              <div className="w-10 h-8 bg-primary rounded-full flex items-center justify-center group relative">
-                <Languages className="w-4 h-4 text-white" />
-                {/* Tooltip on hover */}
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded border border-gray-300/25 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-                  Language
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2 group relative">
+                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                  <Languages className="w-3 h-3 text-white" />
                 </div>
+                <span className="text-sm font-medium text-muted-foreground">Language</span>
               </div>
 
-              <Select value={preferences.targetLanguage} onValueChange={(value) => updatePreferences({ targetLanguage: value })}>
-                <SelectTrigger className="w-full sm:w-64 h-8 bg-red-800 text-white border-red-500/30 hover:bg-red-800">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-red-800 border-red-800/30">
-                  {languages.map((lang) => (
-                    <SelectItem
-                      key={lang.key}
-                      value={lang.key}
-                      className="text-white hover:bg-red-800"
-                    >
-                      <span className="flex items-center gap-2">
-                        {lang.flag && <span className="text-lg leading-none">{lang.flag}</span>}
-                        {lang.label}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <EditableCombobox
+                value={preferences.targetLanguage}
+                onChange={(value) => updatePreferences({ targetLanguage: value })}
+                options={languageOptions}
+                placeholder="Select language..."
+                renderOption={renderModelOption}
+                inputClassName="bg-red-800 text-white border-red-500/30 hover:bg-red-800 focus:bg-red-800 placeholder:text-white/50"
+              />
             </div>
           </div>
 

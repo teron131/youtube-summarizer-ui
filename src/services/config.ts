@@ -10,18 +10,30 @@
 // MODEL CONFIGURATION
 // ================================
 
-export const AVAILABLE_MODELS = {
-  "x-ai/grok-4-fast": "Grok 4 Fast",
-  "x-ai/grok-code-fast-1": "Grok Code Fast 1",
-  "x-ai/grok-4": "Grok 4",
-  "google/gemini-2.5-flash": "Gemini 2.5 Flash",
-  "google/gemini-2.5-pro": "Gemini 2.5 Pro",
-  "openai/gpt-5": "GPT-5",
-  "anthropic/claude-sonnet-4.5": "Claude Sonnet 4.5",
-} as const;
+export const RECOMMENDED_SUMMARIZER_MODELS = [
+  { value: "x-ai/grok-4.1-fast", label: "Grok 4.1 Fast", provider: "x-ai" },
+  { value: "x-ai/grok-4", label: "Grok 4", provider: "x-ai" },
+  { value: "google/gemini-2.5-flash", label: "Gemini 2.5 Flash", provider: "google" },
+  { value: "google/gemini-3-pro-preview", label: "Gemini 3 Pro", provider: "google" },
+  { value: "openai/gpt-5-mini", label: "GPT-5 Mini", provider: "openai" },
+  { value: "openai/gpt-5.1", label: "GPT-5.1", provider: "openai" },
+  { value: "anthropic/claude-haiku-4.5", label: "Claude Haiku 4.5", provider: "anthropic" },
+  { value: "anthropic/claude-sonnet-4.5", label: "Claude Sonnet 4.5", provider: "anthropic" },
+] as const;
 
-export const DEFAULT_ANALYSIS_MODEL = "x-ai/grok-4-fast";
-export const DEFAULT_QUALITY_MODEL = "x-ai/grok-4-fast";
+export const RECOMMENDED_REFINER_MODELS = [
+  { value: "google/gemini-2.5-flash-lite-preview-09-2025", label: "Gemini 2.5 Flash Lite", provider: "google" },
+  { value: "x-ai/grok-4.1-fast", label: "Grok 4.1 Fast", provider: "x-ai" },
+] as const;
+
+// Combined models for backward compatibility and validation
+export const AVAILABLE_MODELS = [...RECOMMENDED_SUMMARIZER_MODELS, ...RECOMMENDED_REFINER_MODELS].reduce((acc, model) => {
+  acc[model.value] = model.label;
+  return acc;
+}, {} as Record<string, string>);
+
+export const DEFAULT_ANALYSIS_MODEL = "x-ai/grok-4.1-fast";
+export const DEFAULT_QUALITY_MODEL = "google/gemini-2.5-flash-lite-preview-09-2025";
 
 // ================================
 // LANGUAGE CONFIGURATION
@@ -76,11 +88,11 @@ export const UI_CONFIG = {
 // TYPE DEFINITIONS
 // ================================
 
-export type ModelKey = keyof typeof AVAILABLE_MODELS;
+export type ModelKey = string; // Relaxed type to allow custom models
 export type LanguageKey = keyof typeof SUPPORTED_LANGUAGES;
 
 export type AvailableModel = {
-  key: ModelKey;
+  key: string;
   label: string;
   provider: string;
   recommended?: boolean;
@@ -96,13 +108,23 @@ export type SupportedLanguage = {
 // DERIVED DATA
 // ================================
 
-export const AVAILABLE_MODELS_LIST: AvailableModel[] = Object.entries(AVAILABLE_MODELS).map(
-  ([key, label]) => ({
-    key: key as ModelKey,
-    label,
-    provider: key.split('/')[0],
-    recommended: key === DEFAULT_ANALYSIS_MODEL,
-  })
+// Helper to convert recommendation arrays to AvailableModel format
+const convertToAvailableModel = (model: { value: string, label: string, provider: string }): AvailableModel => ({
+  key: model.value,
+  label: model.label,
+  provider: model.provider,
+  recommended: true
+});
+
+export const AVAILABLE_SUMMARIZER_MODELS_LIST: AvailableModel[] = RECOMMENDED_SUMMARIZER_MODELS.map(convertToAvailableModel);
+export const AVAILABLE_REFINER_MODELS_LIST: AvailableModel[] = RECOMMENDED_REFINER_MODELS.map(convertToAvailableModel);
+
+export const AVAILABLE_MODELS_LIST: AvailableModel[] = [
+  ...AVAILABLE_SUMMARIZER_MODELS_LIST,
+  ...AVAILABLE_REFINER_MODELS_LIST
+// Remove duplicates based on key
+].filter((model, index, self) => 
+  index === self.findIndex((m) => m.key === model.key)
 );
 
 export const SUPPORTED_LANGUAGES_LIST: SupportedLanguage[] = Object.entries(SUPPORTED_LANGUAGES).map(
@@ -133,8 +155,9 @@ export function getLanguageByKey(key: LanguageKey): SupportedLanguage | undefine
   return SUPPORTED_LANGUAGES_LIST.find(language => language.key === key);
 }
 
-export function isValidModel(model: string): model is ModelKey {
-  return model in AVAILABLE_MODELS;
+export function isValidModel(model: string): boolean {
+  // Allow any string since we support custom models, but we can check if it's in the known list for recommendation status
+  return true; 
 }
 
 export function isValidLanguage(language: string): language is LanguageKey {
@@ -151,12 +174,12 @@ export function validateModelSelection(analysisModel: string, qualityModel: stri
 } {
   const errors: string[] = [];
 
-  if (!isValidModel(analysisModel)) {
-    errors.push(`Invalid analysis model: ${analysisModel}`);
+  if (!analysisModel) {
+    errors.push(`Analysis model is required`);
   }
 
-  if (!isValidModel(qualityModel)) {
-    errors.push(`Invalid quality model: ${qualityModel}`);
+  if (!qualityModel) {
+    errors.push(`Quality model is required`);
   }
 
   return {
@@ -185,6 +208,8 @@ export function validateLanguageSelection(language: string): {
 
 export default {
   AVAILABLE_MODELS,
+  RECOMMENDED_SUMMARIZER_MODELS,
+  RECOMMENDED_REFINER_MODELS,
   DEFAULT_ANALYSIS_MODEL,
   DEFAULT_QUALITY_MODEL,
   SUPPORTED_LANGUAGES,
@@ -194,6 +219,8 @@ export default {
   ENABLE_TRANSLATION_DEFAULT,
   UI_CONFIG,
   AVAILABLE_MODELS_LIST,
+  AVAILABLE_SUMMARIZER_MODELS_LIST,
+  AVAILABLE_REFINER_MODELS_LIST,
   SUPPORTED_LANGUAGES_LIST,
   getModelByKey,
   getLanguageByKey,
