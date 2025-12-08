@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { convertAnalysisChinese } from "@/lib/utils";
 import { AnalysisData, QualityData, VideoInfoResponse } from "@/services/api";
-import { BookOpen, Copy, FileText, Lightbulb, ListChecks, Sparkles } from "lucide-react";
+import { BookOpen, Copy, Lightbulb, ListChecks, Sparkles } from "lucide-react";
 
 interface AnalysisPanelProps {
   analysis: AnalysisData;
@@ -75,14 +75,6 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
       markdown += "# Key Takeaways\n\n";
       convertedAnalysis.takeaways.forEach(takeaway => {
         markdown += `- ${takeaway}\n`;
-      });
-      markdown += "\n";
-    }
-
-    if (convertedAnalysis.key_facts && convertedAnalysis.key_facts.length > 0) {
-      markdown += "# Key Facts\n\n";
-      convertedAnalysis.key_facts.forEach(fact => {
-        markdown += `- ${fact}\n`;
       });
       markdown += "\n";
     }
@@ -178,23 +170,6 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
                   <li key={index} className="flex items-start gap-2 md:gap-3">
                     <span className="text-primary font-bold mt-0.5 text-sm md:text-base">•</span>
                     {renderText(takeaway)}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        )}
-
-        {/* Key Facts Section */}
-        {convertedAnalysis.key_facts && convertedAnalysis.key_facts.length > 0 && (
-          <div className="space-y-1.5 md:space-y-2">
-            <SectionHeader icon={<FileText className="w-4 h-4 md:w-5 md:h-5 text-white" />} title="Key Facts" />
-            <div className="pl-2 md:pl-3">
-              <ul className="space-y-1 md:space-y-1.5">
-                {convertedAnalysis.key_facts.map((fact, index) => (
-                  <li key={index} className="flex items-start gap-2 md:gap-3">
-                    <span className="text-primary font-bold mt-0.5 text-sm md:text-base">•</span>
-                    {renderText(fact)}
                   </li>
                 ))}
               </ul>

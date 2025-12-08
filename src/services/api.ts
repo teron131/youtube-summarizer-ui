@@ -161,7 +161,6 @@ export interface AnalysisData {
   title: string;
   summary: string;
   takeaways: string[];                 // Key insights as simple strings
-  key_facts: string[];                 // Important facts as simple strings
   chapters: AnalysisChapter[];         // Video chapter breakdown
   keywords: string[];                  // Extracted keywords (max 3)
   target_language?: string | null;     // Translation target language
@@ -204,7 +203,6 @@ export interface StreamingChunk {
 export interface QualityData {
   completeness: QualityRate;         // Coverage of entire transcript
   structure: QualityRate;            // Organization and formatting
-  grammar: QualityRate;              // Language quality and correctness
   no_garbage: QualityRate;           // Removal of promotional content
   meta_language_avoidance: QualityRate; // Avoidance of meta-language phrases
   useful_keywords: QualityRate;      // Usefulness of keywords for analysis highlighting

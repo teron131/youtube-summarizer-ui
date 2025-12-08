@@ -24,14 +24,6 @@ export const exampleData: StreamingProcessingResult = {
     "AI-driven scientific breakthroughs, exemplified by AlphaFold and RF Diffusion, represent a 'step function change' in the pace of research, enabling discoveries previously thought impossible.",
     "The methodologies developed for protein folding are transferable to other scientific domains, such as materials science, leading to the discovery of new stable materials."
   ],
-  "key_facts": [
-    "Before AI, tens of thousands of biologists painstakingly worked out the structure of 150,000 proteins over six decades.",
-    "DeepMind's AlphaFold determined the structure of 200 million proteins in just a few years, covering nearly every protein known in nature.",
-    "John Kendrew took 12 years to determine the first protein structure (myoglobin) using X-ray crystallography.",
-    "Cyrus Levinthal calculated that a short protein chain with 35 amino acids could fold in an astronomical number of ways, taking 200 times the age of the universe for a computer to find the correct structure by brute force.",
-    "AlphaFold 2 achieved a score of 90, the gold standard for accuracy, in the CASP 14 competition, making its predictions virtually indistinguishable from actual structures.",
-    "John Jumper and Demis Hassabis received half of the 2024 Nobel Prize in Chemistry for AlphaFold, while David Baker received the other half for designing new proteins."
-  ],
   "chapters": [
     {
       "header": "The Protein Folding Problem: A Historical Challenge",
@@ -104,11 +96,7 @@ export const exampleData: StreamingProcessingResult = {
   },
   "structure": {
     "rate": "Pass",
-    "reason": "The output perfectly adheres to the specified schema, including the correct formatting for title, summary, chapters, takeaways, key facts, and keywords. Takeaways and key facts are simple arrays as requested."
-  },
-  "grammar": {
-    "rate": "Pass",
-    "reason": "The text is free of typos and grammatical errors. The wording is appropriate and professional throughout."
+    "reason": "The output perfectly adheres to the specified schema, including the correct formatting for title, summary, chapters, takeaways, and keywords. Takeaways are simple arrays as requested."
   },
   "no_garbage": {
     "rate": "Pass",

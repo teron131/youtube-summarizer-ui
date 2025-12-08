@@ -40,7 +40,6 @@ export function convertAnalysisChinese(analysis: AnalysisData): AnalysisData {
     title: s2tw(analysis.title),
     summary: s2tw(analysis.summary),
     takeaways: analysis.takeaways.map(s2tw),
-    key_facts: analysis.key_facts.map(s2tw),
     keywords: analysis.keywords.map(s2tw),
     chapters: analysis.chapters.map(chapter => ({
       ...chapter,
