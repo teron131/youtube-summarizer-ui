@@ -273,7 +273,6 @@ All colors MUST be HSL.
   border-radius: 9999px;
   animation: timelineGlow 1.8s ease-in-out infinite alternate;
 }
-
 @keyframes timelineGlow {
   from {
     box-shadow: 0 0 16px hsl(var(--youtube-red) / 0.35), 0 0 32px hsl(var(--youtube-red) / 0.2);

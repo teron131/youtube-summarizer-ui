@@ -122,23 +122,31 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
           <div className="space-y-1.5 md:space-y-2">
             <SectionHeader icon={<BookOpen className="w-4 h-4 md:w-5 md:h-5 text-white" />} title="Video Chapters" />
 
-            <div className="pl-2 md:pl-3 space-y-2 md:space-y-3">
+            <div className="pl-2 md:pl-3 space-y-6 relative">
+              {/* Vertical line connecting chapters */}
+              <div className="absolute left-[29px] top-6 bottom-6 w-0.5 bg-primary/30 z-0" />
+              
               {convertedAnalysis.chapters.map((chapter, index) => (
-                <div key={index} className="space-y-1 md:space-y-1.5">
-                  <div className="flex items-center gap-3">
-                    <h5 className="text-base md:text-lg font-semibold text-primary">{chapter.header}</h5>
+                <div key={index} className="relative z-10 space-y-1 md:space-y-1.5">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-card border-2 border-primary/30 group-hover:border-primary group-hover:text-primary flex items-center justify-center text-primary shadow-sm transition-colors mt-0.5 z-10">
+                      <span className="text-sm font-bold">{index + 1}</span>
+                    </div>
+                    <div>
+                      <h5 className="text-base md:text-lg font-semibold text-primary">{chapter.header}</h5>
+                      <p className="text-foreground leading-7 md:leading-8 text-sm md:text-base mt-1">{chapter.summary}</p>
+                      {chapter.key_points && chapter.key_points.length > 0 && (
+                        <ul className="space-y-0.5 md:space-y-1 mt-2">
+                          {chapter.key_points.map((point, pIndex) => (
+                            <li key={pIndex} className="flex items-start gap-2 md:gap-3">
+                              <span className="text-primary font-bold mt-0.5 text-sm md:text-base">•</span>
+                              <span className="text-foreground leading-7 md:leading-8 text-sm md:text-base">{point}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
                   </div>
-                  <p className="text-foreground leading-7 md:leading-8 text-sm md:text-base">{chapter.summary}</p>
-                  {chapter.key_points && chapter.key_points.length > 0 && (
-                    <ul className="space-y-0.5 md:space-y-1">
-                      {chapter.key_points.map((point, pIndex) => (
-                        <li key={pIndex} className="flex items-start gap-2 md:gap-3">
-                          <span className="text-primary font-bold mt-0.5 text-sm md:text-base">•</span>
-                          <span className="text-foreground leading-7 md:leading-8 text-sm md:text-base">{point}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
                 </div>
               ))}
             </div>
