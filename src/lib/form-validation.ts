@@ -7,25 +7,23 @@ import { isValidYouTubeUrl } from './url-utils';
 /**
  * Validate YouTube URL input
  */
-export function validateYouTubeUrl(url: string): { 
-  isValid: boolean; 
-  error?: string 
+export function validateYouTubeUrl(url: string): {
+  isValid: boolean;
+  error?: string
 } {
   const trimmed = url.trim();
-  
-  // Empty is valid (for example mode)
-  if (trimmed.length === 0) {
+
+  if (!trimmed) {
     return { isValid: true };
   }
-  
-  // Check YouTube URL format
+
   if (!isValidYouTubeUrl(trimmed)) {
-    return { 
-      isValid: false, 
-      error: 'Please enter a valid YouTube URL (youtube.com or youtu.be).' 
+    return {
+      isValid: false,
+      error: 'Please enter a valid YouTube URL (youtube.com or youtu.be).'
     };
   }
-  
+
   return { isValid: true };
 }
 
@@ -34,7 +32,7 @@ export function validateYouTubeUrl(url: string): {
  */
 export function isFormValid(url: string): boolean {
   const trimmed = url.trim();
-  return trimmed.length === 0 || isValidYouTubeUrl(trimmed);
+  return !trimmed || isValidYouTubeUrl(trimmed);
 }
 
 /**
@@ -44,25 +42,11 @@ export function prepareProcessingOptions(
   targetLanguage: string,
   analysisModel: string,
   qualityModel: string
-): {
-  targetLanguage?: string;
-  analysisModel?: string;
-  qualityModel?: string;
-} {
-  const options = {
+) {
+  return {
     analysisModel,
     qualityModel,
-  } as {
-    targetLanguage?: string;
-    analysisModel?: string;
-    qualityModel?: string;
+    ...(targetLanguage !== "auto" && { targetLanguage }),
   };
-
-  // Convert "auto" to undefined for backend (auto-detect)
-  if (targetLanguage !== "auto") {
-    options.targetLanguage = targetLanguage;
-  }
-
-  return options;
 }
 

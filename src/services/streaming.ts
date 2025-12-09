@@ -5,15 +5,82 @@
 
 import { api } from './api';
 import {
-    AnalysisData,
-    ApiError,
-    QualityData,
-    StreamingChunk,
-    StreamingProcessingResult,
-    StreamingProgressState,
-    SummarizeRequest,
-    VideoInfoResponse
+  AnalysisData,
+  ApiError,
+  QualityData,
+  StreamingChunk,
+  StreamingProcessingResult,
+  StreamingProgressState,
+  SummarizeRequest,
+  VideoInfoResponse
 } from './types';
+
+function createLogger(onLog?: (logs: string[]) => void) {
+  const logs: string[] = [];
+  return {
+    add: (msg: string) => {
+      const timestamp = new Date().toLocaleTimeString();
+      logs.push(`[${timestamp}] ${msg}`);
+      onLog?.([...logs]);
+    },
+    getLogs: () => logs,
+  };
+}
+
+function processChunk(
+  data: StreamingChunk,
+  logger: ReturnType<typeof createLogger>,
+  onProgress?: (state: StreamingProgressState) => void
+) {
+  if (data.type === 'status') {
+    logger.add(data.message || 'Processing...');
+    return;
+  }
+
+  if (data.type === 'complete' || data.is_complete) {
+    const qualityScore = data.quality?.percentage_score;
+    const msg = qualityScore !== undefined
+      ? `✅ Analysis completed successfully with ${qualityScore}% quality score`
+      : `✅ Analysis completed successfully`;
+
+    logger.add(msg);
+    onProgress?.({
+      step: 'complete',
+      stepName: 'Analysis Complete',
+      status: 'completed',
+      message: msg,
+      iterationCount: data.iteration_count,
+      qualityScore,
+    });
+    return;
+  }
+
+  if (data.quality?.percentage_score !== undefined) {
+    const score = data.quality.percentage_score;
+    const passed = data.quality.is_acceptable;
+    logger.add(`🎯 Quality Check: ${score}% (${passed ? 'Pass' : 'Refine'})`);
+
+    onProgress?.({
+      step: passed ? 'quality_check' : 'refinement',
+      stepName: passed ? 'Quality Check' : 'Refining',
+      status: 'processing',
+      message: passed ? 'Quality check passed' : 'Refining analysis...',
+      qualityScore: score,
+      iterationCount: data.iteration_count,
+    });
+    return;
+  }
+
+  if (data.analysis && !data.quality) {
+    onProgress?.({
+      step: 'analysis_generation',
+      stepName: 'Analysis Generation',
+      status: 'completed',
+      message: 'Analysis generated',
+      iterationCount: data.iteration_count,
+    });
+  }
+}
 
 export async function streamAnalysis(
   url: string,
@@ -26,18 +93,11 @@ export async function streamAnalysis(
   onLog?: (logs: string[]) => void
 ): Promise<StreamingProcessingResult> {
   const startTime = Date.now();
-  const logs: string[] = [];
-  
-  const addLog = (msg: string) => {
-    const timestamp = new Date().toLocaleTimeString();
-    const logEntry = `[${timestamp}] ${msg}`;
-    logs.push(logEntry);
-    onLog?.([...logs]);
-  };
+  const logger = createLogger(onLog);
 
   try {
     // 1. Scraping Phase
-    addLog('🚀 Starting process...');
+    logger.add('🚀 Starting process...');
     onProgress?.({
       step: 'scraping',
       stepName: 'Scraping Video',
@@ -46,7 +106,7 @@ export async function streamAnalysis(
     });
 
     const scrapResult = await api.scrapVideo({ url });
-    
+
     if (scrapResult.status !== 'success') {
       throw new Error(scrapResult.message || 'Scraping failed');
     }
@@ -54,15 +114,15 @@ export async function streamAnalysis(
     const videoInfo: VideoInfoResponse = {
       url: scrapResult.url || url,
       title: scrapResult.title || null,
-      thumbnail: scrapResult.thumbnail || undefined,
+      thumbnail: scrapResult.thumbnail,
       author: scrapResult.author || null,
-      duration: scrapResult.duration || undefined,
-      upload_date: scrapResult.upload_date || undefined,
-      view_count: scrapResult.view_count || undefined,
-      like_count: scrapResult.like_count || undefined,
+      duration: scrapResult.duration,
+      upload_date: scrapResult.upload_date,
+      view_count: scrapResult.view_count,
+      like_count: scrapResult.like_count,
     };
-    
-    addLog(`✅ Scraped: ${videoInfo.title}`);
+
+    logger.add(`✅ Scraped: ${videoInfo.title}`);
     onProgress?.({
       step: 'scraping',
       stepName: 'Scraping Video',
@@ -98,7 +158,7 @@ export async function streamAnalysis(
 
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
-    
+
     let analysis: AnalysisData | undefined;
     let quality: QualityData | undefined;
     let iterationCount = 0;
@@ -113,60 +173,16 @@ export async function streamAnalysis(
 
       for (const line of lines) {
         if (!line.startsWith('data: ')) continue;
-        
+
         try {
           const data: StreamingChunk = JSON.parse(line.slice(6));
           chunksProcessed++;
 
-          // Update state
           if (data.analysis) analysis = data.analysis;
           if (data.quality) quality = data.quality;
           if (data.iteration_count) iterationCount = data.iteration_count;
 
-          // Emit progress based on chunk type
-          if (data.type === 'status') {
-            addLog(data.message || 'Processing...');
-          } else if (data.type === 'complete' || data.is_complete) {
-             const qualityScore = data.quality?.percentage_score;
-             const msg = qualityScore !== undefined
-               ? `✅ Analysis completed successfully with ${qualityScore}% quality score`
-               : `✅ Analysis completed successfully`;
-             
-             addLog(msg);
-             
-             onProgress?.({
-               step: 'complete',
-               stepName: 'Analysis Complete',
-               status: 'completed',
-               message: msg,
-               iterationCount,
-               qualityScore,
-               chunkCount: chunksProcessed
-             });
-          } else if (data.quality && data.quality.percentage_score !== undefined) {
-             const score = data.quality.percentage_score;
-             const passed = data.quality.is_acceptable;
-             addLog(`🎯 Quality Check: ${score}% (${passed ? 'Pass' : 'Refine'})`);
-             
-             onProgress?.({
-               step: passed ? 'quality_check' : 'refinement',
-               stepName: passed ? 'Quality Check' : 'Refining',
-               status: 'processing',
-               message: passed ? 'Quality check passed' : 'Refining analysis...',
-               qualityScore: score,
-               iterationCount
-             });
-          } else if (data.analysis && !data.quality) {
-             // Initial analysis generation
-             onProgress?.({
-               step: 'analysis_generation',
-               stepName: 'Analysis Generation',
-               status: 'completed',
-               message: 'Analysis generated',
-               iterationCount
-             });
-          }
-          
+          processChunk(data, logger, onProgress);
         } catch (e) {
           // Ignore parse errors for partial chunks
         }
@@ -174,35 +190,35 @@ export async function streamAnalysis(
     }
 
     const totalTime = ((Date.now() - startTime) / 1000).toFixed(1) + 's';
-    addLog(`🏁 Completed in ${totalTime}`);
+    logger.add(`🏁 Completed in ${totalTime}`);
 
     return {
       success: true,
       videoInfo,
-      transcript: scrapResult.transcript || undefined,
+      transcript: scrapResult.transcript,
       analysis,
       quality,
       totalTime,
       iterationCount,
       chunksProcessed,
-      logs
+      logs: logger.getLogs()
     };
 
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Unknown error';
-    addLog(`❌ Error: ${msg}`);
-    
+    logger.add(`❌ Error: ${msg}`);
+
     const apiError: ApiError = {
       message: msg,
       type: 'processing'
     };
 
     onProgress?.({
-        step: 'analyzing', // Default to analyzing failure
-        stepName: 'Processing',
-        status: 'error',
-        message: msg,
-        error: apiError
+      step: 'analyzing',
+      stepName: 'Processing',
+      status: 'error',
+      message: msg,
+      error: apiError
     });
 
     return {
@@ -210,7 +226,7 @@ export async function streamAnalysis(
       totalTime: ((Date.now() - startTime) / 1000).toFixed(1) + 's',
       iterationCount: 0,
       chunksProcessed: 0,
-      logs,
+      logs: logger.getLogs(),
       error: apiError
     };
   }

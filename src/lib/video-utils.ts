@@ -4,6 +4,12 @@
 
 import { StreamingProgressState } from '@/services/types';
 
+const VIDEO_ID_REGEX = /^[\w-]{11}$/;
+const STEP_ORDER = ['scraping', 'analysis_generation', 'quality_check', 'refinement', 'complete'] as const;
+type NormalizedStep = typeof STEP_ORDER[number];
+const MILLION = 1000000;
+const THOUSAND = 1000;
+
 export const PROGRESS_STEPS = [
   { step: 'scraping', name: "Scraping Video", description: "Extracting video info and transcript using Scrape Creators" },
   { step: 'analysis_generation', name: "Analysis Generation", description: "Generating initial AI analysis with Gemini model" },
@@ -19,15 +25,14 @@ export function getVideoIdFromParams(): string {
   try {
     const params = new URLSearchParams(window.location.search);
     const videoId = params.get('v');
-    
-    // Validate video ID format (YouTube video IDs are typically 11 characters)
-    if (videoId && /^[\w-]{11}$/.test(videoId)) {
+
+    if (videoId && VIDEO_ID_REGEX.test(videoId)) {
       return `https://www.youtube.com/watch?v=${videoId}`;
     }
   } catch (error) {
     console.error('Error parsing URL parameters:', error);
   }
-  
+
   return '';
 }
 
@@ -36,48 +41,26 @@ export function getVideoIdFromParams(): string {
  */
 export function normalizeStepName(
   step: StreamingProgressState['step']
-): StreamingProgressState['step'] {
-  return step === 'analyzing' ? 'analysis_generation' : step;
+): NormalizedStep {
+  return step === 'analyzing' ? 'analysis_generation' : step as NormalizedStep;
 }
 
 /**
  * Find step index in progress steps array
  */
 export function findStepIndex(step: StreamingProgressState['step']): number {
-  const normalizedStep = normalizeStepName(step);
-  return PROGRESS_STEPS.findIndex(s => s.step === normalizedStep);
+  return PROGRESS_STEPS.findIndex(s => s.step === step);
 }
 
 /**
  * Sort progress states in correct order
  */
 export function sortProgressStates(states: StreamingProgressState[]): StreamingProgressState[] {
-  const order = ['scraping', 'analysis_generation', 'quality_check', 'refinement', 'complete'];
-  return [...states].sort((a, b) => order.indexOf(a.step) - order.indexOf(b.step));
-}
-
-/**
- * Calculate progress percentage based on current step
- */
-export function calculateProgressPercentage(
-  currentStep: number,
-  finished: boolean
-): number {
-  if (finished) return 100;
-  
-  const anchors = 5; // Start, Scrap, Analysis, Quality, Finish
-  const stepToAnchor = [0, 1, 2, 3, 2, 4];
-  const activeAnchor = stepToAnchor[Math.max(0, Math.min(currentStep, stepToAnchor.length - 1))];
-  
-  return (activeAnchor / (anchors - 1)) * 100;
-}
-
-/**
- * Get stage text for current step
- */
-export function getStageText(step: number): string {
-  const stages = ['Start', 'Scrap', 'Analysis', 'Quality', 'Finish'];
-  return stages[Math.max(0, Math.min(step, stages.length - 1))] || 'Processing';
+  return [...states].sort((a, b) => {
+    const stepA = normalizeStepName(a.step);
+    const stepB = normalizeStepName(b.step);
+    return STEP_ORDER.indexOf(stepA) - STEP_ORDER.indexOf(stepB);
+  });
 }
 
 /**
@@ -130,26 +113,20 @@ export function getLogClassName(logType: ReturnType<typeof classifyLogType>): st
  */
 export function formatDuration(duration: string): string {
   if (!duration) return '0:00';
+
   const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
   if (!match) return duration;
-  
+
   const hours = (match[1] || '').replace('H', '');
   const minutes = (match[2] || '').replace('M', '');
   const seconds = (match[3] || '').replace('S', '');
-  
+
   const parts = [];
   if (hours) parts.push(hours);
   parts.push(minutes || (hours ? '00' : '0'));
   parts.push((seconds || '00').padStart(2, '0'));
-  
-  return parts.join(':');
-}
 
-/**
- * Format processing time (e.g. 1.5s)
- */
-export function formatProcessingTime(timeStr: string): string {
-  return timeStr || '0s';
+  return parts.join(':');
 }
 
 /**
@@ -157,7 +134,21 @@ export function formatProcessingTime(timeStr: string): string {
  */
 export function formatViewCount(count: number): string {
   if (!count) return '0';
-  if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
-  if (count >= 1000) return `${(count / 1000).toFixed(1)}K`;
+  if (count >= MILLION) return `${(count / MILLION).toFixed(1)}M`;
+  if (count >= THOUSAND) return `${(count / THOUSAND).toFixed(1)}K`;
   return count.toString();
+}
+
+/**
+ * Get stage text from anchor index
+ */
+export function getStageText(anchor: number): string {
+  const stages = [
+    'Initializing',
+    'Scraping',
+    'Analyzing',
+    'Quality Check',
+    'Complete',
+  ];
+  return stages[anchor] || 'Processing';
 }
