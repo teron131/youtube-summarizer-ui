@@ -34,19 +34,28 @@ export function EditableCombobox({
   type = "text",
 }: EditableComboboxProps) {
   const [open, setOpen] = React.useState(false)
+  const [searchText, setSearchText] = React.useState("")
   const containerRef = React.useRef<HTMLDivElement>(null)
   const inputRef = React.useRef<HTMLInputElement>(null)
 
-  // Filter options based on input value
+  // Sync searchText with value when value changes externally (only when closed)
+  React.useEffect(() => {
+    if (!open) {
+      setSearchText(value || "")
+    }
+  }, [value, open])
+
+  // Filter options: show all when searchText is empty or matches current value, otherwise filter
   const filteredOptions = React.useMemo(() => {
-    if (!value) return options
-    const lowerValue = value.toLowerCase()
+    if (!searchText || searchText === value) return options
+    
+    const lowerSearch = searchText.toLowerCase()
     return options.filter(
       (option) =>
-        option.label.toLowerCase().includes(lowerValue) ||
-        option.value.toLowerCase().includes(lowerValue)
+        option.label.toLowerCase().includes(lowerSearch) ||
+        option.value.toLowerCase().includes(lowerSearch)
     )
-  }, [value, options])
+  }, [searchText, value, options])
 
   // Handle click outside to close dropdown
   React.useEffect(() => {
@@ -62,29 +71,46 @@ export function EditableCombobox({
     }
   }, [])
 
+  const openDropdown = () => {
+    setSearchText("")
+    setOpen(true)
+    inputRef.current?.focus()
+  }
+
+  const closeDropdown = () => {
+    setOpen(false)
+    setSearchText(value || "")
+  }
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e.target.value)
+    const newValue = e.target.value
+    setSearchText(newValue)
+    onChange(newValue)
     if (!open) setOpen(true)
   }
 
   const handleOptionClick = (optionValue: string) => {
     onChange(optionValue)
-    setOpen(false)
+    setSearchText(optionValue)
+    closeDropdown()
     inputRef.current?.blur()
   }
 
-  const handleInputFocus = () => {
+  const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    setSearchText("")
     setOpen(true)
+    e.target.select()
   }
 
   const toggleOpen = () => {
     if (open) {
-      setOpen(false)
+      closeDropdown()
     } else {
-      setOpen(true)
-      inputRef.current?.focus()
+      openDropdown()
     }
   }
+
+  const displayValue = open ? (searchText || value || "") : (value || "")
 
   // Find selected option for display purposes if needed (e.g. to bold it)
   // const selectedOption = options.find((opt) => opt.value === value)
@@ -102,7 +128,7 @@ export function EditableCombobox({
         <Input
           ref={inputRef}
           type={type}
-          value={value}
+          value={displayValue}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
           placeholder={placeholder}

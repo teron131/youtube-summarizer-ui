@@ -206,37 +206,68 @@ function deleteCookie(name: string) {
 }
 
 /**
+ * Default user preferences
+ */
+const DEFAULT_USER_PREFERENCES: UserPreferences = {
+  analysisModel: DEFAULT_ANALYSIS_MODEL,
+  qualityModel: DEFAULT_QUALITY_MODEL,
+  targetLanguage: DEFAULT_TARGET_LANGUAGE || 'auto',
+};
+
+/**
+ * Validates and normalizes user preferences, replacing invalid values with defaults
+ */
+function validatePreferences(
+  prefs: Partial<UserPreferences>,
+  defaults: UserPreferences
+): UserPreferences {
+  return {
+    analysisModel: (prefs.analysisModel && isValidModel(prefs.analysisModel))
+      ? prefs.analysisModel
+      : defaults.analysisModel,
+    qualityModel: (prefs.qualityModel && isValidModel(prefs.qualityModel))
+      ? prefs.qualityModel
+      : defaults.qualityModel,
+    targetLanguage: (prefs.targetLanguage && isValidLanguage(prefs.targetLanguage))
+      ? prefs.targetLanguage
+      : defaults.targetLanguage,
+  };
+}
+
+/**
  * Hook for managing user preferences with cookie persistence
  */
 export function useUserPreferences() {
-  // Default preferences
-  const defaultPreferences: UserPreferences = {
-    analysisModel: DEFAULT_ANALYSIS_MODEL,
-    qualityModel: DEFAULT_QUALITY_MODEL,
-    targetLanguage: DEFAULT_TARGET_LANGUAGE || 'auto',
-  };
 
   const [preferences, setPreferences] = useState<UserPreferences>(() => {
-    // Load preferences from cookies on initialization
     try {
       const cookieData = getCookie(COOKIE_NAME);
       if (cookieData) {
         const parsed = JSON.parse(cookieData);
-
-        // Validate that the stored preferences are still valid
-        const validated: UserPreferences = {
-          analysisModel: isValidModel(parsed.analysisModel) ? parsed.analysisModel : defaultPreferences.analysisModel,
-          qualityModel: isValidModel(parsed.qualityModel) ? parsed.qualityModel : defaultPreferences.qualityModel,
-          targetLanguage: isValidLanguage(parsed.targetLanguage) ? parsed.targetLanguage : defaultPreferences.targetLanguage,
-        };
-
-        return validated;
+        return validatePreferences(parsed, DEFAULT_USER_PREFERENCES);
       }
     } catch (error) {
       console.warn('Failed to load user preferences from cookie:', error);
     }
-    return defaultPreferences;
+    return DEFAULT_USER_PREFERENCES;
   });
+
+  // Validate preferences on mount and ensure defaults are set
+  useEffect(() => {
+    setPreferences(prev => {
+      const updated = validatePreferences(prev, DEFAULT_USER_PREFERENCES);
+      
+      // Only update if something changed
+      if (
+        updated.analysisModel !== prev.analysisModel ||
+        updated.qualityModel !== prev.qualityModel ||
+        updated.targetLanguage !== prev.targetLanguage
+      ) {
+        return updated;
+      }
+      return prev;
+    });
+  }, []);
 
   // Save preferences to cookies whenever they change
   useEffect(() => {
@@ -252,7 +283,7 @@ export function useUserPreferences() {
   };
 
   const resetPreferences = () => {
-    setPreferences(defaultPreferences);
+    setPreferences(DEFAULT_USER_PREFERENCES);
     deleteCookie(COOKIE_NAME);
   };
 
