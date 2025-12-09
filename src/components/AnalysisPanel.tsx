@@ -77,7 +77,7 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
               <ListChecks className="h-4 w-4" />
               AI Analysis
             </div>
-            <h3 className="text-2xl md:text-3xl font-bold text-foreground">Structured breakdown</h3>
+            <h3 className="text-2xl md:text-3xl font-bold text-foreground">Structured Analysis</h3>
             <p className="text-sm text-muted-foreground">Summary, takeaways, chapters, and keywords in one view.</p>
           </div>
 
