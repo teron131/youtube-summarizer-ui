@@ -6,8 +6,8 @@ import { Card } from "@/components/ui/card";
 import { ComboboxOption } from "@/components/ui/editable-combobox";
 import { Input } from "@/components/ui/input";
 import { useLanguageSelection, useModelSelection, useUserPreferences } from "@/hooks/use-config";
+import { isFormValid, prepareProcessingOptions, validateYouTubeUrl } from "@/lib/form-validation";
 import { getProviderLogo } from "@/lib/provider-logos";
-import { isValidYouTubeUrl } from "@/lib/url-utils";
 import { AlertCircle, Bot, ExternalLink, Languages, Loader2, Play, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -38,18 +38,12 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
     }
   }, [initialUrl]);
 
-  const isFormValid = (inputUrl: string) => {
-    const trimmedUrl = inputUrl.trim();
-    return trimmedUrl.length === 0 || isValidYouTubeUrl(trimmedUrl);
-  };
-
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newUrl = e.target.value;
     setUrl(newUrl);
     if (validationError) {
-      setValidationError(""); // Clear error on new input
+      setValidationError("");
     }
-    // Show/hide examples based on input
     setShowExamples(newUrl.trim().length === 0);
   };
 
@@ -57,30 +51,24 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
     e.preventDefault();
     const trimmedUrl = url.trim();
 
-    // Prepare options - convert "auto" to null for backend (auto-detect)
-    const options: {
-      targetLanguage?: string;
-      analysisModel?: string;
-      qualityModel?: string;
-    } = {
-      analysisModel: preferences.analysisModel,
-      qualityModel: preferences.qualityModel,
-    };
-
-    if (preferences.targetLanguage !== "auto") {
-      options.targetLanguage = preferences.targetLanguage;
-    }
+    // Prepare processing options
+    const options = prepareProcessingOptions(
+      preferences.targetLanguage,
+      preferences.analysisModel,
+      preferences.qualityModel
+    );
 
     // Allow empty input for example output
     if (!trimmedUrl) {
       setValidationError("");
-      onSubmit("", options); // Send empty string to trigger example response
+      onSubmit("", options);
       return;
     }
 
-    // Basic client-side check for non-empty URLs
-    if (!isValidYouTubeUrl(trimmedUrl)) {
-      setValidationError("Please enter a valid YouTube URL (youtube.com or youtu.be).");
+    // Validate URL
+    const validation = validateYouTubeUrl(trimmedUrl);
+    if (!validation.isValid) {
+      setValidationError(validation.error || "Invalid URL");
       return;
     }
 
