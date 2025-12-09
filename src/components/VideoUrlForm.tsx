@@ -1,14 +1,14 @@
-import AnthropicLogo from "@/assets/logos/anthropic.svg";
-import GoogleLogo from "@/assets/logos/google.svg";
-import OpenAILogo from "@/assets/logos/openai.svg";
-import XaiLogo from "@/assets/logos/xai.svg";
+import { ExampleUrls } from "@/components/ExampleUrls";
+import { ModelSelector } from "@/components/ModelSelector";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ComboboxOption, EditableCombobox } from "@/components/ui/editable-combobox";
+import { ComboboxOption } from "@/components/ui/editable-combobox";
 import { Input } from "@/components/ui/input";
 import { useLanguageSelection, useModelSelection, useUserPreferences } from "@/hooks/use-config";
-import { AlertCircle, Bot, ExternalLink, Languages, Loader2, Play, Sparkles, Youtube } from "lucide-react";
+import { getProviderLogo } from "@/lib/provider-logos";
+import { isValidYouTubeUrl } from "@/lib/url-utils";
+import { AlertCircle, Bot, ExternalLink, Languages, Loader2, Play, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface VideoUrlFormProps {
@@ -20,17 +20,6 @@ interface VideoUrlFormProps {
   isLoading: boolean;
   initialUrl?: string;
 }
- 
-// Utility function to get provider logo
-const getProviderLogo = (provider: string) => {
-  const logoMap = {
-    google: GoogleLogo,
-    anthropic: AnthropicLogo,
-    openai: OpenAILogo,
-    'x-ai': XaiLogo,
-  };
-  return logoMap[provider as keyof typeof logoMap] || null;
-};
 
 export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormProps) => {
   const [url, setUrl] = useState(initialUrl || "");
@@ -49,11 +38,9 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
     }
   }, [initialUrl]);
 
-  // Helper function to validate form
   const isFormValid = (inputUrl: string) => {
     const trimmedUrl = inputUrl.trim();
-    return trimmedUrl.length === 0 ||
-           (trimmedUrl.length > 0 && (trimmedUrl.includes("youtube.com") || trimmedUrl.includes("youtu.be")));
+    return trimmedUrl.length === 0 || isValidYouTubeUrl(trimmedUrl);
   };
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,7 +79,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
     }
 
     // Basic client-side check for non-empty URLs
-    if (!trimmedUrl.includes("youtube.com") && !trimmedUrl.includes("youtu.be")) {
+    if (!isValidYouTubeUrl(trimmedUrl)) {
       setValidationError("Please enter a valid YouTube URL (youtube.com or youtu.be).");
       return;
     }
@@ -101,26 +88,11 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
     onSubmit(trimmedUrl, options);
   };
 
-  // Example URLs for demonstration
-  const exampleUrls = [
-    "https://youtu.be/dQw4w9WgXcQ",
-    "https://youtube.com/watch?v=jNQXAC9IVRw", 
-    "https://youtube.com/watch?v=9bZkp7q19f0"
-  ];
-
   const handleExampleClick = (exampleUrl: string) => {
     setUrl(exampleUrl);
     setShowExamples(false);
     setValidationError("");
   };
-
-  // Helper to render model options with icons
-  const renderModelOption = (option: ComboboxOption) => (
-    <>
-      {option.icon && <span className="mr-2 flex items-center justify-center w-4 h-4">{option.icon}</span>}
-      <span>{option.label}</span>
-    </>
-  );
 
   // Prepare options for comboboxes
   const summarizerOptions: ComboboxOption[] = summarizerModels.map(m => ({
@@ -148,63 +120,32 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Options Section - Grid layout for 3 items */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-6 border-b border-muted">
-            
-            {/* Summarizer Model Selection */}
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2 group relative">
-                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                  <Bot className="w-3 h-3 text-white" />
-                </div>
-                <span className="text-sm font-medium text-muted-foreground">Summarizer</span>
-              </div>
-              
-              <EditableCombobox
-                value={preferences.analysisModel}
-                onChange={(value) => updatePreferences({ analysisModel: value })}
-                options={summarizerOptions}
-                placeholder="Select summarizer..."
-                renderOption={renderModelOption}
-                inputClassName="bg-red-800 text-white border-red-500/30 hover:bg-red-800 focus:bg-red-800 placeholder:text-white/50"
-              />
-            </div>
+            <ModelSelector
+              label="Summarizer"
+              icon={Bot}
+              value={preferences.analysisModel}
+              onChange={(value) => updatePreferences({ analysisModel: value })}
+              options={summarizerOptions}
+              placeholder="Select summarizer..."
+            />
 
-            {/* Refiner Model Selection */}
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2 group relative">
-                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                  <Sparkles className="w-3 h-3 text-white" />
-                </div>
-                <span className="text-sm font-medium text-muted-foreground">Refiner</span>
-              </div>
+            <ModelSelector
+              label="Refiner"
+              icon={Sparkles}
+              value={preferences.qualityModel}
+              onChange={(value) => updatePreferences({ qualityModel: value })}
+              options={refinerOptions}
+              placeholder="Select refiner..."
+            />
 
-              <EditableCombobox
-                value={preferences.qualityModel}
-                onChange={(value) => updatePreferences({ qualityModel: value })}
-                options={refinerOptions}
-                placeholder="Select refiner..."
-                renderOption={renderModelOption}
-                inputClassName="bg-red-800 text-white border-red-500/30 hover:bg-red-800 focus:bg-red-800 placeholder:text-white/50"
-              />
-            </div>
-
-            {/* Language Selection */}
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2 group relative">
-                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                  <Languages className="w-3 h-3 text-white" />
-                </div>
-                <span className="text-sm font-medium text-muted-foreground">Language</span>
-              </div>
-
-              <EditableCombobox
-                value={preferences.targetLanguage}
-                onChange={(value) => updatePreferences({ targetLanguage: value })}
-                options={languageOptions}
-                placeholder="Select language..."
-                renderOption={renderModelOption}
-                inputClassName="bg-red-800 text-white border-red-500/30 hover:bg-red-800 focus:bg-red-800 placeholder:text-white/50"
-              />
-            </div>
+            <ModelSelector
+              label="Language"
+              icon={Languages}
+              value={preferences.targetLanguage}
+              onChange={(value) => updatePreferences({ targetLanguage: value })}
+              options={languageOptions}
+              placeholder="Select language..."
+            />
           </div>
 
           <div className="space-y-3">
@@ -228,32 +169,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
 
             {/* Example URLs when empty input */}
             {showExamples && (
-              <div className="space-y-3">
-                <Alert className="border-primary/50 bg-primary/5">
-                  <Youtube className="h-4 w-4 text-primary" />
-                  <AlertDescription className="text-primary">
-                    Try one of these example URLs to see how it works:
-                  </AlertDescription>
-                </Alert>
-                
-                <div className="grid gap-2">
-                  {exampleUrls.map((exampleUrl, index) => (
-                    <button
-                      key={index}
-                      type="button"
-                      onClick={() => handleExampleClick(exampleUrl)}
-                      className="text-left p-3 rounded-lg border border-primary/20 hover:border-primary/40 hover:bg-primary/5 transition-all duration-300"
-                    >
-                        <div className="flex items-center gap-2 min-w-0 flex-1">
-                          <ExternalLink className="w-3 h-3 text-primary flex-shrink-0" />
-                          <code className="text-sm text-muted-foreground break-all">
-                            {exampleUrl}
-                          </code>
-                        </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <ExampleUrls onSelect={handleExampleClick} />
             )}
           </div>
           

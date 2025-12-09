@@ -1,4 +1,6 @@
 import { Card } from "@/components/ui/card";
+import { cleanVideoUrl } from "@/lib/url-utils";
+import { formatDate, formatDuration } from "@/lib/date-utils";
 import { s2tw } from "@/lib/utils";
 import { CalendarDays, Clock, Eye, ThumbsUp, User } from "lucide-react";
 import { ReactNode } from "react";
@@ -29,40 +31,6 @@ interface VideoInfoProps {
   upload_date?: string | null;
 }
 
-const formatDate = (dateStr?: string): string | null => {
-  if (!dateStr) return null;
-  // Handle YYYYMMDD format
-  if (/^\d{8}$/.test(dateStr)) {
-    const year = dateStr.substring(0, 4);
-    const month = dateStr.substring(4, 6);
-    const day = dateStr.substring(6, 8);
-    try {
-      return new Date(`${year}-${month}-${day}`).toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
-    } catch (e) {
-      return dateStr; // Fallback to original string if date is invalid
-    }
-  }
-  // Handle ISO 8601 or other standard date strings
-  try {
-    return new Date(dateStr).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  } catch (e) {
-    return dateStr; // Fallback to original string for other formats
-  }
-};
-
-const formatDuration = (duration?: string): string | null => {
-  if (!duration) return null;
-  // Remove leading 00: if hours are zero
-  return duration.replace(/^0{1,2}:/, "");
-};
 
 export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like_count, upload_date, url }: VideoInfoProps) => {
   const displayDuration = formatDuration(duration || undefined);
@@ -74,26 +42,6 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
     author: author ? s2tw(author) : author,
   };
   
-  const cleanVideoUrl = (input?: string): string | null => {
-    if (!input) return null;
-    try {
-      const u = new URL(input);
-      const host = u.hostname.replace(/^www\./, "");
-      if (host.includes("youtube.com")) {
-        const v = u.searchParams.get("v");
-        if (v) return `https://www.youtube.com/watch?v=${v}`;
-        return `https://www.${host}${u.pathname}`;
-      }
-      if (host === "youtu.be") {
-        const id = u.pathname.replace(/^\//, "");
-        return id ? `https://www.youtube.com/watch?v=${id}` : "https://www.youtube.com";
-      }
-      return `https://www.${host}${u.pathname}`;
-    } catch (e) {
-      return input.replace(/^https?:\/\//, "").replace(/^www\./, "");
-    }
-  };
-
   const cleanedUrl = cleanVideoUrl(url);
 
   return (
