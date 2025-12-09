@@ -35,8 +35,8 @@ export function HeroSection({ onSubmit, isLoading, initialUrl }: HeroSectionProp
 
       {/* Content */}
       <div className="relative container mx-auto px-4 pt-14 pb-20 lg:pb-28">
-        <div className="grid items-start gap-10 lg:grid-cols-[1.05fr,0.95fr]">
-          <div className="space-y-8">
+        <div className="flex flex-col items-center gap-10">
+          <div className="space-y-8 w-full max-w-4xl">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-medium text-primary shadow-sm fade-in-up">
               <Sparkles className="h-4 w-4" />
               Powered by Gemini, Scrape Creators, Fal
@@ -51,7 +51,7 @@ export function HeroSection({ onSubmit, isLoading, initialUrl }: HeroSectionProp
               </h1>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-3 fade-in-up stagger-2">
+            <div className="flex flex-col gap-4 fade-in-up stagger-2">
               {[
                 { icon: <Zap className="h-4 w-4" />, label: "Fast streaming", value: "< 1 min completion" },
                 { icon: <ShieldCheck className="h-4 w-4" />, label: "Structured outputs", value: "Summary, takeaways, chapters" },
@@ -71,7 +71,7 @@ export function HeroSection({ onSubmit, isLoading, initialUrl }: HeroSectionProp
             </div>
           </div>
 
-          <div className="relative fade-in-up stagger-3">
+          <div className="relative fade-in-up stagger-3 w-full max-w-4xl">
             <div className="absolute inset-0 -z-10 rounded-[30px] bg-gradient-to-br from-primary/20 via-transparent to-foreground/10 blur-3xl" />
             <VideoUrlForm onSubmit={onSubmit} isLoading={isLoading} initialUrl={initialUrl} />
           </div>
