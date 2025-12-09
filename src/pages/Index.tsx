@@ -105,15 +105,7 @@ const Index = () => {
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_20%_20%,rgba(255,0,76,0.08),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(255,255,255,0.05),transparent_30%),radial-gradient(circle_at_50%_80%,rgba(255,0,76,0.06),transparent_28%)]" />
 
         <div className="container relative z-10 mx-auto px-4 pb-16 -mt-12">
-          <div className="max-w-6xl mx-auto space-y-10">
-            <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-muted/20 px-4 py-3 shadow-sm backdrop-blur">
-              <div className="flex items-center gap-3">
-                <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-                <p className="text-sm font-medium text-foreground">Latest output</p>
-              </div>
-              <p className="text-xs text-muted-foreground">Transcript · Analysis · Chapters</p>
-            </div>
-
+          <div className="max-w-full mx-auto space-y-10">
             {/* Video Info */}
             {!isExampleMode && videoInfo && (
               <VideoInfo

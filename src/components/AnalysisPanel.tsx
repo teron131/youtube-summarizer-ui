@@ -108,7 +108,7 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
             <SectionHeader icon={<Lightbulb className="w-4 h-4 md:w-5 md:h-5" />} title="Key Takeaways" />
             <ul className="space-y-2 md:space-y-2.5">
               {convertedAnalysis.takeaways.map((takeaway, index) => (
-                <li key={index} className="flex items-start gap-3">
+                <li key={index} className="flex items-start gap-2">
                   <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                   {renderText(takeaway)}
                 </li>
@@ -119,36 +119,43 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
 
         {/* Video Chapters Section */}
         {convertedAnalysis.chapters && convertedAnalysis.chapters.length > 0 && (
-          <div className="space-y-4 rounded-2xl border border-border/60 bg-card/60 p-4 md:p-5 shadow-sm">
+          <div className="space-y-3 rounded-2xl border border-border/60 bg-card/60 p-4 md:p-5 shadow-sm">
             <SectionHeader icon={<BookOpen className="w-4 h-4 md:w-5 md:h-5" />} title="Video Chapters" />
 
-            <div className="relative pl-4 md:pl-5 space-y-5">
-              <div className="absolute left-0 top-1 bottom-1 w-px bg-gradient-to-b from-primary/60 via-primary/30 to-transparent" />
-
-              {convertedAnalysis.chapters.map((chapter, index) => (
-                <div key={index} className="relative space-y-2">
-                  <div className="flex items-start gap-3">
-                    <div className="mt-1 flex h-8 w-8 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary font-semibold">
-                      {index + 1}
+            <div className="space-y-3">
+              {convertedAnalysis.chapters.map((chapter, index) => {
+                const isLast = index === convertedAnalysis.chapters.length - 1;
+                return (
+                  <div key={index} className="grid grid-cols-[auto_1fr] gap-3">
+                    <div className="relative flex flex-col items-center">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary font-semibold">
+                        {index + 1}
+                      </div>
+                      <div
+                        className={`mt-0 w-px bg-gradient-to-b from-primary/60 via-primary/50 to-transparent ${
+                          isLast ? "h-[98%]" : "h-full"
+                        }`}
+                      />
                     </div>
-                    <div className="space-y-1">
+
+                    <div className="space-y-1.5">
                       <h5 className="text-base md:text-lg font-semibold text-primary">{chapter.header}</h5>
                       <p className="text-foreground leading-7 md:leading-8 text-sm md:text-base">{chapter.summary}</p>
+
+                      {chapter.key_points && chapter.key_points.length > 0 && (
+                        <ul className="pl-2 space-y-1">
+                          {chapter.key_points.map((point, pIndex) => (
+                            <li key={pIndex} className="flex items-start gap-2 text-sm md:text-base text-foreground leading-7">
+                              <span className="text-primary font-bold mt-0.5">•</span>
+                              <span>{point}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
                   </div>
-
-                  {chapter.key_points && chapter.key_points.length > 0 && (
-                    <ul className="ml-11 space-y-1.5">
-                      {chapter.key_points.map((point, pIndex) => (
-                        <li key={pIndex} className="flex items-start gap-2 text-sm md:text-base text-foreground leading-7">
-                          <span className="text-primary font-bold mt-0.5">•</span>
-                          <span>{point}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
