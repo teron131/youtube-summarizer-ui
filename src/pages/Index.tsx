@@ -8,13 +8,12 @@ import { VideoInfo } from "@/components/VideoInfo";
 import { useToast } from "@/hooks/use-toast";
 import { useVideoProcessing, VideoProcessingOptions } from "@/hooks/use-video-processing";
 import { loadExampleData } from "@/lib/example-data-loader";
-import { findStepIndex, getVideoIdFromParams, normalizeStepName, sortProgressStates } from "@/lib/video-utils";
-import { handleApiError, StreamingProgressState, VideoInfoResponse } from "@/services/api";
+import { getVideoIdFromParams } from "@/lib/video-utils";
+import { handleApiError } from "@/services/api";
 import { useState } from "react";
 
 const Index = () => {
   const [initialUrl] = useState<string>(getVideoIdFromParams());
-  const [showLogs, setShowLogs] = useState(false);
   const [isExampleMode, setIsExampleMode] = useState(false);
   const { toast } = useToast();
 
@@ -66,43 +65,7 @@ const Index = () => {
     }
 
     try {
-      const result = await processVideo(
-        url,
-        options,
-        (progressState: StreamingProgressState) => {
-          const normalizedStep = normalizeStepName(progressState.step);
-          const stepIndex = findStepIndex(normalizedStep);
-
-          setCurrentStep(stepIndex >= 0 ? stepIndex : 0);
-          setCurrentStage(progressState.message);
-
-          setProgressStates(prev => {
-            const updated = [...prev];
-            const existingIndex = updated.findIndex(s => s.step === normalizedStep);
-
-            if (existingIndex >= 0) {
-              updated[existingIndex] = { ...progressState, step: normalizedStep };
-            } else {
-              updated.push({ ...progressState, step: normalizedStep });
-            }
-
-            return sortProgressStates(updated);
-          });
-
-          // Surface video info immediately after scraping
-          if (normalizedStep === 'scraping' && progressState.status === 'completed') {
-            type ScrapeDataPayload = { videoInfo?: VideoInfoResponse; transcript?: string };
-            const data = (progressState as unknown as { data?: ScrapeDataPayload }).data;
-            
-            if (data?.videoInfo) {
-              setScrapedVideoInfo(data.videoInfo);
-            }
-            if (data?.transcript) {
-              setScrapedTranscript(data.transcript);
-            }
-          }
-        }
-      );
+      const result = await processVideo(url, options);
 
       console.log('🎉 Streaming completed successfully:', {
         hasVideoInfo: !!result.videoInfo,
