@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { convertAnalysisChinese } from "@/lib/utils";
 import { generateAnalysisMarkdown } from "@/lib/markdown-utils";
-import { AnalysisData, QualityData, VideoInfoResponse } from "@/services/api";
+import { convertAnalysisChinese } from "@/lib/utils";
+import { AnalysisData, QualityData, VideoInfoResponse } from "@/services/types";
 import { BookOpen, Copy, Lightbulb, ListChecks, Sparkles } from "lucide-react";
 
 interface AnalysisPanelProps {

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ApiError, StreamingProgressState } from "@/services/api";
+import { ApiError, StreamingProgressState } from "@/services/types";
 import { AlertCircle } from "lucide-react";
 
 interface ErrorDisplayProps {

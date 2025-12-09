@@ -1,4 +1,4 @@
-import { StreamingProcessingResult } from "./api";
+import { StreamingProcessingResult } from "./types";
 
 export const exampleData: StreamingProcessingResult = {
   success: true,

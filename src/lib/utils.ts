@@ -1,4 +1,4 @@
-import { AnalysisData, VideoInfoResponse } from "@/services/api";
+import { AnalysisData, VideoInfoResponse } from "@/services/types";
 import { clsx, type ClassValue } from "clsx";
 import * as OpenCC from 'opencc-js';
 import { twMerge } from "tailwind-merge";

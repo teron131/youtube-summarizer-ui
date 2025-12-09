@@ -1,5 +1,5 @@
-import { StreamingProcessingResult, StreamingProgressState, VideoInfoResponse } from '@/services/api';
 import { exampleData } from '@/services/example-data';
+import { StreamingProcessingResult, StreamingProgressState, VideoInfoResponse } from '@/services/types';
 
 export interface ExampleDataResult {
   progressStates: StreamingProgressState[];

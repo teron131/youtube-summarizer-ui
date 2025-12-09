@@ -2,7 +2,7 @@
  * Video processing utilities
  */
 
-import { StreamingProgressState } from '@/services/api';
+import { StreamingProgressState } from '@/services/types';
 
 export const PROGRESS_STEPS = [
   { step: 'scraping', name: "Scraping Video", description: "Extracting video info and transcript using Scrape Creators" },
@@ -125,3 +125,39 @@ export function getLogClassName(logType: ReturnType<typeof classifyLogType>): st
   return classes[logType];
 }
 
+/**
+ * Format duration string (e.g. PT1H2M3S -> 1:02:03)
+ */
+export function formatDuration(duration: string): string {
+  if (!duration) return '0:00';
+  const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+  if (!match) return duration;
+  
+  const hours = (match[1] || '').replace('H', '');
+  const minutes = (match[2] || '').replace('M', '');
+  const seconds = (match[3] || '').replace('S', '');
+  
+  const parts = [];
+  if (hours) parts.push(hours);
+  parts.push(minutes || (hours ? '00' : '0'));
+  parts.push((seconds || '00').padStart(2, '0'));
+  
+  return parts.join(':');
+}
+
+/**
+ * Format processing time (e.g. 1.5s)
+ */
+export function formatProcessingTime(timeStr: string): string {
+  return timeStr || '0s';
+}
+
+/**
+ * Format view count (e.g. 1000000 -> 1M)
+ */
+export function formatViewCount(count: number): string {
+  if (!count) return '0';
+  if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
+  if (count >= 1000) return `${(count / 1000).toFixed(1)}K`;
+  return count.toString();
+}

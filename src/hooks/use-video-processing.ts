@@ -1,11 +1,11 @@
 import { findStepIndex, normalizeStepName, sortProgressStates } from '@/lib/video-utils';
+import { streamAnalysis } from '@/services/streaming';
 import {
   ApiError,
-  streamingProcessing,
   StreamingProcessingResult,
   StreamingProgressState,
   VideoInfoResponse,
-} from '@/services/api';
+} from '@/services/types';
 import { useCallback, useState } from 'react';
 
 export interface VideoProcessingOptions {
@@ -158,27 +158,32 @@ export function useVideoProcessing() {
         onProgress?.(progressState);
       };
 
-      const result = await streamingProcessing(
-        url,
-        handleProgress,
-        (logs: string[]) => updateState({ streamingLogs: logs }),
-        options,
-      );
+      try {
+        const result = await streamAnalysis(
+          url,
+          options || {},
+          handleProgress,
+          (logs: string[]) => updateState({ streamingLogs: logs }),
+        );
 
-      if (result.success) {
-        updateState({
-          scrapedVideoInfo: result.videoInfo || null,
-          scrapedTranscript: result.transcript || null,
-          analysisResult: result,
-          currentStage: 'Processing completed',
-          isLoading: false,
-        });
-      } else {
-        updateState({ isLoading: false });
-        throw result.error || new Error('Processing failed');
+        if (result.success) {
+          updateState({
+            scrapedVideoInfo: result.videoInfo || null,
+            scrapedTranscript: result.transcript || null,
+            analysisResult: result,
+            currentStage: 'Processing completed',
+            isLoading: false,
+          });
+          return result;
+        } else {
+            throw result.error || new Error('Processing failed');
+        }
+
+      } catch (e) {
+          const error = e as ApiError;
+           updateState({ isLoading: false, error });
+           throw error;
       }
-
-      return result;
     },
     [applyProgressUpdate, updateState],
   );

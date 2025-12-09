@@ -2,7 +2,7 @@ import { ProcessLogs } from "@/components/ProcessLogs";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { isStepCompleted, isStepProcessing } from "@/lib/video-utils";
-import { StreamingProcessingResult, StreamingProgressState } from "@/services/api";
+import { StreamingProcessingResult, StreamingProgressState } from "@/services/types";
 import { CheckCircle } from "lucide-react";
 
 interface ProcessingTimelineProps {

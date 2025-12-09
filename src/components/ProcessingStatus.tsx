@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { getStageText } from "@/lib/video-utils";
-import { StreamingProgressState } from "@/services/api";
+import { StreamingProgressState } from "@/services/types";
 import { Loader2 } from "lucide-react";
 
 interface ProcessingStatusProps {

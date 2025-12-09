@@ -14,29 +14,52 @@ export function isValidYouTubeUrl(url: string): boolean {
 }
 
 /**
- * Clean and normalize YouTube URL
+ * Extract video ID from YouTube URL
  */
-export function cleanVideoUrl(input?: string | null): string | null {
-  if (!input) return null;
+export function extractVideoId(url: string): string {
   try {
-    const u = new URL(input);
+    if (!url) return '';
+    const u = new URL(url);
     const host = u.hostname.replace(/^www\./, "");
     
     if (host.includes("youtube.com")) {
       const v = u.searchParams.get("v");
-      if (v) return `https://www.youtube.com/watch?v=${v}`;
-      return `https://www.${host}${u.pathname}`;
+      if (v) return v;
     }
     
     if (host === "youtu.be") {
       const id = u.pathname.replace(/^\//, "");
-      return id ? `https://www.youtube.com/watch?v=${id}` : "https://www.youtube.com";
+      if (id) return id;
     }
-    
-    return `https://www.${host}${u.pathname}`;
   } catch (e) {
-    return input.replace(/^https?:\/\//, "").replace(/^www\./, "");
+    // Fallback regex for partial URLs
+    const match = url.match(/(?:v=|youtu\.be\/)([\w-]+)/);
+    if (match && match[1]) return match[1];
   }
+  return '';
+}
+
+/**
+ * Clean and normalize YouTube URL
+ */
+export function cleanVideoUrl(input?: string | null): string | null {
+  if (!input) return null;
+  const videoId = extractVideoId(input);
+  return videoId ? `https://www.youtube.com/watch?v=${videoId}` : input;
+}
+
+/**
+ * Get video thumbnail URL
+ */
+export function getThumbnailUrl(videoId: string, quality: 'default' | 'hq' | 'mq' | 'sd' | 'maxres' = 'hq'): string {
+    const qualityMap = {
+        default: 'default',
+        hq: 'hqdefault',
+        mq: 'mqdefault',
+        sd: 'sddefault',
+        maxres: 'maxresdefault'
+    };
+    return `https://img.youtube.com/vi/${videoId}/${qualityMap[quality]}.jpg`;
 }
 
 /**
@@ -47,4 +70,3 @@ export const EXAMPLE_YOUTUBE_URLS = [
   "https://youtube.com/watch?v=jNQXAC9IVRw", 
   "https://youtube.com/watch?v=9bZkp7q19f0"
 ] as const;
-

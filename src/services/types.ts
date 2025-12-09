@@ -111,6 +111,8 @@ export interface QualityData {
 export interface QualityRate {
   rate: 'Fail' | 'Refine' | 'Pass';
   reason: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
 }
 
 // Streaming Types
@@ -133,7 +135,8 @@ export interface StreamingProgressState {
   stepName: string;
   status: 'pending' | 'processing' | 'completed' | 'error';
   message: string;
-  data?: unknown;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data?: any;
   error?: ApiError;
   processingTime?: string;
   iterationCount?: number;

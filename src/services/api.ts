@@ -1,149 +1,84 @@
 /**
  * YouTube Summarizer API Service
- * ===============================
- *
- * Main entry point for the YouTube Summarizer API client.
- * Re-exports all API functionality from specialized modules.
+ * Simplified functional API client
  */
 
-// ================================
-// TYPE EXPORTS
-// ================================
-
-export type {
-  AnalysisChapter,
-  AnalysisData,
+import {
   ApiError,
   ConfigurationResponse,
   HealthCheckResponse,
-  QualityData,
-  QualityRate,
   ScrapRequest,
   ScrapResponse,
-  StreamingChunk,
-  StreamingProcessingResult,
-  StreamingProgressState,
   SummarizeRequest,
-  SummarizeResponse,
-  VideoInfoResponse
-} from './api-types';
+  SummarizeResponse
+} from './types';
 
-// ================================
-// ERROR HANDLING EXPORTS
-// ================================
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+const API_VERSION = "3.0.0";
 
-export {
-  categorizeError, ERROR_MESSAGES,
-  getErrorMessage,
-  getErrorSeverity,
-  handleApiError,
-  isApiError,
-  isNetworkError,
-  isProcessingError,
-  isServerError,
-  isValidationError
-} from './api-errors';
+// Helper for making requests
+async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  const url = `${API_BASE_URL}${endpoint}`;
+  const defaultHeaders = {
+    'Content-Type': 'application/json',
+    'User-Agent': `YouTube-Summarizer-Frontend/${API_VERSION}`,
+  };
 
-// ================================
-// UTILITY EXPORTS
-// ================================
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers: { ...defaultHeaders, ...options.headers },
+    });
 
-export {
-  extractVideoId,
-  formatDuration,
-  formatProcessingTime,
-  formatViewCount,
-  getThumbnailUrl,
-  isValidYouTubeUrl
-} from './api-utils';
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const error: ApiError = {
+        message: errorData.detail || `Request failed with status ${response.status}`,
+        status: response.status,
+        details: JSON.stringify(errorData),
+        type: response.status >= 500 ? 'server' : 'validation'
+      };
+      throw error;
+    }
 
-// ================================
-// API CLIENT
-// ================================
-
-import { YouTubeApiClient } from './api-client';
-import type { StreamingProgressState } from './api-types';
-
-// Create singleton instance
-const apiClient = new YouTubeApiClient();
-
-// ================================
-// PUBLIC API FUNCTIONS
-// ================================
-
-/**
- * Health check
- */
-export const healthCheck = () => apiClient.healthCheck();
-
-/**
- * Get backend configuration
- */
-export const getConfiguration = () => apiClient.getConfiguration();
-
-/**
- * Get configuration with local fallback
- */
-export const getConfigurationWithFallback = () => apiClient.getConfigurationWithFallback();
-
-/**
- * Scrap video information and transcript
- */
-export const scrapVideo = (request: { url: string }) => apiClient.scrapVideo(request);
-
-/**
- * Generate AI analysis (non-streaming)
- */
-export const summarizeContent = (request: {
-  content: string;
-  content_type: 'url' | 'transcript';
-  analysis_model?: string;
-  quality_model?: string;
-  target_language?: string | null;
-}) => apiClient.summarizeContent(request);
-
-/**
- * Streaming processing function (recommended)
- * Performs complete workflow: scraping + AI analysis with progress updates
- */
-export const streamingProcessing = (
-  url: string,
-  onProgress?: (state: StreamingProgressState) => void,
-  onLogUpdate?: (logs: string[]) => void,
-  options?: {
-    analysisModel?: string;
-    qualityModel?: string;
-    targetLanguage?: string;
+    return await response.json();
+  } catch (error) {
+    if ((error as ApiError).status) throw error;
+    
+    // Network or other errors
+    throw {
+      message: error instanceof Error ? error.message : 'Unknown network error',
+      type: 'network'
+    } as ApiError;
   }
-) => apiClient.streamingProcessing(url, onProgress, onLogUpdate, options);
+}
 
-// ================================
-// CONFIGURATION EXPORTS
-// ================================
+// API Functions
+export const api = {
+  healthCheck: () => request<HealthCheckResponse>('/health'),
+  
+  getConfiguration: () => request<ConfigurationResponse>('/config'),
+  
+  scrapVideo: (data: ScrapRequest) => request<ScrapResponse>('/scrap', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  
+  summarize: (data: SummarizeRequest) => request<SummarizeResponse>('/summarize', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  
+  // Expose base URL for streaming
+  baseUrl: API_BASE_URL
+};
 
-export {
-  AVAILABLE_MODELS,
-  AVAILABLE_MODELS_LIST,
-  DEFAULT_ANALYSIS_MODEL,
-  DEFAULT_QUALITY_MODEL,
-  DEFAULT_TARGET_LANGUAGE,
-  getLanguageByKey,
-  getModelByKey,
-  isValidLanguage,
-  isValidModel,
-  SUPPORTED_LANGUAGES,
-  SUPPORTED_LANGUAGES_LIST,
-  validateLanguageSelection,
-  validateModelSelection,
-  type AvailableModel,
-  type LanguageKey,
-  type ModelKey,
-  type SupportedLanguage
-} from './config';
-
-// ================================
-// EXPORTS
-// ================================
-
-export { apiClient, YouTubeApiClient };
-export default apiClient;
+export function handleApiError(error: unknown): ApiError {
+  if ((error as ApiError).message && (error as ApiError).type) {
+    return error as ApiError;
+  }
+  return {
+    message: error instanceof Error ? error.message : 'Unknown error',
+    type: 'unknown'
+  };
+}
