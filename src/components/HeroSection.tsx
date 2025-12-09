@@ -1,5 +1,4 @@
 import heroBackground from "@/assets/youtube-subtle-background.jpg";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { VideoUrlForm } from "@/components/VideoUrlForm";
 import { ShieldCheck, Sparkles, Zap } from "lucide-react";
 
@@ -16,11 +15,6 @@ interface HeroSectionProps {
 export function HeroSection({ onSubmit, isLoading, initialUrl }: HeroSectionProps) {
   return (
     <section className="relative overflow-hidden bg-gradient-hero">
-      {/* Theme Toggle */}
-      <div className="absolute top-4 right-4 z-50">
-        <ThemeToggle />
-      </div>
-
       {/* Background */}
       <div
         className="absolute inset-0 bg-cover bg-center opacity-10"

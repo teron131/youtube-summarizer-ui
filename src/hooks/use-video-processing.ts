@@ -20,7 +20,6 @@ export interface VideoProcessingState {
   currentStep: number;
   currentStage: string;
   progressStates: StreamingProgressState[];
-  streamingLogs: string[];
   analysisResult: StreamingProcessingResult | null;
   scrapedVideoInfo: VideoInfoResponse | null;
   scrapedTranscript: string | null;
@@ -36,7 +35,6 @@ const initialState: VideoProcessingState = {
   currentStep: 0,
   currentStage: '',
   progressStates: [],
-  streamingLogs: [],
   analysisResult: null,
   scrapedVideoInfo: null,
   scrapedTranscript: null,
@@ -82,7 +80,6 @@ export function useVideoProcessing() {
       currentStep: 0,
       currentStage: 'Initializing...',
       progressStates: [],
-      streamingLogs: [],
       scrapedVideoInfo: null,
       scrapedTranscript: null,
     });
@@ -97,7 +94,6 @@ export function useVideoProcessing() {
         url,
         options || {},
         handleProgress,
-        (logs) => setState((prev) => ({ ...prev, streamingLogs: logs })),
       );
 
       if (!result.success) {
@@ -134,7 +130,6 @@ export function useVideoProcessing() {
       ...prev,
       progressStates: typeof states === 'function' ? states(prev.progressStates) : states,
     })),
-    setStreamingLogs: (streamingLogs: string[]) => setState((prev) => ({ ...prev, streamingLogs })),
     setAnalysisResult: (analysisResult: StreamingProcessingResult | null) =>
       setState((prev) => ({ ...prev, analysisResult })),
     setScrapedVideoInfo: (scrapedVideoInfo: VideoInfoResponse | null) =>

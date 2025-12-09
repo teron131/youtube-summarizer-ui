@@ -117,16 +117,6 @@ export const exampleData: StreamingProcessingResult = {
 },
   iterationCount: 1,
   chunksProcessed: 12,
-  logs: [
-    '[3:57:28 AM] Starting AI analysis with Gemini LLM...',
-    '[3:57:28 AM] Detected YouTube URL, scraping to get chapters...',
-    '[3:57:28 AM] Found 5 chapters in YouTube video',
-    '[3:57:28 AM] Processing 24123 characters of transcript',
-    '[3:57:28 AM] Including 5 video chapters in Gemini analysis',
-    '[3:57:28 AM] Generated analysis (iteration 1)',
-    '[3:57:28 AM] Quality check passed with 100% score',
-    '[3:57:28 AM] Analysis completed successfully! Generated 5 chapters'
-  ],
 };
 
 // Export individual constants for easier testing

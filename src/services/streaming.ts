@@ -15,35 +15,20 @@ import {
   VideoInfoResponse
 } from './types';
 
-function createLogger(onLog?: (logs: string[]) => void) {
-  const logs: string[] = [];
-  return {
-    add: (msg: string) => {
-      const timestamp = new Date().toLocaleTimeString();
-      logs.push(`[${timestamp}] ${msg}`);
-      onLog?.([...logs]);
-    },
-    getLogs: () => logs,
-  };
-}
-
 function processChunk(
   data: StreamingChunk,
-  logger: ReturnType<typeof createLogger>,
   onProgress?: (state: StreamingProgressState) => void
 ) {
   if (data.type === 'status') {
-    logger.add(data.message || 'Processing...');
     return;
   }
 
   if (data.type === 'complete' || data.is_complete) {
     const qualityScore = data.quality?.percentage_score;
     const msg = qualityScore !== undefined
-      ? `✅ Analysis completed successfully with ${qualityScore}% quality score`
-      : `✅ Analysis completed successfully`;
+      ? `Analysis completed successfully with ${qualityScore}% quality score`
+      : `Analysis completed successfully`;
 
-    logger.add(msg);
     onProgress?.({
       step: 'complete',
       stepName: 'Analysis Complete',
@@ -58,7 +43,6 @@ function processChunk(
   if (data.quality?.percentage_score !== undefined) {
     const score = data.quality.percentage_score;
     const passed = data.quality.is_acceptable;
-    logger.add(`🎯 Quality Check: ${score}% (${passed ? 'Pass' : 'Refine'})`);
 
     onProgress?.({
       step: passed ? 'quality_check' : 'refinement',
@@ -89,15 +73,12 @@ export async function streamAnalysis(
     qualityModel?: string;
     targetLanguage?: string | null;
   },
-  onProgress?: (state: StreamingProgressState) => void,
-  onLog?: (logs: string[]) => void
+  onProgress?: (state: StreamingProgressState) => void
 ): Promise<StreamingProcessingResult> {
   const startTime = Date.now();
-  const logger = createLogger(onLog);
 
   try {
     // 1. Scraping Phase
-    logger.add('🚀 Starting process...');
     onProgress?.({
       step: 'scraping',
       stepName: 'Scraping Video',
@@ -122,7 +103,6 @@ export async function streamAnalysis(
       like_count: scrapResult.like_count,
     };
 
-    logger.add(`✅ Scraped: ${videoInfo.title}`);
     onProgress?.({
       step: 'scraping',
       stepName: 'Scraping Video',
@@ -182,7 +162,7 @@ export async function streamAnalysis(
           if (data.quality) quality = data.quality;
           if (data.iteration_count) iterationCount = data.iteration_count;
 
-          processChunk(data, logger, onProgress);
+          processChunk(data, onProgress);
         } catch (e) {
           // Ignore parse errors for partial chunks
         }
@@ -190,7 +170,6 @@ export async function streamAnalysis(
     }
 
     const totalTime = ((Date.now() - startTime) / 1000).toFixed(1) + 's';
-    logger.add(`🏁 Completed in ${totalTime}`);
 
     return {
       success: true,
@@ -200,13 +179,11 @@ export async function streamAnalysis(
       quality,
       totalTime,
       iterationCount,
-      chunksProcessed,
-      logs: logger.getLogs()
+      chunksProcessed
     };
 
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Unknown error';
-    logger.add(`❌ Error: ${msg}`);
 
     const apiError: ApiError = {
       message: msg,
@@ -226,7 +203,6 @@ export async function streamAnalysis(
       totalTime: ((Date.now() - startTime) / 1000).toFixed(1) + 's',
       iterationCount: 0,
       chunksProcessed: 0,
-      logs: logger.getLogs(),
       error: apiError
     };
   }

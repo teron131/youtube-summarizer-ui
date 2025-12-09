@@ -2,7 +2,6 @@ import { AnalysisPanel } from "@/components/AnalysisPanel";
 import { ErrorDisplay } from "@/components/ErrorDisplay";
 import { HeroSection } from "@/components/HeroSection";
 import { ProcessingStatus } from "@/components/ProcessingStatus";
-import { ProcessingTimeline } from "@/components/ProcessingTimeline";
 import { TranscriptPanel } from "@/components/TranscriptPanel";
 import { VideoInfo } from "@/components/VideoInfo";
 import { useToast } from "@/hooks/use-toast";
@@ -23,7 +22,6 @@ const Index = () => {
     currentStep,
     currentStage,
     progressStates,
-    streamingLogs,
     analysisResult,
     scrapedVideoInfo,
     scrapedTranscript,
@@ -34,7 +32,6 @@ const Index = () => {
     setAnalysisResult,
     setScrapedVideoInfo,
     setScrapedTranscript,
-    setStreamingLogs,
     setLoading,
     processVideo,
   } = useVideoProcessing();
@@ -44,12 +41,11 @@ const Index = () => {
     setCurrentStage("Loading example...");
 
     const example = loadExampleData();
-    
+
     setProgressStates(example.progressStates);
     setScrapedVideoInfo(example.videoInfo);
     setScrapedTranscript(example.transcript);
     setAnalysisResult(example.analysisResult);
-    setStreamingLogs(example.logs);
     setCurrentStep(4);
     setCurrentStage("Example ready");
     setLoading(false);
@@ -149,16 +145,6 @@ const Index = () => {
                 error={error}
                 progressStates={progressStates}
                 onLoadExample={loadExample}
-              />
-            )}
-
-            {/* Success State - Process Overview */}
-            {!isLoading && !error && analysisResult && analysisResult.success && (
-              <ProcessingTimeline
-                progressStates={progressStates}
-                analysisResult={analysisResult}
-                streamingLogs={streamingLogs}
-                isExampleMode={isExampleMode}
               />
             )}
           </div>

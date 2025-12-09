@@ -6,7 +6,6 @@ export interface ExampleDataResult {
   videoInfo: VideoInfoResponse | null;
   transcript: string | null;
   analysisResult: StreamingProcessingResult;
-  logs: string[];
 }
 
 /**
@@ -56,7 +55,6 @@ export function loadExampleData(): ExampleDataResult {
     videoInfo: exampleData.videoInfo || null,
     transcript: exampleData.transcript || null,
     analysisResult: exampleData,
-    logs: exampleData.logs || [],
   };
 }
 

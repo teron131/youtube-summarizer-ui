@@ -154,7 +154,6 @@ export interface StreamingProcessingResult {
   totalTime: string;
   iterationCount: number;
   chunksProcessed: number;
-  logs: string[];
 }
 
 // Error Types

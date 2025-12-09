@@ -84,31 +84,6 @@ export function isStepProcessing(
 }
 
 /**
- * Classify log type for styling
- */
-export function classifyLogType(log: string): 'error' | 'success' | 'quality' | 'iteration' | 'default' {
-  if (log.includes('❌') || log.includes('failed')) return 'error';
-  if (log.includes('✅') || log.includes('completed')) return 'success';
-  if (log.includes('quality') || log.includes('Quality')) return 'quality';
-  if (log.includes('iteration') || log.includes('Iteration')) return 'iteration';
-  return 'default';
-}
-
-/**
- * Get CSS class for log type
- */
-export function getLogClassName(logType: ReturnType<typeof classifyLogType>): string {
-  const classes = {
-    error: 'text-red-400',
-    success: 'text-green-400',
-    quality: 'text-blue-400',
-    iteration: 'text-purple-400 font-semibold',
-    default: 'text-foreground',
-  };
-  return classes[logType];
-}
-
-/**
  * Format duration string (e.g. PT1H2M3S -> 1:02:03)
  */
 export function formatDuration(duration: string): string {

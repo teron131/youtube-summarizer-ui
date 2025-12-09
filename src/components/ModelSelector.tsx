@@ -31,9 +31,9 @@ export function ModelSelector({
         <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
           <Icon className="w-3 h-3 text-white" />
         </div>
-        <span className="text-sm font-medium text-muted-foreground">{label}</span>
+        <span className="text-sm font-bold text-primary uppercase tracking-wide">{label}</span>
       </div>
-      
+
       <EditableCombobox
         value={value}
         onChange={onChange}

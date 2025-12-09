@@ -30,7 +30,7 @@ const SectionHeader = ({ icon, title }: SectionHeaderProps) => (
     <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
       {icon}
     </div>
-    <h4 className="text-sm md:text-base font-semibold uppercase tracking-[0.18em] text-primary">
+    <h4 className="text-sm md:text-base font-bold uppercase tracking-wide text-primary">
       {title}
     </h4>
   </div>
