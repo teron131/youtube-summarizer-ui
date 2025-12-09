@@ -45,7 +45,8 @@ export function ProcessingTimeline({
   const progressPercent = finished ? 100 : (activeIndex / 4) * 100;
 
   return (
-    <Card className="bg-gradient-card border border-red-500/30 shadow-card backdrop-blur-sm">
+    <Card className="relative rounded-2xl border border-border/60 bg-card/60 shadow-sm overflow-hidden">
+      <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-primary via-primary/70 to-red-500" />
       <Button
         variant="ghost"
         className="w-full p-8 h-auto justify-between hover:bg-primary/5 transition-all duration-300 whitespace-normal items-start text-left"

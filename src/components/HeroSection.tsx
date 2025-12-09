@@ -1,6 +1,7 @@
 import heroBackground from "@/assets/youtube-subtle-background.jpg";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { VideoUrlForm } from "@/components/VideoUrlForm";
+import { ShieldCheck, Sparkles, Zap } from "lucide-react";
 
 interface HeroSectionProps {
   onSubmit: (url: string, options?: {
@@ -14,70 +15,69 @@ interface HeroSectionProps {
 
 export function HeroSection({ onSubmit, isLoading, initialUrl }: HeroSectionProps) {
   return (
-    <div className="relative overflow-hidden min-h-screen flex items-center bg-background">
+    <section className="relative overflow-hidden bg-gradient-hero">
       {/* Theme Toggle */}
       <div className="absolute top-4 right-4 z-50">
         <ThemeToggle />
       </div>
 
       {/* Background */}
-      <div 
+      <div
         className="absolute inset-0 bg-cover bg-center opacity-10"
         style={{ backgroundImage: `url(${heroBackground})` }}
       />
-      <div className="absolute inset-0 bg-gradient-hero" />
-      
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}} />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-background/40 to-background" />
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute -top-32 -right-24 h-72 w-72 rounded-full bg-primary/20 blur-3xl animate-pulse" />
+        <div className="absolute -bottom-32 -left-20 h-96 w-96 rounded-full bg-primary/10 blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
+        <div className="absolute inset-0 opacity-[0.07] bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.35),transparent_30%),radial-gradient(circle_at_80%_0%,rgba(255,0,76,0.35),transparent_25%),radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.12),transparent_35%)]" />
       </div>
-      
+
       {/* Content */}
-      <div className="relative container mx-auto px-4 pt-4 pb-20">
-        <div className="text-center space-y-4 mb-8">
-          <div className="fade-in-up">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full mb-2">
-              <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-              <span className="text-primary text-base font-medium">Powered by Gemini, Scrape Creators, Fal</span>
+      <div className="relative container mx-auto px-4 pt-14 pb-20 lg:pb-28">
+        <div className="grid items-start gap-10 lg:grid-cols-[1.05fr,0.95fr]">
+          <div className="space-y-8">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-medium text-primary shadow-sm fade-in-up">
+              <Sparkles className="h-4 w-4" />
+              Powered by Gemini, Scrape Creators, Fal
+            </div>
+
+            <div className="space-y-4 fade-in-up stagger-1">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight text-foreground">
+                Transform YouTube Video into
+                <span className="block bg-gradient-to-r from-primary via-primary/80 to-white bg-clip-text text-transparent animate-glow">
+                  Structured Summary
+                </span>
+              </h1>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-3 fade-in-up stagger-2">
+              {[
+                { icon: <Zap className="h-4 w-4" />, label: "Fast streaming", value: "< 1 min completion" },
+                { icon: <ShieldCheck className="h-4 w-4" />, label: "Structured outputs", value: "Summary, takeaways, chapters" },
+                { icon: <Sparkles className="h-4 w-4" />, label: "Multi-model ready", value: "GPT, Gemini, Grok, Claude, more" },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-2xl border border-primary/15 bg-background/60 px-4 py-3 shadow-lg hover:border-primary/30 transition-colors duration-300"
+                >
+                  <div className="flex items-center gap-2 text-primary">
+                    {item.icon}
+                    <span className="text-xs uppercase tracking-wide">{item.label}</span>
+                  </div>
+                  <p className="mt-2 text-sm font-semibold text-foreground">{item.value}</p>
+                </div>
+              ))}
             </div>
           </div>
-          
-          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-foreground fade-in-up stagger-1">
-            YouTube
-            <br />
-            <span className="animate-glow bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-              Summarizer
-            </span>
-          </h1>
-          
-          <p className="text-xl sm:text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed fade-in-up stagger-2">
-            Transform any 
-            <span className="text-primary font-semibold"> YouTube </span>
-             video into structured summaries.
-          </p>
-          
-          <div className="flex flex-wrap justify-center gap-4 text-base text-muted-foreground fade-in-up stagger-3">
-            <div className="flex items-center gap-2">
-              <div className="w-1 h-1 bg-primary rounded-full" />
-              <span>Scrap / Transcribe + Summarize</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-1 h-1 bg-primary rounded-full" />
-              <span>Structured Analysis</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-1 h-1 bg-primary rounded-full" />
-              <span>Time Saving</span>
-            </div>
+
+          <div className="relative fade-in-up stagger-3">
+            <div className="absolute inset-0 -z-10 rounded-[30px] bg-gradient-to-br from-primary/20 via-transparent to-foreground/10 blur-3xl" />
+            <VideoUrlForm onSubmit={onSubmit} isLoading={isLoading} initialUrl={initialUrl} />
           </div>
-        </div>
-        
-        <div className="max-w-5xl mx-auto fade-in-up stagger-4">
-          <VideoUrlForm onSubmit={onSubmit} isLoading={isLoading} initialUrl={initialUrl} />
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 

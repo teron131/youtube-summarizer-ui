@@ -4,7 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { generateAnalysisMarkdown } from "@/lib/markdown-utils";
 import { convertAnalysisChinese } from "@/lib/utils";
 import { AnalysisData, QualityData, VideoInfoResponse } from "@/services/types";
-import { BookOpen, Copy, Lightbulb, ListChecks, Sparkles } from "lucide-react";
+import { BookOpen, CheckCircle2, Copy, Lightbulb, ListChecks, Sparkles } from "lucide-react";
 
 interface AnalysisPanelProps {
   analysis: AnalysisData;
@@ -27,10 +27,12 @@ interface SectionHeaderProps {
 
 const SectionHeader = ({ icon, title }: SectionHeaderProps) => (
   <div className="flex items-center gap-3">
-    <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
       {icon}
     </div>
-    <h4 className="text-base md:text-lg font-bold text-primary">{title}</h4>
+    <h4 className="text-sm md:text-base font-semibold uppercase tracking-[0.18em] text-primary">
+      {title}
+    </h4>
   </div>
 );
 
@@ -63,25 +65,27 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
   };
 
   return (
-    <Card className="p-4 md:p-6 modern-blur shadow-glass hover-lift">
-      <div className="space-y-3 md:space-y-4">
-        {/* Main Header - now inside the card */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center">
-              <ListChecks className="w-6 h-6 text-white" />
+    <Card className="relative overflow-hidden border border-border/70 bg-[radial-gradient(circle_at_20%_20%,rgba(255,0,76,0.06),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(255,255,255,0.04),transparent_30%)] shadow-2xl">
+      <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-primary via-primary/70 to-red-500" />
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/5 via-transparent to-primary/5" />
+
+      <div className="relative space-y-5 md:space-y-6 p-5 md:p-7 lg:p-8">
+        {/* Main Header */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
+              <ListChecks className="h-4 w-4" />
+              AI Analysis
             </div>
-            <div>
-              <h3 className="text-2xl font-bold text-white">AI Analysis</h3>
-              <p className="text-muted-foreground">Key insights extracted from the video content.</p>
-            </div>
+            <h3 className="text-2xl md:text-3xl font-bold text-foreground">Structured breakdown</h3>
+            <p className="text-sm text-muted-foreground">Summary, takeaways, chapters, and keywords in one view.</p>
           </div>
-          
+
           <Button
             variant="outline"
             size="lg"
             onClick={copyToClipboard}
-            className="gap-3 h-12 px-6 border-primary/30 hover:bg-primary/10 hover:border-primary transition-all duration-300"
+            className="gap-3 h-11 px-5 border-primary/30 hover:bg-primary/10 hover:border-primary transition-all duration-300"
           >
             <Copy className="w-5 h-5" />
             Copy
@@ -90,63 +94,59 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
 
         {/* Summary Section */}
         {convertedAnalysis.summary && (
-          <div className="space-y-1.5 md:space-y-2">
-            <SectionHeader icon={<Sparkles className="w-4 h-4 md:w-5 md:h-5 text-white" />} title="Summary" />
-            <div className="pl-2 md:pl-3">
-              <p className="text-foreground leading-7 md:leading-8 text-sm md:text-base">
-                {convertedAnalysis.summary}
-              </p>
-            </div>
+          <div className="space-y-3 rounded-2xl border border-border/60 bg-card/60 p-4 md:p-5 shadow-sm">
+            <SectionHeader icon={<Sparkles className="w-4 h-4 md:w-5 md:h-5" />} title="Summary" />
+            <p className="text-foreground leading-7 md:leading-8 text-sm md:text-base">
+              {convertedAnalysis.summary}
+            </p>
           </div>
         )}
 
         {/* Key Takeaways Section */}
         {convertedAnalysis.takeaways && convertedAnalysis.takeaways.length > 0 && (
-          <div className="space-y-1.5 md:space-y-2">
-            <SectionHeader icon={<Lightbulb className="w-4 h-4 md:w-5 md:h-5 text-white" />} title="Key Takeaways" />
-            <div className="pl-2 md:pl-3">
-              <ul className="space-y-1 md:space-y-1.5">
-                {convertedAnalysis.takeaways.map((takeaway, index) => (
-                  <li key={index} className="flex items-start gap-2 md:gap-3">
-                    <span className="text-primary font-bold mt-0.5 text-sm md:text-base">•</span>
-                    {renderText(takeaway)}
-                  </li>
-                ))}
-              </ul>
-            </div>
+          <div className="space-y-3 rounded-2xl border border-border/60 bg-card/60 p-4 md:p-5 shadow-sm">
+            <SectionHeader icon={<Lightbulb className="w-4 h-4 md:w-5 md:h-5" />} title="Key Takeaways" />
+            <ul className="space-y-2 md:space-y-2.5">
+              {convertedAnalysis.takeaways.map((takeaway, index) => (
+                <li key={index} className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                  {renderText(takeaway)}
+                </li>
+              ))}
+            </ul>
           </div>
         )}
 
         {/* Video Chapters Section */}
         {convertedAnalysis.chapters && convertedAnalysis.chapters.length > 0 && (
-          <div className="space-y-1.5 md:space-y-2">
-            <SectionHeader icon={<BookOpen className="w-4 h-4 md:w-5 md:h-5 text-white" />} title="Video Chapters" />
+          <div className="space-y-4 rounded-2xl border border-border/60 bg-card/60 p-4 md:p-5 shadow-sm">
+            <SectionHeader icon={<BookOpen className="w-4 h-4 md:w-5 md:h-5" />} title="Video Chapters" />
 
-            <div className="pl-2 md:pl-3 space-y-6 relative">
-              {/* Vertical line connecting chapters */}
-              <div className="absolute left-[29px] top-6 bottom-6 w-0.5 bg-primary/30 z-0" />
-              
+            <div className="relative pl-4 md:pl-5 space-y-5">
+              <div className="absolute left-0 top-1 bottom-1 w-px bg-gradient-to-b from-primary/60 via-primary/30 to-transparent" />
+
               {convertedAnalysis.chapters.map((chapter, index) => (
-                <div key={index} className="relative z-10 space-y-1 md:space-y-1.5">
+                <div key={index} className="relative space-y-2">
                   <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-card border-2 border-primary/30 group-hover:border-primary group-hover:text-primary flex items-center justify-center text-primary shadow-sm transition-colors mt-0.5 z-10">
-                      <span className="text-sm font-bold">{index + 1}</span>
+                    <div className="mt-1 flex h-8 w-8 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary font-semibold">
+                      {index + 1}
                     </div>
-                    <div>
+                    <div className="space-y-1">
                       <h5 className="text-base md:text-lg font-semibold text-primary">{chapter.header}</h5>
-                      <p className="text-foreground leading-7 md:leading-8 text-sm md:text-base mt-1">{chapter.summary}</p>
-                      {chapter.key_points && chapter.key_points.length > 0 && (
-                        <ul className="space-y-0.5 md:space-y-1 mt-2">
-                          {chapter.key_points.map((point, pIndex) => (
-                            <li key={pIndex} className="flex items-start gap-2 md:gap-3">
-                              <span className="text-primary font-bold mt-0.5 text-sm md:text-base">•</span>
-                              <span className="text-foreground leading-7 md:leading-8 text-sm md:text-base">{point}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
+                      <p className="text-foreground leading-7 md:leading-8 text-sm md:text-base">{chapter.summary}</p>
                     </div>
                   </div>
+
+                  {chapter.key_points && chapter.key_points.length > 0 && (
+                    <ul className="ml-11 space-y-1.5">
+                      {chapter.key_points.map((point, pIndex) => (
+                        <li key={pIndex} className="flex items-start gap-2 text-sm md:text-base text-foreground leading-7">
+                          <span className="text-primary font-bold mt-0.5">•</span>
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               ))}
             </div>
@@ -155,19 +155,17 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
 
         {/* Keywords Section - now from Analysis model */}
         {convertedAnalysis.keywords && convertedAnalysis.keywords.length > 0 && (
-          <div className="space-y-1.5 md:space-y-2">
-            <SectionHeader icon={<span className="text-white font-bold text-sm md:text-base">#</span>} title="Keywords" />
-            <div className="pl-2 md:pl-3">
-              <div className="flex flex-wrap gap-2">
-                {convertedAnalysis.keywords.map((keyword, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary border border-primary/20"
-                  >
-                    {keyword}
-                  </span>
-                ))}
-              </div>
+          <div className="space-y-3 rounded-2xl border border-border/60 bg-card/60 p-4 md:p-5 shadow-sm">
+            <SectionHeader icon={<span className="text-sm md:text-base font-bold text-primary">#</span>} title="Keywords" />
+            <div className="flex flex-wrap gap-2">
+              {convertedAnalysis.keywords.map((keyword, index) => (
+                <span
+                  key={index}
+                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary border border-primary/20"
+                >
+                  {keyword}
+                </span>
+              ))}
             </div>
           </div>
         )}

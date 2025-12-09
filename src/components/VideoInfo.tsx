@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
-import { cleanVideoUrl } from "@/lib/url-utils";
 import { formatDate, formatDuration } from "@/lib/date-utils";
+import { cleanVideoUrl } from "@/lib/url-utils";
 import { s2tw } from "@/lib/utils";
 import { CalendarDays, Clock, Eye, ThumbsUp, User } from "lucide-react";
 import { ReactNode } from "react";
@@ -45,7 +45,9 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
   const cleanedUrl = cleanVideoUrl(url);
 
   return (
-    <Card className="p-8 modern-blur shadow-glass hover-lift overflow-hidden">
+    <Card className="relative overflow-hidden p-8 rounded-2xl border border-border/60 bg-card/60 shadow-sm">
+      <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-primary via-primary/70 to-red-500" />
+
       <div className="flex flex-col sm:flex-row gap-6">
         <div className="flex-shrink-0 relative" style={{ aspectRatio: "16 / 9" }}>
           <img

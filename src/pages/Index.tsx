@@ -101,63 +101,75 @@ const Index = () => {
         initialUrl={initialUrl}
       />
 
-      <div className="container mx-auto px-4 py-12 bg-background">
-        <div className="max-w-5xl mx-auto space-y-8 bg-background">
-          {/* Video Info */}
-          {!isExampleMode && videoInfo && (
-            <VideoInfo
-              url={videoInfo.url}
-              title={videoInfo.title}
-              thumbnail={videoInfo.thumbnail}
-              author={videoInfo.author}
-              duration={videoInfo.duration}
-              upload_date={videoInfo.upload_date}
-              view_count={videoInfo.view_count}
-              like_count={videoInfo.like_count}
-            />
-          )}
+      <div className="relative bg-background">
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_20%_20%,rgba(255,0,76,0.08),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(255,255,255,0.05),transparent_30%),radial-gradient(circle_at_50%_80%,rgba(255,0,76,0.06),transparent_28%)]" />
 
-          {/* Transcript */}
-          {!isExampleMode && transcript && (
-            <TranscriptPanel transcript={transcript} />
-          )}
+        <div className="container relative z-10 mx-auto px-4 pb-16 -mt-12">
+          <div className="max-w-6xl mx-auto space-y-10">
+            <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-muted/20 px-4 py-3 shadow-sm backdrop-blur">
+              <div className="flex items-center gap-3">
+                <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                <p className="text-sm font-medium text-foreground">Latest output</p>
+              </div>
+              <p className="text-xs text-muted-foreground">Transcript · Analysis · Chapters</p>
+            </div>
 
-          {/* AI Analysis */}
-          {!isExampleMode && analysisResult?.analysis && (
-            <AnalysisPanel
-              analysis={analysisResult.analysis}
-              quality={analysisResult.quality}
-              videoInfo={analysisResult.videoInfo}
-            />
-          )}
+            {/* Video Info */}
+            {!isExampleMode && videoInfo && (
+              <VideoInfo
+                url={videoInfo.url}
+                title={videoInfo.title}
+                thumbnail={videoInfo.thumbnail}
+                author={videoInfo.author}
+                duration={videoInfo.duration}
+                upload_date={videoInfo.upload_date}
+                view_count={videoInfo.view_count}
+                like_count={videoInfo.like_count}
+              />
+            )}
 
-          {/* Loading State */}
-          {isLoading && (
-            <ProcessingStatus
-              currentStage={currentStage}
-              currentStep={currentStep}
-              progressStates={progressStates}
-            />
-          )}
+            {/* Transcript */}
+            {!isExampleMode && transcript && (
+              <TranscriptPanel transcript={transcript} />
+            )}
 
-          {/* Error State */}
-          {error && !isLoading && (
-            <ErrorDisplay
-              error={error}
-              progressStates={progressStates}
-              onLoadExample={loadExample}
-            />
-          )}
+            {/* AI Analysis */}
+            {!isExampleMode && analysisResult?.analysis && (
+              <AnalysisPanel
+                analysis={analysisResult.analysis}
+                quality={analysisResult.quality}
+                videoInfo={analysisResult.videoInfo}
+              />
+            )}
 
-          {/* Success State - Process Overview */}
-          {!isLoading && !error && analysisResult && analysisResult.success && (
-            <ProcessingTimeline
-              progressStates={progressStates}
-              analysisResult={analysisResult}
-              streamingLogs={streamingLogs}
-              isExampleMode={isExampleMode}
-            />
-          )}
+            {/* Loading State */}
+            {isLoading && (
+              <ProcessingStatus
+                currentStage={currentStage}
+                currentStep={currentStep}
+                progressStates={progressStates}
+              />
+            )}
+
+            {/* Error State */}
+            {error && !isLoading && (
+              <ErrorDisplay
+                error={error}
+                progressStates={progressStates}
+                onLoadExample={loadExample}
+              />
+            )}
+
+            {/* Success State - Process Overview */}
+            {!isLoading && !error && analysisResult && analysisResult.success && (
+              <ProcessingTimeline
+                progressStates={progressStates}
+                analysisResult={analysisResult}
+                streamingLogs={streamingLogs}
+                isExampleMode={isExampleMode}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>

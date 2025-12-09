@@ -102,12 +102,13 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
   }));
  
   return (
-    <Card className="p-10 modern-blur shadow-glass hover-lift">
-      <div className="space-y-8">
-        
+    <Card className="relative overflow-hidden rounded-[28px] border border-primary/15 bg-gradient-to-b from-background/85 via-background/70 to-background/60 shadow-[0_20px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+      <div className="absolute inset-x-0 top-0 h-[3px] bg-primary/50" />
+
+      <div className="space-y-8 p-8 sm:p-10">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Options Section - Grid layout for 3 items */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-6 border-b border-muted">
+          <div className="grid grid-cols-1 gap-4 rounded-2xl border border-border/60 bg-muted/30 p-4 md:grid-cols-3">
             <ModelSelector
               label="Summarizer"
               icon={Bot}
@@ -142,12 +143,12 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
               placeholder="https://youtube.com/watch?v=dQw4w9WgXcQ"
               value={url}
               onChange={handleUrlChange}
-              className={`h-16 text-lg px-6 bg-background/50 border-2 border-primary/20 focus:ring-primary focus:border-primary transition-all duration-500 hover:border-primary/40 rounded-2xl ${
-                validationError ? 'border-destructive focus:ring-destructive' : ''
+              className={`h-16 rounded-2xl border-2 bg-card/70 px-6 text-lg shadow-inner transition-all duration-300 placeholder:text-muted-foreground/80 focus:border-primary focus:ring-primary ${
+                validationError ? "border-destructive focus:ring-destructive" : "border-border/60 hover:border-primary/40"
               }`}
               disabled={isLoading}
             />
-            
+
             {validationError && (
               <Alert variant="destructive" className="border-destructive/50 bg-destructive/10">
                 <AlertCircle className="h-4 w-4" />
@@ -156,26 +157,25 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
             )}
 
             {/* Example URLs when empty input */}
-            {showExamples && (
-              <ExampleUrls onSelect={handleExampleClick} />
-            )}
+            {showExamples && <ExampleUrls onSelect={handleExampleClick} />}
           </div>
-          
+
           <Button
             type="submit"
             disabled={isLoading || !isFormValid(url)}
-            className="w-full h-16 text-lg bg-primary text-white font-bold hover:shadow-button transition-all duration-500 hover:scale-[1.02] youtube-pulse rounded-2xl disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none border border-primary/30 hover:bg-primary/90"
+            className="group relative flex h-16 w-full items-center justify-center gap-3 overflow-hidden rounded-2xl bg-primary/80 text-lg font-semibold text-white shadow-2xl transition-transform duration-300 hover:scale-[1.01] hover:bg-primary/60 focus-visible:ring-2 focus-visible:ring-primary/80 disabled:scale-100 disabled:opacity-60"
           >
+            <div className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-20 bg-white/10" />
             {isLoading ? (
               <>
-                <Loader2 className="w-6 h-6 mr-3 animate-spin flex-shrink-0" />
-                <span className="font-bold text-sm sm:text-lg break-words">Processing Video...</span>
+                <Loader2 className="w-6 h-6 animate-spin flex-shrink-0" />
+                <span className="font-semibold text-sm sm:text-lg break-words">Processing video...</span>
               </>
             ) : (
               <>
-                <Play className="w-6 h-6 mr-3 flex-shrink-0" />
-                <span className="font-bold text-sm sm:text-lg break-words">
-                  {url.trim().length === 0 ? "See Example" : "Summarize Video"}
+                <Play className="w-6 h-6 flex-shrink-0" />
+                <span className="font-semibold text-sm sm:text-lg break-words">
+                  {url.trim().length === 0 ? "See example" : "Summarize video"}
                 </span>
               </>
             )}
@@ -184,13 +184,12 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
 
         {/* Help text and examples - only show when not showing examples above */}
         {!showExamples && (
-          <div className="border-t border-muted pt-4 space-y-3">
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground">
-                Supported YouTube URL formats:
-              </p>
+          <div className="rounded-2xl border border-border/60 bg-muted/20 p-4 space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm text-muted-foreground">Supported YouTube URL formats</p>
+              <span className="text-xs rounded-full bg-primary/10 px-3 py-1 text-primary">Drop an empty link to preview</span>
             </div>
-            
+
             <div className="grid gap-2 text-xs text-muted-foreground">
               <div className="flex items-center gap-2">
                 <ExternalLink className="w-3 h-3" />
@@ -203,7 +202,6 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
             </div>
           </div>
         )}
-
       </div>
     </Card>
   );
