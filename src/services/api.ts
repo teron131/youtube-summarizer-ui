@@ -3,45 +3,36 @@
  * ===============================
  *
  * Optimized API client for the YouTube Summarizer backend.
- * Aligned with youtube-summarizer/app.py v3.0.0 implementation.
- *
- * ## Key Features
- *
- * - **Meta-language avoidance**: Clean, direct AI responses without meta-descriptive language
- * - **Advanced LangGraph workflow**: Multi-step analysis with quality control and self-refinement
- * - **Real-time streaming**: Progress updates during processing
- * - **Multi-model support**: Gemini, Claude, and GPT models
- * - **Translation support**: Multiple language options
- *
- * ## URL Configuration
- *
- * **Development**: Uses Vite proxy `/api` → `localhost:8080`
- * **Production**: Set `VITE_API_BASE_URL=https://youtube-summarizer-teron131.up.railway.app` (no `/api` suffix)
- *
- * ## Processing Workflow
- *
- * The backend uses an advanced LangGraph workflow with multiple processing options:
- * - **Step 1**: `/scrap` - Extract video info and transcript using Scrape Creators
- * - **Step 2**: `/summarize` or `/stream-summarize` - Generate AI analysis with:
- *   - Model selection (Gemini 2.5 Pro/Flash, Claude Sonnet 4)
- *   - Translation support (Chinese, English, Japanese, Korean, German, Russian)
- *   - Quality assessment with automatic refinement
- *   - Meta-language avoidance for cleaner output
- *   - Real-time streaming progress updates
- *
- * ## Available Endpoints
- *
- * - `/` - API information and health check
- * - `/health` - Health check with environment configuration
- * - `/config` - Get available models and languages for configuration
- * - `/scrap` - Extract video metadata and transcript
- * - `/summarize` - Full LangGraph workflow analysis
- * - `/stream-summarize` - Streaming analysis with real-time progress
+ * Main entry point that coordinates between specialized modules.
  */
 
 // API Configuration
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 const API_VERSION = "3.0.0";
+
+// Import and re-export types
+export type {
+  AnalysisChapter, AnalysisData, ApiError, ConfigurationResponse,
+  HealthCheckResponse, QualityData,
+  QualityRate, ScrapRequest,
+  ScrapResponse, StreamingChunk, StreamingProcessingResult, StreamingProgressState, SummarizeRequest,
+  SummarizeResponse, VideoInfoResponse
+} from './api-types';
+
+// Import and re-export error handling
+export {
+  ERROR_MESSAGES, getErrorMessage,
+  getErrorSeverity, handleApiError,
+  isApiError,
+  isNetworkError, isProcessingError,
+  isServerError, isValidationError
+} from './api-errors';
+
+// Import and re-export utilities
+export {
+  extractVideoId, formatDuration, formatProcessingTime,
+  formatViewCount, getThumbnailUrl, isValidYouTubeUrl
+} from './api-utils';
 
 // Import configuration constants
 import {
@@ -52,6 +43,26 @@ import {
   SUPPORTED_LANGUAGES_LIST
 } from './config';
 
+// Import types for internal use
+import type {
+  AnalysisData,
+  ApiError,
+  ConfigurationResponse,
+  HealthCheckResponse,
+  QualityData,
+  ScrapRequest,
+  ScrapResponse,
+  StreamingChunk,
+  StreamingProcessingResult,
+  StreamingProgressState,
+  SummarizeRequest,
+  SummarizeResponse,
+  VideoInfoResponse,
+} from './api-types';
+
+import { ERROR_MESSAGES, handleApiError as handleApiErrorUtil } from './api-errors';
+import * as apiUtils from './api-utils';
+
 // Development logging
 if (import.meta.env.DEV) {
   const displayUrl = API_BASE_URL || '/api (Vite proxy → localhost:8080)';
@@ -61,210 +72,6 @@ if (import.meta.env.DEV) {
   // Production logging
   console.log('Production API Base URL:', API_BASE_URL || 'Not configured');
   console.log('API Version:', API_VERSION);
-}
-
-// ================================
-// TYPE DEFINITIONS
-// ================================
-
-// Basic Video Info
-export interface VideoInfoResponse {
-  url: string;
-  title: string | null;
-  thumbnail?: string;
-  author: string | null;
-  duration?: string;
-  upload_date?: string;
-  view_count?: number;
-  like_count?: number;
-}
-
-export interface ScrapRequest {
-  url: string;
-}
-
-export interface ScrapResponse {
-  status: string;
-  message: string;
-  timestamp: string;
-  transcript: string | null;
-  processing_time: string;
-
-  // Video data in consistent order - all optional
-  url?: string | null;
-  title?: string | null;
-  thumbnail?: string | null;
-  author?: string | null;
-  duration?: string | null;
-  upload_date?: string | null;
-  view_count?: number | null;
-  like_count?: number | null;
-}
-
-export interface SummarizeRequest {
-  content: string;
-  content_type?: 'url' | 'transcript';
-
-  // Model selection
-  analysis_model?: string; // default="google/gemini-2.5-pro"
-  quality_model?: string; // default="google/gemini-2.5-flash"
-
-  // Translation options
-  target_language?: string | null; // Target language for translation (None for auto-detect, "auto" gets converted to null)
-
-
-}
-
-// SummarizeResponse with new metadata fields
-export interface SummarizeResponse {
-  status: string;
-  message: string;
-  timestamp: string;
-  analysis: AnalysisData;
-  quality?: QualityData;
-  processing_time: string;
-  iteration_count: number; // default=1
-
-  // Model metadata
-  analysis_model: string; // Model used for analysis
-  quality_model: string; // Model used for quality evaluation
-
-  // Translation metadata
-  target_language?: string | null; // Target language used for translation
-
-}
-
-// Configuration Response
-export interface ConfigurationResponse {
-  status: string;
-  message: string;
-  available_models: Record<string, string>; // Available models for selection
-  supported_languages: Record<string, string>; // Supported languages for translation
-  default_analysis_model: string; // Default analysis model
-  default_quality_model: string; // Default quality model
-  default_target_language: string; // Default target language
-}
-
-// ================================
-// ANALYSIS DATA STRUCTURES
-// ================================
-// Updated to match backend Python models (v3.0.0):
-// - TextItem provides clean text content
-// - text field replaces point field (clearer semantics)
-// - Keywords in Analysis model for better extraction context
-// - All interfaces aligned with Pydantic models in summarizer.py
-
-// Using simple strings for takeaways and key facts
-
-// Main analysis result (matches backend Analysis model)
-export interface AnalysisData {
-  title: string;
-  summary: string;
-  takeaways: string[];                 // Key insights as simple strings
-  chapters: AnalysisChapter[];         // Video chapter breakdown
-  keywords: string[];                  // Extracted keywords (max 3)
-  target_language?: string | null;     // Translation target language
-}
-
-// Video chapter structure (matches backend Chapter model)
-export interface AnalysisChapter {
-  header: string;
-  summary: string;
-  key_points: string[];               // Chapter-specific key points
-}
-
-// ================================
-// STREAMING ANALYSIS TYPES
-// ================================
-
-// Real-time streaming chunk from LangGraph workflow (matches backend GraphState)
-export interface StreamingChunk {
-  // Core workflow state (matches backend GraphState fields)
-  transcript_or_url?: string;        // Input content or YouTube URL
-  analysis?: AnalysisData;           // Current analysis result
-  quality?: QualityData;             // Current quality assessment
-  iteration_count?: number;          // Current iteration number
-  is_complete?: boolean;             // Whether workflow is finished
-
-  // Streaming metadata (added by backend API)
-  timestamp?: string;                // Chunk timestamp
-  chunk_number?: number;             // Sequential chunk number
-  type?: 'status' | 'analysis' | 'quality' | 'complete' | 'error';
-  message?: string;                  // Human-readable status message
-  processing_time?: string;          // Current processing time
-  total_chunks?: number;             // Total chunks expected
-}
-
-// ================================
-// QUALITY ASSESSMENT STRUCTURES
-// ================================
-
-// Quality assessment for analysis (matches backend Quality model)
-export interface QualityData {
-  completeness: QualityRate;         // Coverage of entire transcript
-  structure: QualityRate;            // Organization and formatting
-  no_garbage: QualityRate;           // Removal of promotional content
-  meta_language_avoidance: QualityRate; // Avoidance of meta-language phrases
-  useful_keywords: QualityRate;      // Usefulness of keywords for analysis highlighting
-  correct_language: QualityRate;     // Language consistency and quality
-
-  // Computed quality metrics (optional - calculated by backend)
-  total_score?: number;               // Raw score out of max possible
-  max_possible_score?: number;        // Maximum possible score
-  percentage_score?: number;          // Quality percentage (0-100)
-  is_acceptable?: boolean;           // Whether quality meets threshold
-}
-
-// Individual quality rating (matches backend Rate model)
-export interface QualityRate {
-  rate: 'Fail' | 'Refine' | 'Pass';  // Quality level assessment
-  reason: string;                   // Explanation for the rating
-}
-
-export interface StreamingProgressState {
-  step: 'scraping' | 'analyzing' | 'analysis_generation' | 'quality_check' | 'refinement' | 'complete';
-  stepName: string;
-  status: 'pending' | 'processing' | 'completed' | 'error';
-  message: string;
-  data?: unknown;
-  error?: ApiError;
-  processingTime?: string;
-  iterationCount?: number;
-  qualityScore?: number;
-  chunkCount?: number;
-}
-
-export interface StreamingProcessingResult {
-  success: boolean;
-  videoInfo?: VideoInfoResponse;
-  transcript?: string;
-  analysis?: AnalysisData;
-  quality?: QualityData;
-  error?: ApiError;
-  totalTime: string;
-  iterationCount: number;
-  chunksProcessed: number;
-  logs: string[];
-}
-
-// Health Check Response
-export interface HealthCheckResponse {
-  status: 'healthy';
-  message: string;
-  timestamp: string;
-  version: string;
-  environment: {
-    gemini_configured: boolean;
-    scrapecreators_configured: boolean;
-  };
-}
-
-// Error Types
-export interface ApiError {
-  message: string;
-  status?: number;
-  details?: string;
-  type?: 'network' | 'validation' | 'server' | 'processing' | 'unknown';
 }
 
 // ================================
@@ -975,7 +782,7 @@ class YouTubeApiClient {
 
     } catch (error) {
       const totalTime = ((Date.now() - startTime) / 1000).toFixed(1) + 's';
-      const apiError = handleApiError(error);
+      const apiError = handleApiErrorUtil(error);
 
       // Add error to logs
       const errorTimestamp = new Date().toLocaleTimeString();
@@ -1005,85 +812,31 @@ class YouTubeApiClient {
   }
 
   // ================================
-  // UTILITY METHODS
+  // UTILITY METHODS (delegated to api-utils)
   // ================================
 
-  /**
-   * Client-side YouTube URL validation
-   */
   isValidYouTubeUrl(url: string): boolean {
-    const patterns = [
-      /^https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[a-zA-Z0-9_-]+/,
-      /^https?:\/\/(www\.)?youtube\.com\/v\/[a-zA-Z0-9_-]+/,
-    ];
-    
-    return patterns.some(pattern => pattern.test(url));
+    return apiUtils.isValidYouTubeUrl(url);
   }
 
-  /**
-   * Extract video ID from YouTube URL
-   */
-  extractVideoId(url: string): string | null {
-    const patterns = [
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/v\/)([a-zA-Z0-9_-]+)/,
-    ];
-    
-    for (const pattern of patterns) {
-      const match = url.match(pattern);
-      if (match) return match[1];
-    }
-    
-    return null;
+  extractVideoId(url: string): string {
+    return apiUtils.extractVideoId(url);
   }
 
-  /**
-   * Generate YouTube thumbnail URL
-   */
   getThumbnailUrl(videoId: string, quality: 'default' | 'hq' | 'mq' | 'sd' | 'maxres' = 'hq'): string {
-    const qualityMap = {
-      'default': 'default',
-      'hq': 'hqdefault',
-      'mq': 'mqdefault', 
-      'sd': 'sddefault',
-      'maxres': 'maxresdefault'
-    };
-    
-    return `https://img.youtube.com/vi/${videoId}/${qualityMap[quality]}.jpg`;
+    return apiUtils.getThumbnailUrl(videoId, quality);
   }
 
-  /**
-   * Format processing time
-   */
   formatProcessingTime(timeStr: string): string {
-    const seconds = parseFloat(timeStr.replace('s', ''));
-    if (seconds < 60) return `${seconds.toFixed(1)}s`;
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}m ${remainingSeconds.toFixed(1)}s`;
+    return apiUtils.formatProcessingTime(timeStr);
   }
 
-  /**
-   * Format view count
-   */
   formatViewCount(count: number): string {
-    if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
-    if (count >= 1000) return `${(count / 1000).toFixed(1)}K`;
-    return count.toString();
+    return apiUtils.formatViewCount(count);
   }
 
-  /**
-   * Format duration
-   */
   formatDuration(durationStr: string): string {
-    const seconds = parseInt(durationStr.replace('s', ''));
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const remainingSeconds = seconds % 60;
-    
-    if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-    }
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    return apiUtils.formatDuration(durationStr);
   }
 }
 
@@ -1120,13 +873,7 @@ export const scrapVideo = (request: ScrapRequest) => apiClient.scrapVideo(reques
 // Not used by UI (streaming is used), but kept for tooling/testing
 export const summarizeContent = (request: SummarizeRequest) => apiClient.summarizeContent(request);
 
-// Utility functions
-export const isValidYouTubeUrl = (url: string) => apiClient.isValidYouTubeUrl(url);
-export const extractVideoId = (url: string) => apiClient.extractVideoId(url);
-export const getThumbnailUrl = (videoId: string, quality?: 'default' | 'hq' | 'mq' | 'sd' | 'maxres') => apiClient.getThumbnailUrl(videoId, quality);
-export const formatProcessingTime = (timeStr: string) => apiClient.formatProcessingTime(timeStr);
-export const formatViewCount = (count: number) => apiClient.formatViewCount(count);
-export const formatDuration = (durationStr: string) => apiClient.formatDuration(durationStr);
+// Note: Utility functions are exported from api-utils at the top of this file
 
 // ================================
 // CONFIGURATION EXPORTS
@@ -1139,114 +886,7 @@ export {
   DEFAULT_TARGET_LANGUAGE, getLanguageByKey, getModelByKey, isValidLanguage, isValidModel, SUPPORTED_LANGUAGES, SUPPORTED_LANGUAGES_LIST, validateLanguageSelection, validateModelSelection, type AvailableModel, type LanguageKey, type ModelKey, type SupportedLanguage
 } from './config';
 
-// ================================
-// ERROR HANDLING UTILITIES
-// ================================
-
-export const handleApiError = (error: unknown): ApiError => {
-  if (isApiError(error)) {
-    return error;
-  }
-
-  if (error instanceof Error) {
-    // Determine error type based on message content
-    let errorType: ApiError['type'] = 'unknown';
-    const message = error.message.toLowerCase();
-
-    if (message.includes('unable to connect') || message.includes('fetch') || message.includes('network')) {
-      errorType = 'network';
-    } else if (message.includes('invalid') || message.includes('validation') || message.includes('bad request')) {
-      errorType = 'validation';
-    } else if (message.includes('too long') || message.includes('processing failed') || message.includes('too large')) {
-      errorType = 'processing';
-    } else if (message.includes('server error') || message.includes('internal server error')) {
-      errorType = 'server';
-    }
-
-    return {
-      message: error.message,
-      type: errorType,
-      details: error.stack,
-    };
-  }
-
-  return {
-    message: 'An unknown error occurred',
-    type: 'unknown',
-    details: String(error),
-  };
-};
-
-export const isApiError = (error: unknown): error is ApiError => {
-  return typeof error === 'object' && error !== null && 'message' in error;
-};
-
-export const isNetworkError = (error: ApiError): boolean => {
-  return error.type === 'network' || 
-         error.message.includes('Unable to connect') ||
-         error.message.includes('fetch');
-};
-
-export const isValidationError = (error: ApiError): boolean => {
-  return error.type === 'validation' ||
-         error.status === 400 || 
-         error.message.includes('validation') ||
-         error.message.includes('invalid');
-};
-
-export const isProcessingError = (error: ApiError): boolean => {
-  return error.type === 'processing' ||
-         error.status === 413 ||
-         error.message.includes('too long') ||
-         error.message.includes('processing failed');
-};
-
-export const isServerError = (error: ApiError): boolean => {
-  return error.type === 'server' ||
-         (error.status !== undefined && error.status >= 500);
-};
-
-export const getErrorMessage = (error: ApiError): string => {
-  if (isNetworkError(error)) {
-    return 'Connection failed. Please check if the backend server is running.';
-  }
-  
-  if (isValidationError(error)) {
-    return error.message;
-  }
-  
-  if (isProcessingError(error)) {
-    return 'Video processing failed. The video might be too long or unavailable.';
-  }
-  
-  if (isServerError(error)) {
-    return 'Server error occurred. Please try again later.';
-  }
-  
-  return error.message || 'An unexpected error occurred.';
-};
-
-export const getErrorSeverity = (error: ApiError): 'low' | 'medium' | 'high' => {
-  if (isNetworkError(error) || isServerError(error)) return 'high';
-  if (isProcessingError(error)) return 'medium';
-  return 'low';
-};
-
-// ================================
-// CONSTANTS
-// ================================
-
-export const ERROR_MESSAGES = {
-  NETWORK: 'Unable to connect to the server',
-  VALIDATION: 'Invalid input provided', 
-  PROCESSING: 'Video processing failed',
-  SERVER: 'Server error occurred',
-  UNKNOWN: 'An unexpected error occurred',
-  INVALID_URL: 'Invalid YouTube URL',
-  EMPTY_URL: 'URL is required',
-  CONFIG_MISSING: 'Required API key missing',
-  API_QUOTA_EXCEEDED: 'API quota exceeded'
-} as const;
+// Note: Error handling and utilities are exported from api-errors and api-utils at the top of this file
 
 // Export everything for convenient imports
 export { apiClient, YouTubeApiClient };
