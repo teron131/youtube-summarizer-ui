@@ -6,9 +6,9 @@ A modern, full-stack application that transforms YouTube videos into concise, AI
 
 ## 🚀 Features
 
-- **YouTube Video Processing**: Extract video information, audio, and existing captions
-- **AI Transcription**: High-quality audio transcription using FAL AI's Whisper service
-- **Smart Summarization**: AI-powered summaries using Google's Gemini API
+- **YouTube Video Processing**: Extract video information and transcripts using ScrapeCreators API
+- **AI Transcription**: Fallback audio transcription using FAL AI's Whisper service
+- **Smart Summarization**: AI-powered summaries using OpenRouter (Grok, Gemini, Claude) with quality self-checking
 - **Real-time Processing**: Live progress updates and detailed logging
 - **Modern UI**: Beautiful, responsive interface with Tailwind CSS and shadcn/ui
 - **Error Handling**: Comprehensive error handling and user feedback
@@ -25,19 +25,23 @@ A modern, full-stack application that transforms YouTube videos into concise, AI
 
 ### Backend
 - **FastAPI** for high-performance API
-- **yt-dlp** for YouTube video processing
-- **FAL AI** for audio transcription
-- **Google Gemini** for AI summarization
+- **ScrapeCreators API** for YouTube video metadata and transcript extraction
+- **yt-dlp** for fallback video processing
+- **FAL AI** for audio transcription (fallback)
+- **OpenRouter** for unified LLM access (Grok, Gemini, Claude)
+- **LangChain & LangGraph** for AI workflow orchestration
 - **Pydub** for audio optimization
 - **OpenCC** for Chinese text conversion
 
 ## 📋 Prerequisites
 
-- **Node.js** 18+ and npm
+- **Node.js** 18+ and npm/bun
 - **Python** 3.8+
-- **API Keys**:
-  - FAL AI API key ([Get here](https://fal.ai/))
-  - Google Gemini API key ([Get here](https://ai.google.dev/))
+- **API Keys** (at least one required):
+  - **ScrapeCreators API key** ([Get here](https://scrapecreators.com/)) - For video scraping
+  - **OpenRouter API key** ([Get here](https://openrouter.ai/)) - For AI models (Grok, Claude, etc.)
+  - **OR** Google Gemini API key ([Get here](https://ai.google.dev/)) - Alternative for AI analysis
+  - FAL AI API key ([Get here](https://fal.ai/)) - Optional, for audio transcription fallback
 
 ## 🚀 Quick Start
 
@@ -67,8 +71,15 @@ cp youtube-summarizer/.env_example youtube-summarizer/.env
 Edit `youtube-summarizer/.env` with your API keys:
 
 ```env
-# API Keys
+# Required
+SCRAPECREATORS_API_KEY=your_scrapecreators_api_key_here
+
+# AI Models (at least one required)
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+# OR
 GEMINI_API_KEY=your_gemini_api_key_here
+
+# Optional
 FAL_KEY=your_fal_api_key_here
 ```
 
