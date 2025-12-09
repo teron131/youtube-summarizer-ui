@@ -126,6 +126,23 @@ export async function streamAnalysis(
           // Emit progress based on chunk type
           if (data.type === 'status') {
             addLog(data.message || 'Processing...');
+          } else if (data.type === 'complete' || data.is_complete) {
+             const qualityScore = data.quality?.percentage_score;
+             const msg = qualityScore !== undefined
+               ? `✅ Analysis completed successfully with ${qualityScore}% quality score`
+               : `✅ Analysis completed successfully`;
+             
+             addLog(msg);
+             
+             onProgress?.({
+               step: 'complete',
+               stepName: 'Analysis Complete',
+               status: 'completed',
+               message: msg,
+               iterationCount,
+               qualityScore,
+               chunkCount: chunksProcessed
+             });
           } else if (data.quality && data.quality.percentage_score !== undefined) {
              const score = data.quality.percentage_score;
              const passed = data.quality.is_acceptable;
@@ -137,6 +154,15 @@ export async function streamAnalysis(
                status: 'processing',
                message: passed ? 'Quality check passed' : 'Refining analysis...',
                qualityScore: score,
+               iterationCount
+             });
+          } else if (data.analysis && !data.quality) {
+             // Initial analysis generation
+             onProgress?.({
+               step: 'analysis_generation',
+               stepName: 'Analysis Generation',
+               status: 'completed',
+               message: 'Analysis generated',
                iterationCount
              });
           }
@@ -189,4 +215,3 @@ export async function streamAnalysis(
     };
   }
 }
-

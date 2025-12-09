@@ -2,7 +2,7 @@
  * Markdown generation utilities
  */
 
-import { AnalysisData, VideoInfoResponse } from '@/services/api';
+import { AnalysisData, VideoInfoResponse } from '@/services/types';
 import { convertAnalysisChinese } from './utils';
 
 /**

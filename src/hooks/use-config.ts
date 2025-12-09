@@ -11,7 +11,8 @@
  * - Type-safe configuration management
  */
 
-import { ConfigurationResponse, getConfigurationWithFallback } from '@/services/api';
+import { api } from '@/services/api';
+import { ConfigurationResponse } from '@/services/types';
 import {
   AVAILABLE_MODELS,
   AVAILABLE_MODELS_LIST,
@@ -61,7 +62,7 @@ export function useConfig(): UseConfigReturn {
       setIsLoading(true);
       setError(null);
 
-      const configuration = await getConfigurationWithFallback();
+      const configuration = await api.getConfiguration();
       setConfig(configuration);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load configuration');
