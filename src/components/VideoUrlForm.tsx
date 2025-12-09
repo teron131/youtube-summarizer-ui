@@ -107,8 +107,8 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
 
       <div className="space-y-8 p-8 sm:p-10">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Options Section - Vertical layout */}
-          <div className="flex flex-col gap-4 rounded-2xl border border-border/60 bg-muted/30 p-4">
+          {/* Options Section - Grid layout */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 rounded-2xl border border-border/60 bg-muted/30 p-6">
             <ModelSelector
               label="Summarizer"
               icon={Bot}

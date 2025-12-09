@@ -44,14 +44,14 @@ export function HeroSection({ onSubmit, isLoading, initialUrl }: HeroSectionProp
 
             <div className="space-y-4 fade-in-up stagger-1">
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight text-foreground">
-                Transform YouTube Video into
+                YouTube Video
                 <span className="block bg-gradient-to-r from-primary via-primary/80 to-white bg-clip-text text-transparent animate-glow">
-                  Structured Summary
+                  Structured Analysis
                 </span>
               </h1>
             </div>
 
-            <div className="flex flex-col gap-4 fade-in-up stagger-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 fade-in-up stagger-2 max-w-5xl mx-auto">
               {[
                 { icon: <Zap className="h-4 w-4" />, label: "Fast streaming", value: "< 1 min completion" },
                 { icon: <ShieldCheck className="h-4 w-4" />, label: "Structured outputs", value: "Summary, takeaways, chapters" },
@@ -59,7 +59,7 @@ export function HeroSection({ onSubmit, isLoading, initialUrl }: HeroSectionProp
               ].map((item) => (
                 <div
                   key={item.label}
-                  className="rounded-2xl border border-primary/15 bg-background/60 px-4 py-3 shadow-lg hover:border-primary/30 transition-colors duration-300"
+                  className="rounded-2xl border border-primary/15 bg-background/60 px-6 py-4 shadow-lg hover:border-primary/30 transition-colors duration-300"
                 >
                   <div className="flex items-center gap-2 text-primary">
                     {item.icon}
