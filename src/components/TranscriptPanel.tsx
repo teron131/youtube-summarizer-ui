@@ -35,7 +35,7 @@ export const TranscriptPanel = ({ transcript }: TranscriptPanelProps) => {
         <CollapsibleTrigger asChild>
           <Button
             variant="ghost"
-            className="w-full p-8 h-auto justify-between hover:bg-primary/5 transition-all duration-300"
+            className="w-full p-8 h-auto justify-between hover:bg-transparent transition-all duration-300"
           >
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center">
