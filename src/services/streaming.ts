@@ -15,22 +15,20 @@ import {
   VideoInfoResponse,
 } from './types';
 
+// --- Types & Constants ---
+
 type ChunkHandler = (data: StreamingChunk) => StreamingProgressState | null;
 
 const createCompleteHandler = (): ChunkHandler => (data) => {
-  if (!data.type || (data.type !== 'complete' && !data.is_complete)) return null;
-
+  if (data.type !== 'complete' && !data.is_complete) return null;
   const qualityScore = data.quality?.percentage_score;
-  const message =
-    qualityScore !== undefined
-      ? `Analysis completed successfully with ${qualityScore}% quality score`
-      : 'Analysis completed successfully';
-
   return {
     step: 'complete',
     stepName: 'Analysis Complete',
     status: 'completed',
-    message,
+    message: qualityScore !== undefined
+      ? `Analysis completed successfully with ${qualityScore}% quality score`
+      : 'Analysis completed successfully',
     iterationCount: data.iteration_count,
     qualityScore,
   };
@@ -38,10 +36,7 @@ const createCompleteHandler = (): ChunkHandler => (data) => {
 
 const createQualityHandler = (): ChunkHandler => (data) => {
   if (!data.quality?.percentage_score) return null;
-
-  const score = data.quality.percentage_score;
-  const passed = data.quality.is_acceptable;
-
+  const { percentage_score: score, is_acceptable: passed } = data.quality;
   return {
     step: passed ? 'quality_check' : 'refinement',
     stepName: passed ? 'Quality Check' : 'Refining',
@@ -54,7 +49,6 @@ const createQualityHandler = (): ChunkHandler => (data) => {
 
 const createAnalysisHandler = (): ChunkHandler => (data) => {
   if (!data.analysis || data.quality) return null;
-
   return {
     step: 'analysis_generation',
     stepName: 'Analysis Generation',
@@ -70,12 +64,10 @@ const CHUNK_HANDLERS: ChunkHandler[] = [
   createAnalysisHandler(),
 ];
 
-function processChunk(
-  data: StreamingChunk,
-  onProgress?: (state: StreamingProgressState) => void,
-): void {
-  if (data.type === 'status') return;
+// --- Helper Functions ---
 
+function processChunk(data: StreamingChunk, onProgress?: (state: StreamingProgressState) => void): void {
+  if (data.type === 'status') return;
   for (const handler of CHUNK_HANDLERS) {
     const state = handler(data);
     if (state) {
@@ -84,6 +76,43 @@ function processChunk(
     }
   }
 }
+
+async function performScraping(url: string, onProgress?: (state: StreamingProgressState) => void) {
+  onProgress?.({
+    step: 'scraping',
+    stepName: 'Scraping Video',
+    status: 'processing',
+    message: 'Extracting video info...',
+  });
+
+  const scrapResult = await api.scrapVideo({ url });
+  if (scrapResult.status !== 'success') {
+    throw new Error(scrapResult.message || 'Scraping failed');
+  }
+
+  const videoInfo: VideoInfoResponse = {
+    url: scrapResult.url || url,
+    title: scrapResult.title || null,
+    thumbnail: scrapResult.thumbnail,
+    author: scrapResult.author || null,
+    duration: scrapResult.duration,
+    upload_date: scrapResult.upload_date,
+    view_count: scrapResult.view_count,
+    like_count: scrapResult.like_count,
+  };
+
+  onProgress?.({
+    step: 'scraping',
+    stepName: 'Scraping Video',
+    status: 'completed',
+    message: `Video scraped: ${videoInfo.title}`,
+    data: { videoInfo, transcript: scrapResult.transcript },
+  });
+
+  return { scrapResult, videoInfo };
+}
+
+// --- Main Function ---
 
 export async function streamAnalysis(
   url: string,
@@ -95,40 +124,12 @@ export async function streamAnalysis(
   onProgress?: (state: StreamingProgressState) => void,
 ): Promise<StreamingProcessingResult> {
   const startTime = Date.now();
+  let iterationCount = 0;
+  let chunksProcessed = 0;
 
   try {
     // 1. Scraping Phase
-    onProgress?.({
-      step: 'scraping',
-      stepName: 'Scraping Video',
-      status: 'processing',
-      message: 'Extracting video info...',
-    });
-
-    const scrapResult = await api.scrapVideo({ url });
-
-    if (scrapResult.status !== 'success') {
-      throw new Error(scrapResult.message || 'Scraping failed');
-    }
-
-    const videoInfo: VideoInfoResponse = {
-      url: scrapResult.url || url,
-      title: scrapResult.title || null,
-      thumbnail: scrapResult.thumbnail,
-      author: scrapResult.author || null,
-      duration: scrapResult.duration,
-      upload_date: scrapResult.upload_date,
-      view_count: scrapResult.view_count,
-      like_count: scrapResult.like_count,
-    };
-
-    onProgress?.({
-      step: 'scraping',
-      stepName: 'Scraping Video',
-      status: 'completed',
-      message: `Video scraped: ${videoInfo.title}`,
-      data: { videoInfo, transcript: scrapResult.transcript },
-    });
+    const { scrapResult, videoInfo } = await performScraping(url, onProgress);
 
     // 2. Analysis Phase (Streaming)
     onProgress?.({
@@ -143,8 +144,7 @@ export async function streamAnalysis(
       content_type: scrapResult.transcript ? 'transcript' : 'url',
       analysis_model: options.analysisModel || 'google/gemini-2.5-pro',
       quality_model: options.qualityModel || 'google/gemini-2.5-flash',
-      target_language:
-        options.targetLanguage === 'auto' ? null : options.targetLanguage,
+      target_language: options.targetLanguage === 'auto' ? null : options.targetLanguage,
     };
 
     const response = await fetch(`${api.baseUrl}/stream-summarize`, {
@@ -161,35 +161,26 @@ export async function streamAnalysis(
 
     let analysis: AnalysisData | undefined;
     let quality: QualityData | undefined;
-    let iterationCount = 0;
-    let chunksProcessed = 0;
 
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
 
       const chunkText = decoder.decode(value, { stream: true });
-      const lines = chunkText.split('\n');
-
-      for (const line of lines) {
+      for (const line of chunkText.split('\n')) {
         if (!line.startsWith('data: ')) continue;
-
         try {
           const data: StreamingChunk = JSON.parse(line.slice(6));
           chunksProcessed++;
-
           if (data.analysis) analysis = data.analysis;
           if (data.quality) quality = data.quality;
           if (data.iteration_count) iterationCount = data.iteration_count;
-
           processChunk(data, onProgress);
         } catch {
-          // Ignore parse errors for partial chunks
+          // Ignore partial chunks
         }
       }
     }
-
-    const totalTime = `${((Date.now() - startTime) / 1000).toFixed(1)}s`;
 
     return {
       success: true,
@@ -197,17 +188,14 @@ export async function streamAnalysis(
       transcript: scrapResult.transcript,
       analysis,
       quality,
-      totalTime,
+      totalTime: `${((Date.now() - startTime) / 1000).toFixed(1)}s`,
       iterationCount,
       chunksProcessed,
     };
+
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Unknown error';
-
-    const apiError: ApiError = {
-      message: msg,
-      type: 'processing',
-    };
+    const apiError: ApiError = { message: msg, type: 'processing' };
 
     onProgress?.({
       step: 'analyzing',
@@ -220,8 +208,8 @@ export async function streamAnalysis(
     return {
       success: false,
       totalTime: `${((Date.now() - startTime) / 1000).toFixed(1)}s`,
-      iterationCount: 0,
-      chunksProcessed: 0,
+      iterationCount,
+      chunksProcessed,
       error: apiError,
     };
   }

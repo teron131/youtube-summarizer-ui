@@ -1,14 +1,12 @@
 import { ExampleUrls } from "@/components/ExampleUrls";
-import { ModelSelector } from "@/components/ModelSelector";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ComboboxOption } from "@/components/ui/editable-combobox";
 import { Input } from "@/components/ui/input";
-import { useLanguageSelection, useModelSelection, useUserPreferences } from "@/hooks/use-config";
+import { VideoProcessingOptions } from "@/components/VideoProcessingOptions";
+import { useUserPreferences } from "@/hooks/use-config";
 import { isFormValid, prepareProcessingOptions, validateYouTubeUrl } from "@/lib/form-validation";
-import { getProviderLogo } from "@/lib/provider-logos";
-import { AlertCircle, Bot, ExternalLink, Languages, Loader2, Play, Sparkles } from "lucide-react";
+import { AlertCircle, ExternalLink, Loader2, Play } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface VideoUrlFormProps {
@@ -25,11 +23,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
   const [url, setUrl] = useState(initialUrl || "");
   const [validationError, setValidationError] = useState<string>("");
   const [showExamples, setShowExamples] = useState(false);
-
-  // Use configuration hooks
-  const { languages } = useLanguageSelection();
-  const { summarizerModels, refinerModels } = useModelSelection();
-  const { preferences, updatePreferences } = useUserPreferences();
+  const { preferences } = useUserPreferences();
 
   useEffect(() => {
     if (initialUrl) setUrl(initialUrl);
@@ -74,57 +68,11 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
     setValidationError("");
   };
 
-  const summarizerOptions: ComboboxOption[] = summarizerModels.map(m => ({
-    value: m.key,
-    label: m.label,
-    icon: <img src={getProviderLogo(m.provider) as string} alt={m.provider} className="w-full h-full object-contain" />,
-  }));
-
-  const refinerOptions: ComboboxOption[] = refinerModels.map(m => ({
-    value: m.key,
-    label: m.label,
-    icon: <img src={getProviderLogo(m.provider) as string} alt={m.provider} className="w-full h-full object-contain" />,
-  }));
-
-  const languageOptions: ComboboxOption[] = languages.map(l => ({
-    value: l.key,
-    label: l.label,
-    icon: l.flag ? <span className="text-sm">{l.flag}</span> : undefined,
-  }));
- 
   return (
     <Card className="rounded-[28px] p-0 border-border/50">
       <div className="space-y-8 p-8 sm:p-10">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Options Section - Grid layout */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 rounded-2xl border border-border/50 bg-muted/30 p-6">
-            <ModelSelector
-              label="Summarizer"
-              icon={Bot}
-              value={preferences.analysisModel}
-              onChange={(value) => updatePreferences({ analysisModel: value })}
-              options={summarizerOptions}
-              placeholder="Select summarizer..."
-            />
-
-            <ModelSelector
-              label="Refiner"
-              icon={Sparkles}
-              value={preferences.qualityModel}
-              onChange={(value) => updatePreferences({ qualityModel: value })}
-              options={refinerOptions}
-              placeholder="Select refiner..."
-            />
-
-            <ModelSelector
-              label="Language"
-              icon={Languages}
-              value={preferences.targetLanguage}
-              onChange={(value) => updatePreferences({ targetLanguage: value })}
-              options={languageOptions}
-              placeholder="Select language..."
-            />
-          </div>
+          <VideoProcessingOptions />
 
           <div className="space-y-3">
             <Input

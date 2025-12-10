@@ -1,6 +1,5 @@
 /**
  * YouTube Summarizer API Service
- * Simplified functional API client
  */
 
 import {
@@ -14,21 +13,16 @@ import {
 } from './types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
-const API_VERSION = "3.0.0";
 
-// Helper for making requests
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
-  const defaultHeaders = {
+  const headers = {
     'Content-Type': 'application/json',
-    'User-Agent': `YouTube-Summarizer-Frontend/${API_VERSION}`,
+    ...options.headers,
   };
 
   try {
-    const response = await fetch(url, {
-      ...options,
-      headers: { ...defaultHeaders, ...options.headers },
-    });
+    const response = await fetch(url, { ...options, headers });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
@@ -44,34 +38,12 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     return await response.json();
   } catch (error) {
     if ((error as ApiError).status) throw error;
-
     throw {
       message: error instanceof Error ? error.message : 'Unknown network error',
       type: 'network',
     } as ApiError;
   }
 }
-
-// API Functions
-export const api = {
-  healthCheck: () => request<HealthCheckResponse>('/health'),
-
-  getConfiguration: () => request<ConfigurationResponse>('/config'),
-
-  scrapVideo: (data: ScrapRequest) =>
-    request<ScrapResponse>('/scrap', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }),
-
-  summarize: (data: SummarizeRequest) =>
-    request<SummarizeResponse>('/summarize', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }),
-
-  baseUrl: API_BASE_URL,
-};
 
 export function handleApiError(error: unknown): ApiError {
   if ((error as ApiError).message && (error as ApiError).type) {
@@ -82,3 +54,11 @@ export function handleApiError(error: unknown): ApiError {
     type: 'unknown'
   };
 }
+
+export const api = {
+  healthCheck: () => request<HealthCheckResponse>('/health'),
+  getConfiguration: () => request<ConfigurationResponse>('/config'),
+  scrapVideo: (data: ScrapRequest) => request<ScrapResponse>('/scrap', { method: 'POST', body: JSON.stringify(data) }),
+  summarize: (data: SummarizeRequest) => request<SummarizeResponse>('/summarize', { method: 'POST', body: JSON.stringify(data) }),
+  baseUrl: API_BASE_URL,
+};
