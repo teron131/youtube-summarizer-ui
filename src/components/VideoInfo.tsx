@@ -47,13 +47,15 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
   return (
     <Card className="p-8 shadow-md">
       <div className="flex flex-col sm:flex-row gap-6">
-        <div className="flex-shrink-0 relative" style={{ aspectRatio: "16 / 9" }}>
-          <img
-            src={thumbnail || "/placeholder.svg"}
-            alt={title || "Video thumbnail"}
-            className="w-full sm:w-64 md:w-80 h-full object-cover rounded-xl shadow-lg border border-border/60"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
+        <div className="flex-shrink-0 w-full sm:w-64 md:w-80">
+          <div className="relative rounded-xl border border-border/60 shadow-lg overflow-hidden">
+            <img
+              src={thumbnail || "/placeholder.svg"}
+              alt={title || "Video thumbnail"}
+              className="w-full h-auto object-contain block"
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+          </div>
         </div>
         
         <div className="flex-1 space-y-4">
