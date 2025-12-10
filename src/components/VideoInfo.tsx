@@ -51,7 +51,7 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
           <img
             src={thumbnail || "/placeholder.svg"}
             alt={title || "Video thumbnail"}
-            className="w-full sm:w-64 md:w-80 h-full object-cover rounded-xl shadow-lg border-2 border-primary/20"
+            className="w-full sm:w-64 md:w-80 h-full object-cover rounded-xl shadow-lg border border-border/60"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
         </div>
