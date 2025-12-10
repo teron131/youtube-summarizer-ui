@@ -4,13 +4,15 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { BadgeList, BulletList, Checklist, SectionHeader } from "@/components/ui/list-items";
+import { Input } from "@/components/ui/input";
+import { SectionHeader } from "@/components/ui/list-items";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { generateAnalysisMarkdown } from "@/lib/markdown-utils";
 import { convertAnalysisChinese } from "@/lib/utils";
 import { AnalysisData, QualityData, VideoInfoResponse } from "@/services/types";
-import { BookOpen, Copy, Lightbulb, ListChecks, RefreshCw, Sparkles } from "lucide-react";
+import { BookOpen, ChevronDown, ChevronUp, Copy, Lightbulb, ListChecks, RefreshCw, Search, Sparkles, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 interface AnalysisPanelProps {
   analysis: AnalysisData;
@@ -21,6 +23,10 @@ interface AnalysisPanelProps {
 }
 
 export const AnalysisPanel = ({ analysis, quality, videoInfo, onRegenerate, isRegenerating }: AnalysisPanelProps) => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
+  const [matchCount, setMatchCount] = useState(0);
+  const contentRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   if (!analysis) return null;
@@ -54,120 +60,293 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo, onRegenerate, isRe
     }
   };
 
+  const highlightText = (text: string) => {
+    if (!searchQuery.trim()) return text;
+
+    const regex = new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const parts = text.split(regex);
+
+    let matchIndex = -1;
+    return parts.map((part) => {
+      if (regex.test(part)) {
+        matchIndex++;
+        const isCurrent = matchIndex === currentMatchIndex;
+        return `<mark class="${isCurrent ? 'bg-primary text-primary-foreground' : 'bg-yellow-500/30'}">${part}</mark>`;
+      }
+      return part;
+    }).join('');
+  };
+
+  const getTextContent = () => {
+    let text = convertedAnalysis.summary || '';
+    if (convertedAnalysis.takeaways) {
+      text += ' ' + convertedAnalysis.takeaways.join(' ');
+    }
+    if (convertedAnalysis.chapters) {
+      convertedAnalysis.chapters.forEach(chapter => {
+        text += ' ' + chapter.header + ' ' + chapter.summary;
+        if (chapter.key_points) {
+          text += ' ' + chapter.key_points.join(' ');
+        }
+      });
+    }
+    if (convertedAnalysis.keywords) {
+      text += ' ' + convertedAnalysis.keywords.join(' ');
+    }
+    return text;
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    setCurrentMatchIndex(0);
+
+    if (query.trim()) {
+      const text = getTextContent();
+      const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+      const matches = text.match(regex);
+      setMatchCount(matches ? matches.length : 0);
+    } else {
+      setMatchCount(0);
+    }
+  };
+
+  const navigateMatches = (direction: 'next' | 'prev') => {
+    if (matchCount === 0) return;
+
+    if (direction === 'next') {
+      setCurrentMatchIndex((prev) => (prev + 1) % matchCount);
+    } else {
+      setCurrentMatchIndex((prev) => (prev - 1 + matchCount) % matchCount);
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+    setCurrentMatchIndex(0);
+    setMatchCount(0);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && matchCount > 0) {
+      e.preventDefault();
+      navigateMatches('next');
+    }
+  };
+
+  useEffect(() => {
+    if (contentRef.current && searchQuery.trim()) {
+      const marks = contentRef.current.querySelectorAll('mark');
+      if (marks[currentMatchIndex]) {
+        marks[currentMatchIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [currentMatchIndex, searchQuery]);
+
   return (
     <Card className="p-0 shadow-md">
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/5 via-transparent to-primary/5" />
 
       <div className="relative space-y-5 md:space-y-6 p-6 md:p-8">
         {/* Main Header */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div className="space-y-1">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
-              <ListChecks className="h-4 w-4" />
-              AI Analysis
+        <div className="space-y-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
+                <ListChecks className="h-4 w-4" />
+                AI Analysis
+              </div>
+              <h3 className="text-2xl md:text-3xl font-bold text-foreground">Structured Analysis</h3>
+              <p className="text-sm text-muted-foreground">Save time on long videos, and keywords in one view.</p>
             </div>
-            <h3 className="text-2xl md:text-3xl font-bold text-foreground">Structured Analysis</h3>
-            <p className="text-sm text-muted-foreground">Save time on long videos, and keywords in one view.</p>
-          </div>
 
-          <div className="flex gap-2">
-            {onRegenerate && (
+            <div className="flex gap-2">
+              {onRegenerate && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      onClick={handleRegenerate}
+                      disabled={isRegenerating}
+                      className="gap-3 h-11 px-4 border-border/60 text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <RefreshCw className={`w-5 h-5 ${isRegenerating ? 'animate-spin' : ''}`} />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Rerun</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     variant="outline"
                     size="lg"
-                    onClick={handleRegenerate}
-                    disabled={isRegenerating}
-                    className="gap-3 h-11 px-4 border-border/60 text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={copyToClipboard}
+                    className="gap-3 h-11 px-4 border-border/60 text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
                   >
-                    <RefreshCw className={`w-5 h-5 ${isRegenerating ? 'animate-spin' : ''}`} />
+                    <Copy className="w-5 h-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Rerun</p>
+                  <p>Copy</p>
                 </TooltipContent>
               </Tooltip>
-            )}
-            <Tooltip>
-              <TooltipTrigger asChild>
+            </div>
+          </div>
+
+          {/* Search Bar */}
+          <div className="flex gap-3 items-center">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search analysis..."
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="pl-10 pr-24 h-11 border-border/60 focus:border-primary/50"
+              />
+              {searchQuery && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">
+                    {matchCount > 0 ? `${currentMatchIndex + 1}/${matchCount}` : 'No matches'}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearSearch}
+                    className="h-6 w-6 p-0 hover:bg-primary/10"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            {searchQuery && matchCount > 0 && (
+              <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="lg"
-                  onClick={copyToClipboard}
+                  onClick={() => navigateMatches('prev')}
                   className="gap-3 h-11 px-4 border-border/60 text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
                 >
-                  <Copy className="w-5 h-5" />
+                  <ChevronUp className="w-5 h-5" />
                 </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Copy</p>
-              </TooltipContent>
-            </Tooltip>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => navigateMatches('next')}
+                  className="gap-3 h-11 px-4 border-border/60 text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
+                >
+                  <ChevronDown className="w-5 h-5" />
+                </Button>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Summary Section */}
-        {convertedAnalysis.summary && (
-          <div className="space-y-3">
-            <SectionHeader icon={<Sparkles className="w-4 h-4 md:w-5 md:h-5" />} title="Summary" />
-            <p className="text-foreground leading-7 md:leading-8 text-sm md:text-base">
-              {convertedAnalysis.summary}
-            </p>
-          </div>
-        )}
-
-        {/* Key Takeaways Section */}
-        {convertedAnalysis.takeaways && convertedAnalysis.takeaways.length > 0 && (
-          <div className="space-y-3">
-            <SectionHeader icon={<Lightbulb className="w-4 h-4 md:w-5 md:h-5" />} title="Key Takeaways" />
-            <Checklist items={convertedAnalysis.takeaways} />
-          </div>
-        )}
-
-        {/* Video Chapters Section */}
-        {convertedAnalysis.chapters && convertedAnalysis.chapters.length > 0 && (
-          <div className="space-y-3">
-            <SectionHeader icon={<BookOpen className="w-4 h-4 md:w-5 md:h-5" />} title="Video Chapters" />
-
+        <div ref={contentRef}>
+          {/* Summary Section */}
+          {convertedAnalysis.summary && (
             <div className="space-y-3">
-              {convertedAnalysis.chapters.map((chapter, index) => {
-                const isLast = index === convertedAnalysis.chapters.length - 1;
-                return (
-                  <div key={index} className="grid grid-cols-[auto_1fr] gap-3">
-                    <div className="relative flex flex-col items-center">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary font-semibold">
-                        {index + 1}
-                      </div>
-                      <div
-                        className={`mt-0 w-px bg-gradient-to-b from-primary/60 via-primary/50 to-transparent ${
-                          isLast ? "h-[98%]" : "h-full"
-                        }`}
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <h5 className="text-base md:text-lg font-semibold text-primary">{chapter.header}</h5>
-                      <p className="text-foreground leading-7 md:leading-8 text-sm md:text-base">{chapter.summary}</p>
-
-                      {chapter.key_points && chapter.key_points.length > 0 && (
-                        <BulletList items={chapter.key_points} />
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
+              <SectionHeader icon={<Sparkles className="w-4 h-4 md:w-5 md:h-5" />} title="Summary" />
+              <div
+                className="text-foreground leading-7 md:leading-8 text-sm md:text-base"
+                dangerouslySetInnerHTML={{ __html: highlightText(convertedAnalysis.summary) }}
+              />
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Keywords Section */}
-        {convertedAnalysis.keywords && convertedAnalysis.keywords.length > 0 && (
-          <div className="space-y-3">
-            <SectionHeader icon={<span className="text-sm md:text-base font-bold text-primary">#</span>} title="Keywords" />
-            <BadgeList items={convertedAnalysis.keywords} />
-          </div>
-        )}
+          {/* Key Takeaways Section */}
+          {convertedAnalysis.takeaways && convertedAnalysis.takeaways.length > 0 && (
+            <div className="space-y-3">
+              <SectionHeader icon={<Lightbulb className="w-4 h-4 md:w-5 md:h-5" />} title="Key Takeaways" />
+              <ul className="space-y-2.5">
+                {convertedAnalysis.takeaways.map((item, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <div className="mt-1.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-3 w-3">
+                        <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span
+                      className="text-foreground leading-7 md:leading-8 text-sm md:text-base"
+                      dangerouslySetInnerHTML={{ __html: highlightText(item) }}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Video Chapters Section */}
+          {convertedAnalysis.chapters && convertedAnalysis.chapters.length > 0 && (
+            <div className="space-y-3">
+              <SectionHeader icon={<BookOpen className="w-4 h-4 md:w-5 md:h-5" />} title="Video Chapters" />
+
+              <div className="space-y-3">
+                {convertedAnalysis.chapters.map((chapter, index) => {
+                  const isLast = index === convertedAnalysis.chapters.length - 1;
+                  return (
+                    <div key={index} className="grid grid-cols-[auto_1fr] gap-3">
+                      <div className="relative flex flex-col items-center">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary font-semibold">
+                          {index + 1}
+                        </div>
+                        <div
+                          className={`mt-0 w-px bg-gradient-to-b from-primary/60 via-primary/50 to-transparent ${
+                            isLast ? "h-[98%]" : "h-full"
+                          }`}
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <h5
+                          className="text-base md:text-lg font-semibold text-primary"
+                          dangerouslySetInnerHTML={{ __html: highlightText(chapter.header) }}
+                        />
+                        <div
+                          className="text-foreground leading-7 md:leading-8 text-sm md:text-base"
+                          dangerouslySetInnerHTML={{ __html: highlightText(chapter.summary) }}
+                        />
+
+                        {chapter.key_points && chapter.key_points.length > 0 && (
+                          <ul className="ml-4 mt-3 space-y-2">
+                            {chapter.key_points.map((point, idx) => (
+                              <li key={idx} className="flex items-start gap-2 text-foreground/90 text-sm md:text-base">
+                                <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-primary/60" />
+                                <span dangerouslySetInnerHTML={{ __html: highlightText(point) }} />
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Keywords Section */}
+          {convertedAnalysis.keywords && convertedAnalysis.keywords.length > 0 && (
+            <div className="space-y-3">
+              <SectionHeader icon={<span className="text-sm md:text-base font-bold text-primary">#</span>} title="Keywords" />
+              <div className="flex flex-wrap gap-2">
+                {convertedAnalysis.keywords.map((keyword, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+                    dangerouslySetInnerHTML={{ __html: highlightText(keyword) }}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </Card>
   );
