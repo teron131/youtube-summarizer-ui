@@ -5,19 +5,22 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { BadgeList, BulletList, Checklist, SectionHeader } from "@/components/ui/list-items";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { generateAnalysisMarkdown } from "@/lib/markdown-utils";
 import { convertAnalysisChinese } from "@/lib/utils";
 import { AnalysisData, QualityData, VideoInfoResponse } from "@/services/types";
-import { BookOpen, Copy, Lightbulb, ListChecks, Sparkles } from "lucide-react";
+import { BookOpen, Copy, Lightbulb, ListChecks, RefreshCw, Sparkles } from "lucide-react";
 
 interface AnalysisPanelProps {
   analysis: AnalysisData;
   quality?: QualityData;
   videoInfo?: VideoInfoResponse;
+  onRegenerate?: () => void;
+  isRegenerating?: boolean;
 }
 
-export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelProps) => {
+export const AnalysisPanel = ({ analysis, quality, videoInfo, onRegenerate, isRegenerating }: AnalysisPanelProps) => {
   const { toast } = useToast();
 
   if (!analysis) return null;
@@ -41,6 +44,16 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
     }
   };
 
+  const handleRegenerate = () => {
+    if (onRegenerate) {
+      onRegenerate();
+      toast({
+        title: "Regenerating analysis",
+        description: "Starting a new analysis of the video",
+      });
+    }
+  };
+
   return (
     <Card className="p-0 shadow-md">
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/5 via-transparent to-primary/5" />
@@ -57,14 +70,41 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
             <p className="text-sm text-muted-foreground">Save time on long videos, and keywords in one view.</p>
           </div>
 
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={copyToClipboard}
-            className="gap-3 h-11 px-4 border-border/60 text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
-          >
-            <Copy className="w-5 h-5" />
-          </Button>
+          <div className="flex gap-2">
+            {onRegenerate && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={handleRegenerate}
+                    disabled={isRegenerating}
+                    className="gap-3 h-11 px-4 border-border/60 text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <RefreshCw className={`w-5 h-5 ${isRegenerating ? 'animate-spin' : ''}`} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Rerun</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={copyToClipboard}
+                  className="gap-3 h-11 px-4 border-border/60 text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
+                >
+                  <Copy className="w-5 h-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Copy</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
         </div>
 
         {/* Summary Section */}

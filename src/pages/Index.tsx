@@ -18,6 +18,8 @@ import { useState } from "react";
 const Index = () => {
   const [initialUrl] = useState<string>(getVideoIdFromParams());
   const [isExampleMode, setIsExampleMode] = useState(false);
+  const [lastProcessedUrl, setLastProcessedUrl] = useState<string>("");
+  const [lastOptions, setLastOptions] = useState<VideoProcessingOptions>();
   const { toast } = useToast();
 
   const {
@@ -56,6 +58,9 @@ const Index = () => {
       return;
     }
 
+    setLastProcessedUrl(url);
+    setLastOptions(options);
+
     try {
       await processVideo(url, options);
     } catch (error) {
@@ -70,6 +75,11 @@ const Index = () => {
 
       console.error('Processing error:', apiError.message, 'Details:', apiError.details);
     }
+  };
+
+  const handleRegenerate = async () => {
+    if (!lastProcessedUrl) return;
+    await handleVideoSubmit(lastProcessedUrl, lastOptions);
   };
 
   const videoInfo = analysisResult?.videoInfo || scrapedVideoInfo;
@@ -108,6 +118,8 @@ const Index = () => {
                 analysis={analysisResult.analysis}
                 quality={analysisResult.quality}
                 videoInfo={analysisResult.videoInfo}
+                onRegenerate={handleRegenerate}
+                isRegenerating={isLoading}
               />
             )}
 
