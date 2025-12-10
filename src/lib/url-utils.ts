@@ -8,9 +8,11 @@
 export function isValidYouTubeUrl(url: string): boolean {
   if (!url) return false;
   const trimmed = url.trim();
-  return trimmed.length === 0 || 
-         trimmed.includes("youtube.com") || 
-         trimmed.includes("youtu.be");
+  return (
+    trimmed.length === 0 ||
+    trimmed.includes("youtube.com") ||
+    trimmed.includes("youtu.be")
+  );
 }
 
 /**
@@ -51,15 +53,19 @@ export function cleanVideoUrl(input?: string | null): string | null {
 /**
  * Get video thumbnail URL
  */
-export function getThumbnailUrl(videoId: string, quality: 'default' | 'hq' | 'mq' | 'sd' | 'maxres' = 'hq'): string {
-    const qualityMap = {
-        default: 'default',
-        hq: 'hqdefault',
-        mq: 'mqdefault',
-        sd: 'sddefault',
-        maxres: 'maxresdefault'
-    };
-    return `https://img.youtube.com/vi/${videoId}/${qualityMap[quality]}.jpg`;
+const QUALITY_MAP = {
+  default: 'default',
+  hq: 'hqdefault',
+  mq: 'mqdefault',
+  sd: 'sddefault',
+  maxres: 'maxresdefault',
+} as const;
+
+export function getThumbnailUrl(
+  videoId: string,
+  quality: keyof typeof QUALITY_MAP = 'hq',
+): string {
+  return `https://img.youtube.com/vi/${videoId}/${QUALITY_MAP[quality]}.jpg`;
 }
 
 /**

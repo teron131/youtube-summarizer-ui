@@ -25,11 +25,16 @@ export const RECOMMENDED_REFINER_MODELS = [
   { value: "x-ai/grok-4.1-fast", label: "Grok 4.1 Fast", provider: "x-ai" },
 ] as const;
 
-// Combined models for backward compatibility and validation
-export const AVAILABLE_MODELS = [...RECOMMENDED_SUMMARIZER_MODELS, ...RECOMMENDED_REFINER_MODELS].reduce((acc, model) => {
-  acc[model.value] = model.label;
-  return acc;
-}, {} as Record<string, string>);
+export const AVAILABLE_MODELS = [
+  ...RECOMMENDED_SUMMARIZER_MODELS,
+  ...RECOMMENDED_REFINER_MODELS,
+].reduce(
+  (acc, model) => {
+    acc[model.value] = model.label;
+    return acc;
+  },
+  {} as Record<string, string>,
+);
 
 export const DEFAULT_ANALYSIS_MODEL = "x-ai/grok-4.1-fast";
 export const DEFAULT_QUALITY_MODEL = "google/gemini-2.5-flash-lite-preview-09-2025";
@@ -107,56 +112,54 @@ export type SupportedLanguage = {
 // DERIVED DATA
 // ================================
 
-// Helper to convert recommendation arrays to AvailableModel format
-const convertToAvailableModel = (model: { value: string, label: string, provider: string }): AvailableModel => ({
+const convertToAvailableModel = (
+  model: { value: string; label: string; provider: string },
+): AvailableModel => ({
   key: model.value,
   label: model.label,
   provider: model.provider,
-  recommended: true
+  recommended: true,
 });
 
-export const AVAILABLE_SUMMARIZER_MODELS_LIST: AvailableModel[] = RECOMMENDED_SUMMARIZER_MODELS.map(convertToAvailableModel);
-export const AVAILABLE_REFINER_MODELS_LIST: AvailableModel[] = RECOMMENDED_REFINER_MODELS.map(convertToAvailableModel);
+export const AVAILABLE_SUMMARIZER_MODELS_LIST: AvailableModel[] =
+  RECOMMENDED_SUMMARIZER_MODELS.map(convertToAvailableModel);
+export const AVAILABLE_REFINER_MODELS_LIST: AvailableModel[] =
+  RECOMMENDED_REFINER_MODELS.map(convertToAvailableModel);
 
 export const AVAILABLE_MODELS_LIST: AvailableModel[] = [
   ...AVAILABLE_SUMMARIZER_MODELS_LIST,
-  ...AVAILABLE_REFINER_MODELS_LIST
-// Remove duplicates based on key
-].filter((model, index, self) => 
-  index === self.findIndex((m) => m.key === model.key)
-);
+  ...AVAILABLE_REFINER_MODELS_LIST,
+].filter((model, index, self) => index === self.findIndex((m) => m.key === model.key));
 
-export const SUPPORTED_LANGUAGES_LIST: SupportedLanguage[] = Object.entries(SUPPORTED_LANGUAGES).map(
-  ([key, label]) => {
-    // Extract flag emoji from the beginning of the label
-    const flagRegex = /^([\u{1F1E6}-\u{1F1FF}🌐]+)/u;
-    const flagMatch = label.match(flagRegex);
-    const flag = flagMatch ? flagMatch[1] : "";
-    const cleanLabel = label.replace(flag, "").trim();
+export const SUPPORTED_LANGUAGES_LIST: SupportedLanguage[] = Object.entries(
+  SUPPORTED_LANGUAGES,
+).map(([key, label]) => {
+  const flagRegex = /^([\u{1F1E6}-\u{1F1FF}🌐]+)/u;
+  const flagMatch = label.match(flagRegex);
+  const flag = flagMatch ? flagMatch[1] : "";
+  const cleanLabel = label.replace(flag, "").trim();
 
-    return {
-      key: key as LanguageKey,
-      label: cleanLabel,
-      flag,
-    };
-  }
-);
+  return {
+    key: key as LanguageKey,
+    label: cleanLabel,
+    flag,
+  };
+});
 
 // ================================
 // UTILITY FUNCTIONS
 // ================================
 
 export function getModelByKey(key: ModelKey): AvailableModel | undefined {
-  return AVAILABLE_MODELS_LIST.find(model => model.key === key);
+  return AVAILABLE_MODELS_LIST.find((model) => model.key === key);
 }
 
 export function getLanguageByKey(key: LanguageKey): SupportedLanguage | undefined {
-  return SUPPORTED_LANGUAGES_LIST.find(language => language.key === key);
+  return SUPPORTED_LANGUAGES_LIST.find((language) => language.key === key);
 }
 
 export function isValidModel(model: string): boolean {
-  // Allow any string since we support custom models, but we can check if it's in the known list for recommendation status
-  return true; 
+  return true;
 }
 
 export function isValidLanguage(language: string): language is LanguageKey {

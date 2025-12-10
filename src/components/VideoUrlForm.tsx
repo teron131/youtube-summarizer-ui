@@ -31,19 +31,14 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
   const { summarizerModels, refinerModels } = useModelSelection();
   const { preferences, updatePreferences } = useUserPreferences();
 
-  // Update URL when initialUrl prop changes (for extension use case)
   useEffect(() => {
-    if (initialUrl) {
-      setUrl(initialUrl);
-    }
+    if (initialUrl) setUrl(initialUrl);
   }, [initialUrl]);
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newUrl = e.target.value;
     setUrl(newUrl);
-    if (validationError) {
-      setValidationError("");
-    }
+    if (validationError) setValidationError("");
     setShowExamples(newUrl.trim().length === 0);
   };
 
@@ -51,21 +46,18 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
     e.preventDefault();
     const trimmedUrl = url.trim();
 
-    // Prepare processing options
     const options = prepareProcessingOptions(
       preferences.targetLanguage,
       preferences.analysisModel,
-      preferences.qualityModel
+      preferences.qualityModel,
     );
 
-    // Allow empty input for example output
     if (!trimmedUrl) {
       setValidationError("");
       onSubmit("", options);
       return;
     }
 
-    // Validate URL
     const validation = validateYouTubeUrl(trimmedUrl);
     if (!validation.isValid) {
       setValidationError(validation.error || "Invalid URL");
@@ -82,23 +74,22 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
     setValidationError("");
   };
 
-  // Prepare options for comboboxes
   const summarizerOptions: ComboboxOption[] = summarizerModels.map(m => ({
     value: m.key,
     label: m.label,
-    icon: <img src={getProviderLogo(m.provider) as string} alt={m.provider} className="w-full h-full object-contain" />
+    icon: <img src={getProviderLogo(m.provider) as string} alt={m.provider} className="w-full h-full object-contain" />,
   }));
 
   const refinerOptions: ComboboxOption[] = refinerModels.map(m => ({
     value: m.key,
     label: m.label,
-    icon: <img src={getProviderLogo(m.provider) as string} alt={m.provider} className="w-full h-full object-contain" />
+    icon: <img src={getProviderLogo(m.provider) as string} alt={m.provider} className="w-full h-full object-contain" />,
   }));
 
   const languageOptions: ComboboxOption[] = languages.map(l => ({
     value: l.key,
     label: l.label,
-    icon: l.flag ? <span className="text-sm">{l.flag}</span> : undefined
+    icon: l.flag ? <span className="text-sm">{l.flag}</span> : undefined,
   }));
  
   return (
@@ -142,7 +133,9 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
               value={url}
               onChange={handleUrlChange}
               className={`h-16 rounded-2xl border-2 bg-card/70 px-6 text-lg shadow-inner transition-all duration-300 placeholder:text-muted-foreground/80 focus:border-primary focus:ring-primary ${
-                validationError ? "border-destructive focus:ring-destructive" : "border-border/60 hover:border-primary/40"
+                validationError
+                  ? "border-destructive focus:ring-destructive"
+                  : "border-border/60 hover:border-primary/40"
               }`}
               disabled={isLoading}
             />
@@ -154,7 +147,6 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
               </Alert>
             )}
 
-            {/* Example URLs when empty input */}
             {showExamples && <ExampleUrls onSelect={handleExampleClick} />}
           </div>
 
@@ -180,7 +172,6 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
           </Button>
         </form>
 
-        {/* Help text and examples - only show when not showing examples above */}
         {!showExamples && (
           <div className="rounded-2xl border border-border/60 bg-muted/20 p-4 space-y-3">
             <div className="flex items-center justify-between gap-3">

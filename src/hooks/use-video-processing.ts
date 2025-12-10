@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { findStepIndex, normalizeStepName, sortProgressStates } from '@/lib/video-utils';
 import { streamAnalysis } from '@/services/streaming';
 import {
@@ -6,7 +8,6 @@ import {
   StreamingProgressState,
   VideoInfoResponse,
 } from '@/services/types';
-import { useState } from 'react';
 
 export interface VideoProcessingOptions {
   analysisModel?: string;
@@ -25,7 +26,7 @@ export interface VideoProcessingState {
   scrapedTranscript: string | null;
 }
 
-const initialState: VideoProcessingState = {
+const INITIAL_STATE: VideoProcessingState = {
   isLoading: false,
   error: null,
   currentStep: 0,
@@ -36,16 +37,27 @@ const initialState: VideoProcessingState = {
   scrapedTranscript: null,
 };
 
+const INITIAL_PROCESSING_STATE: VideoProcessingState = {
+  isLoading: true,
+  error: null,
+  analysisResult: null,
+  currentStep: 0,
+  currentStage: 'Initializing...',
+  progressStates: [],
+  scrapedVideoInfo: null,
+  scrapedTranscript: null,
+};
+
 export function useVideoProcessing() {
-  const [state, setState] = useState<VideoProcessingState>(initialState);
+  const [state, setState] = useState<VideoProcessingState>(INITIAL_STATE);
 
   const applyProgressUpdate = (progressState: StreamingProgressState) => {
-    setState((prev) => {
+    setState(prev => {
       const normalizedStep = normalizeStepName(progressState.step);
       const stepIndex = findStepIndex(normalizedStep);
       const nextStates = [...prev.progressStates];
       const normalizedProgress = { ...progressState, step: normalizedStep };
-      const existingIndex = nextStates.findIndex((state) => state.step === normalizedStep);
+      const existingIndex = nextStates.findIndex(s => s.step === normalizedStep);
 
       if (existingIndex >= 0) {
         nextStates[existingIndex] = normalizedProgress;
@@ -69,16 +81,7 @@ export function useVideoProcessing() {
     options?: VideoProcessingOptions,
     onProgress?: (state: StreamingProgressState) => void,
   ): Promise<StreamingProcessingResult> => {
-    setState({
-      isLoading: true,
-      error: null,
-      analysisResult: null,
-      currentStep: 0,
-      currentStage: 'Initializing...',
-      progressStates: [],
-      scrapedVideoInfo: null,
-      scrapedTranscript: null,
-    });
+    setState(INITIAL_PROCESSING_STATE);
 
     const handleProgress = (progressState: StreamingProgressState) => {
       applyProgressUpdate(progressState);
@@ -92,7 +95,7 @@ export function useVideoProcessing() {
         throw result.error || new Error('Processing failed');
       }
 
-      setState((prev) => ({
+      setState(prev => ({
         ...prev,
         scrapedVideoInfo: result.videoInfo || null,
         scrapedTranscript: result.transcript || null,
@@ -104,19 +107,19 @@ export function useVideoProcessing() {
       return result;
     } catch (e) {
       const error = e as ApiError;
-      setState((prev) => ({ ...prev, isLoading: false, error }));
+      setState(prev => ({ ...prev, isLoading: false, error }));
       throw error;
     }
   };
 
   const updateState = (updates: Partial<VideoProcessingState>) => {
-    setState((prev) => ({ ...prev, ...updates }));
+    setState(prev => ({ ...prev, ...updates }));
   };
 
   return {
     ...state,
     processVideo,
     updateState,
-    resetState: () => setState(initialState),
+    resetState: () => setState(INITIAL_STATE),
   };
 }

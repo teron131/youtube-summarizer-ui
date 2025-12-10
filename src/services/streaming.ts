@@ -21,9 +21,10 @@ const createCompleteHandler = (): ChunkHandler => (data) => {
   if (!data.type || (data.type !== 'complete' && !data.is_complete)) return null;
 
   const qualityScore = data.quality?.percentage_score;
-  const message = qualityScore !== undefined
-    ? `Analysis completed successfully with ${qualityScore}% quality score`
-    : 'Analysis completed successfully';
+  const message =
+    qualityScore !== undefined
+      ? `Analysis completed successfully with ${qualityScore}% quality score`
+      : 'Analysis completed successfully';
 
   return {
     step: 'complete',
@@ -71,7 +72,7 @@ const CHUNK_HANDLERS: ChunkHandler[] = [
 
 function processChunk(
   data: StreamingChunk,
-  onProgress?: (state: StreamingProgressState) => void
+  onProgress?: (state: StreamingProgressState) => void,
 ): void {
   if (data.type === 'status') return;
 
@@ -91,7 +92,7 @@ export async function streamAnalysis(
     qualityModel?: string;
     targetLanguage?: string | null;
   },
-  onProgress?: (state: StreamingProgressState) => void
+  onProgress?: (state: StreamingProgressState) => void,
 ): Promise<StreamingProcessingResult> {
   const startTime = Date.now();
 
@@ -142,7 +143,8 @@ export async function streamAnalysis(
       content_type: scrapResult.transcript ? 'transcript' : 'url',
       analysis_model: options.analysisModel || 'google/gemini-2.5-pro',
       quality_model: options.qualityModel || 'google/gemini-2.5-flash',
-      target_language: options.targetLanguage === 'auto' ? null : options.targetLanguage,
+      target_language:
+        options.targetLanguage === 'auto' ? null : options.targetLanguage,
     };
 
     const response = await fetch(`${api.baseUrl}/stream-summarize`, {
@@ -181,7 +183,7 @@ export async function streamAnalysis(
           if (data.iteration_count) iterationCount = data.iteration_count;
 
           processChunk(data, onProgress);
-        } catch (e) {
+        } catch {
           // Ignore parse errors for partial chunks
         }
       }

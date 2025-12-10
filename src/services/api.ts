@@ -36,7 +36,7 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
         message: errorData.detail || `Request failed with status ${response.status}`,
         status: response.status,
         details: JSON.stringify(errorData),
-        type: response.status >= 500 ? 'server' : 'validation'
+        type: response.status >= 500 ? 'server' : 'validation',
       };
       throw error;
     }
@@ -44,11 +44,10 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     return await response.json();
   } catch (error) {
     if ((error as ApiError).status) throw error;
-    
-    // Network or other errors
+
     throw {
       message: error instanceof Error ? error.message : 'Unknown network error',
-      type: 'network'
+      type: 'network',
     } as ApiError;
   }
 }
@@ -56,21 +55,22 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 // API Functions
 export const api = {
   healthCheck: () => request<HealthCheckResponse>('/health'),
-  
+
   getConfiguration: () => request<ConfigurationResponse>('/config'),
-  
-  scrapVideo: (data: ScrapRequest) => request<ScrapResponse>('/scrap', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  }),
-  
-  summarize: (data: SummarizeRequest) => request<SummarizeResponse>('/summarize', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  }),
-  
-  // Expose base URL for streaming
-  baseUrl: API_BASE_URL
+
+  scrapVideo: (data: ScrapRequest) =>
+    request<ScrapResponse>('/scrap', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  summarize: (data: SummarizeRequest) =>
+    request<SummarizeResponse>('/summarize', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  baseUrl: API_BASE_URL,
 };
 
 export function handleApiError(error: unknown): ApiError {

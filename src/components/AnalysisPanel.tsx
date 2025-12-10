@@ -16,13 +16,9 @@ interface AnalysisPanelProps {
 export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelProps) => {
   const { toast } = useToast();
 
-  if (!analysis) {
-    return null;
-  }
+  if (!analysis) return null;
 
-  // Convert Chinese characters in analysis results before displaying
   const convertedAnalysis = convertAnalysisChinese(analysis);
-
 
   const copyToClipboard = async () => {
     try {

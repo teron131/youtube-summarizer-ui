@@ -53,16 +53,7 @@ const Index = () => {
     }
 
     try {
-      const result = await processVideo(url, options);
-
-      console.log('🎉 Streaming completed successfully:', {
-        hasVideoInfo: !!result.videoInfo,
-        hasTranscript: !!result.transcript,
-        hasAnalysis: !!result.analysis,
-        hasQuality: !!result.quality,
-        analysisChapters: result.analysis?.chapters?.length || 0,
-        qualityScore: result.quality?.percentage_score || 0,
-      });
+      await processVideo(url, options);
     } catch (error) {
       const apiError = handleApiError(error);
       updateState({ error: apiError, currentStage: "❌ Processing failed" });

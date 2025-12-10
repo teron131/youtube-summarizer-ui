@@ -5,7 +5,6 @@ import { s2tw } from "@/lib/utils";
 import { CalendarDays, Clock, Eye, ThumbsUp, User } from "lucide-react";
 import { ReactNode } from "react";
 
-// Helper component for info items
 interface InfoItemProps {
   icon: ReactNode;
   value: string;
@@ -31,17 +30,15 @@ interface VideoInfoProps {
   upload_date?: string | null;
 }
 
-
 export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like_count, upload_date, url }: VideoInfoProps) => {
   const displayDuration = formatDuration(duration || undefined);
   const hasMetrics = view_count !== undefined || like_count !== undefined;
 
-  // Convert Chinese characters in video info before displaying
   const convertedInfo = {
     title: title ? s2tw(title) : title,
     author: author ? s2tw(author) : author,
   };
-  
+
   const cleanedUrl = cleanVideoUrl(url);
 
   return (

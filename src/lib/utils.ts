@@ -4,7 +4,7 @@ import * as OpenCC from 'opencc-js';
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 // Initialize converter immediately for serverless compatibility
@@ -16,15 +16,11 @@ const converterCN2TW = OpenCC.Converter({ from: 'cn', to: 'tw' });
  * Optimized for serverless deployment
  */
 export function s2tw(content: string): string {
-  // Return early for empty or very short strings
-  if (!content || content.length < 2) {
-    return content;
-  }
+  if (!content || content.length < 2) return content;
 
   try {
     return converterCN2TW(content);
   } catch (error) {
-    // If conversion fails, return original content
     console.warn('Chinese conversion (CN→TW) failed:', error);
     return content;
   }
@@ -45,8 +41,8 @@ export function convertAnalysisChinese(analysis: AnalysisData): AnalysisData {
       ...chapter,
       header: s2tw(chapter.header),
       summary: s2tw(chapter.summary),
-      key_points: chapter.key_points.map(s2tw)
-    }))
+      key_points: chapter.key_points.map(s2tw),
+    })),
   };
 }
 

@@ -11,11 +11,31 @@ const MILLION = 1000000;
 const THOUSAND = 1000;
 
 export const PROGRESS_STEPS = [
-  { step: 'scraping', name: "Scraping Video", description: "Extracting video info and transcript using Scrape Creators" },
-  { step: 'analysis_generation', name: "Analysis Generation", description: "Generating initial AI analysis with Gemini model" },
-  { step: 'quality_check', name: "Quality Assessment", description: "Evaluating analysis quality and completeness" },
-  { step: 'refinement', name: "Analysis Refinement", description: "Refining analysis based on quality feedback" },
-  { step: 'complete', name: "Complete", description: "Analysis completed successfully" },
+  {
+    step: 'scraping',
+    name: "Scraping Video",
+    description: "Extracting video info and transcript using Scrape Creators",
+  },
+  {
+    step: 'analysis_generation',
+    name: "Analysis Generation",
+    description: "Generating initial AI analysis with Gemini model",
+  },
+  {
+    step: 'quality_check',
+    name: "Quality Assessment",
+    description: "Evaluating analysis quality and completeness",
+  },
+  {
+    step: 'refinement',
+    name: "Analysis Refinement",
+    description: "Refining analysis based on quality feedback",
+  },
+  {
+    step: 'complete',
+    name: "Complete",
+    description: "Analysis completed successfully",
+  },
 ] as const;
 
 /**
@@ -39,10 +59,8 @@ export function getVideoIdFromParams(): string {
 /**
  * Normalize step names for consistent UI display
  */
-export function normalizeStepName(
-  step: StreamingProgressState['step']
-): NormalizedStep {
-  return step === 'analyzing' ? 'analysis_generation' : step as NormalizedStep;
+export function normalizeStepName(step: StreamingProgressState['step']): NormalizedStep {
+  return step === 'analyzing' ? 'analysis_generation' : (step as NormalizedStep);
 }
 
 /**
@@ -68,9 +86,9 @@ export function sortProgressStates(states: StreamingProgressState[]): StreamingP
  */
 export function isStepCompleted(
   states: StreamingProgressState[],
-  step: StreamingProgressState['step']
+  step: StreamingProgressState['step'],
 ): boolean {
-  return states.some(s => s.step === step && s.status === 'completed');
+  return states.some((s) => s.step === step && s.status === 'completed');
 }
 
 /**
@@ -78,9 +96,9 @@ export function isStepCompleted(
  */
 export function isStepProcessing(
   states: StreamingProgressState[],
-  step: StreamingProgressState['step']
+  step: StreamingProgressState['step'],
 ): boolean {
-  return states.some(s => s.step === step && s.status === 'processing');
+  return states.some((s) => s.step === step && s.status === 'processing');
 }
 
 /**

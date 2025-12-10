@@ -11,26 +11,20 @@ export default defineConfig(({ mode }) => ({
     hmr: true,
     force: true,
     proxy: {
-      // Proxy API requests to the backend server (development only)
       '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
-    }
+    },
   },
-  plugins: [
-    react(),
-    mode === 'development' &&
-    componentTagger(),
-  ].filter(Boolean),
+  plugins: [react(), mode === 'development' && componentTagger()].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  // Build configuration for production
   build: {
     outDir: 'dist',
     sourcemap: mode === 'development',
@@ -38,12 +32,15 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-toast'],
+          ui: [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-toast',
+          ],
         },
       },
     },
   },
-  // Environment variable handling
   define: {
     __DEV__: mode === 'development',
   },

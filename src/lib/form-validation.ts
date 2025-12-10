@@ -7,20 +7,14 @@ import { isValidYouTubeUrl } from './url-utils';
 /**
  * Validate YouTube URL input
  */
-export function validateYouTubeUrl(url: string): {
-  isValid: boolean;
-  error?: string
-} {
+export function validateYouTubeUrl(url: string): { isValid: boolean; error?: string } {
   const trimmed = url.trim();
-
-  if (!trimmed) {
-    return { isValid: true };
-  }
+  if (!trimmed) return { isValid: true };
 
   if (!isValidYouTubeUrl(trimmed)) {
     return {
       isValid: false,
-      error: 'Please enter a valid YouTube URL (youtube.com or youtu.be).'
+      error: 'Please enter a valid YouTube URL (youtube.com or youtu.be).',
     };
   }
 
@@ -41,7 +35,7 @@ export function isFormValid(url: string): boolean {
 export function prepareProcessingOptions(
   targetLanguage: string,
   analysisModel: string,
-  qualityModel: string
+  qualityModel: string,
 ) {
   return {
     analysisModel,

@@ -15,12 +15,14 @@ const TOTAL_ANCHORS = 4;
 export function ProcessingStatus({ currentStage, currentStep, progressStates }: ProcessingStatusProps) {
   const finished = progressStates.some(s => s.step === 'complete');
 
-  const mapCurrentToAnchor = (stepIdx: number): number =>
+  const mapCurrentToAnchor = (stepIdx: number) =>
     STEP_TO_ANCHOR[Math.max(0, Math.min(stepIdx + 1, STEP_TO_ANCHOR.length - 1))];
 
-  const activeAnchor = finished ? TOTAL_ANCHORS
-    : progressStates.length === 0 ? 0
-    : mapCurrentToAnchor(currentStep);
+  const activeAnchor = finished
+    ? TOTAL_ANCHORS
+    : progressStates.length === 0
+      ? 0
+      : mapCurrentToAnchor(currentStep);
 
   const progressPercent = (activeAnchor / TOTAL_ANCHORS) * 100;
   const stageText = getStageText(activeAnchor);

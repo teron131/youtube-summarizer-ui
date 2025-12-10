@@ -11,6 +11,12 @@ interface HeroSectionProps {
   initialUrl?: string;
 }
 
+const FEATURES = [
+  { icon: <Zap className="h-4 w-4" />, label: "Fast Processing", value: "< 1 min completion" },
+  { icon: <ShieldCheck className="h-4 w-4" />, label: "Structured Analysis", value: "Save time on long videos" },
+  { icon: <Sparkles className="h-4 w-4" />, label: "Model Neutral", value: "OpenRouter models" },
+];
+
 export function HeroSection({ onSubmit, isLoading, initialUrl }: HeroSectionProps) {
   return (
     <section className="relative overflow-hidden bg-transparent">
@@ -19,7 +25,7 @@ export function HeroSection({ onSubmit, isLoading, initialUrl }: HeroSectionProp
           <div className="space-y-8 w-full max-w-8xl">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-medium text-primary shadow-sm fade-in-up">
               <Sparkles className="h-4 w-4" />
-              Powered by Scrape Creators & OpenRouter 
+              Powered by Scrape Creators & OpenRouter
             </div>
 
             <div className="space-y-4 fade-in-up stagger-1">
@@ -32,11 +38,7 @@ export function HeroSection({ onSubmit, isLoading, initialUrl }: HeroSectionProp
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 fade-in-up stagger-2">
-              {[
-                { icon: <Zap className="h-4 w-4" />, label: "Fast Processing", value: "< 1 min completion" },
-                { icon: <ShieldCheck className="h-4 w-4" />, label: "Structured Analysis", value: "Save time on long videos" },
-                { icon: <Sparkles className="h-4 w-4" />, label: "Model Neutral", value: "OpenRouter models" },
-              ].map((item) => (
+              {FEATURES.map((item) => (
                 <div
                   key={item.label}
                   className="rounded-2xl border border-border/50 bg-background/60 px-6 py-4 shadow-lg hover:border-primary/30 transition-colors duration-300"
