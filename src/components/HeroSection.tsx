@@ -33,9 +33,9 @@ export function HeroSection({ onSubmit, isLoading, initialUrl }: HeroSectionProp
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 fade-in-up stagger-2">
               {[
-                { icon: <Zap className="h-4 w-4" />, label: "Fast streaming", value: "< 1 min completion" },
-                { icon: <ShieldCheck className="h-4 w-4" />, label: "Structured outputs", value: "Summary, takeaways, chapters" },
-                { icon: <Sparkles className="h-4 w-4" />, label: "Multi-model ready", value: "OpenRouter models" },
+                { icon: <Zap className="h-4 w-4" />, label: "Fast Processing", value: "< 1 min completion" },
+                { icon: <ShieldCheck className="h-4 w-4" />, label: "Structured Analysis", value: "Save time on long videos" },
+                { icon: <Sparkles className="h-4 w-4" />, label: "Model Neutral", value: "OpenRouter models" },
               ].map((item) => (
                 <div
                   key={item.label}

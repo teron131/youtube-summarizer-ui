@@ -9,26 +9,20 @@ interface ProcessingStatusProps {
   progressStates: StreamingProgressState[];
 }
 
+const STEP_TO_ANCHOR = [-1, 0, 1, 2, 3, 2, 4];
+const TOTAL_ANCHORS = 4;
+
 export function ProcessingStatus({ currentStage, currentStep, progressStates }: ProcessingStatusProps) {
-  const hasStep = (step: StreamingProgressState['step']) =>
-    progressStates.some(s => s.step === step);
-  const finished = hasStep('complete');
+  const finished = progressStates.some(s => s.step === 'complete');
 
-  const mapCurrentToAnchor = (stepIdx: number): number => {
-    if (stepIdx <= -1) return 0;
-    if (stepIdx === 0) return 1;
-    if (stepIdx === 1) return 2;
-    if (stepIdx === 2) return 3;
-    if (stepIdx === 3) return 2;
-    if (stepIdx >= 4) return 4;
-    return 2;
-  };
+  const mapCurrentToAnchor = (stepIdx: number): number =>
+    STEP_TO_ANCHOR[Math.max(0, Math.min(stepIdx + 1, STEP_TO_ANCHOR.length - 1))];
 
-  const activeAnchor = finished
-    ? 4
-    : (progressStates.length === 0 ? 0 : mapCurrentToAnchor(currentStep));
+  const activeAnchor = finished ? TOTAL_ANCHORS
+    : progressStates.length === 0 ? 0
+    : mapCurrentToAnchor(currentStep);
 
-  const progressPercent = (activeAnchor / 4) * 100;
+  const progressPercent = (activeAnchor / TOTAL_ANCHORS) * 100;
   const stageText = getStageText(activeAnchor);
 
   return (
@@ -42,11 +36,11 @@ export function ProcessingStatus({ currentStage, currentStep, progressStates }: 
             <div className="absolute inset-0 w-20 h-20 bg-primary/30 rounded-full animate-ping" />
           </div>
         </div>
-        
+
         <div className="text-center space-y-4">
           <h3 className="text-2xl font-bold text-foreground">Processing Video</h3>
           <p className="text-lg text-muted-foreground">{currentStage}</p>
-          
+
           <div className="space-y-3 mt-8">
             <div className="relative h-2 rounded-full timeline-track">
               <div
@@ -64,4 +58,3 @@ export function ProcessingStatus({ currentStage, currentStep, progressStates }: 
     </Card>
   );
 }
-

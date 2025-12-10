@@ -1,40 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { BadgeList, BulletList, Checklist, SectionHeader } from "@/components/ui/list-items";
 import { useToast } from "@/hooks/use-toast";
 import { generateAnalysisMarkdown } from "@/lib/markdown-utils";
 import { convertAnalysisChinese } from "@/lib/utils";
 import { AnalysisData, QualityData, VideoInfoResponse } from "@/services/types";
-import { BookOpen, CheckCircle2, Copy, Lightbulb, ListChecks, Sparkles } from "lucide-react";
+import { BookOpen, Copy, Lightbulb, ListChecks, Sparkles } from "lucide-react";
 
 interface AnalysisPanelProps {
   analysis: AnalysisData;
   quality?: QualityData;
   videoInfo?: VideoInfoResponse;
 }
-
-// Helper function to render text
-const renderText = (text: string, className = "") => (
-  <span className={`text-foreground leading-7 md:leading-8 text-sm md:text-base ${className}`}>
-    {text}
-  </span>
-);
-
-// Helper component for section headers
-interface SectionHeaderProps {
-  icon: React.ReactNode;
-  title: string;
-}
-
-const SectionHeader = ({ icon, title }: SectionHeaderProps) => (
-  <div className="flex items-center gap-3">
-    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
-      {icon}
-    </div>
-    <h4 className="text-sm md:text-base font-bold uppercase tracking-wide text-primary">
-      {title}
-    </h4>
-  </div>
-);
 
 export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelProps) => {
   const { toast } = useToast();
@@ -77,7 +54,7 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
               AI Analysis
             </div>
             <h3 className="text-2xl md:text-3xl font-bold text-foreground">Structured Analysis</h3>
-            <p className="text-sm text-muted-foreground">Summary, takeaways, chapters, and keywords in one view.</p>
+            <p className="text-sm text-muted-foreground">Save time on long videos, and keywords in one view.</p>
           </div>
 
           <Button
@@ -104,14 +81,7 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
         {convertedAnalysis.takeaways && convertedAnalysis.takeaways.length > 0 && (
           <div className="space-y-3">
             <SectionHeader icon={<Lightbulb className="w-4 h-4 md:w-5 md:h-5" />} title="Key Takeaways" />
-            <ul className="space-y-2 md:space-y-2.5">
-              {convertedAnalysis.takeaways.map((takeaway, index) => (
-                <li key={index} className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                  {renderText(takeaway)}
-                </li>
-              ))}
-            </ul>
+            <Checklist items={convertedAnalysis.takeaways} />
           </div>
         )}
 
@@ -141,14 +111,7 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
                       <p className="text-foreground leading-7 md:leading-8 text-sm md:text-base">{chapter.summary}</p>
 
                       {chapter.key_points && chapter.key_points.length > 0 && (
-                        <ul className="pl-2 space-y-1">
-                          {chapter.key_points.map((point, pIndex) => (
-                            <li key={pIndex} className="flex items-start gap-2 text-sm md:text-base text-foreground leading-7">
-                              <span className="text-primary font-bold mt-0.5">•</span>
-                              <span>{point}</span>
-                            </li>
-                          ))}
-                        </ul>
+                        <BulletList items={chapter.key_points} />
                       )}
                     </div>
                   </div>
@@ -158,20 +121,11 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
           </div>
         )}
 
-        {/* Keywords Section - now from Analysis model */}
+        {/* Keywords Section */}
         {convertedAnalysis.keywords && convertedAnalysis.keywords.length > 0 && (
           <div className="space-y-3">
             <SectionHeader icon={<span className="text-sm md:text-base font-bold text-primary">#</span>} title="Keywords" />
-            <div className="flex flex-wrap gap-2">
-              {convertedAnalysis.keywords.map((keyword, index) => (
-                <span
-                  key={index}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary border border-primary/20"
-                >
-                  {keyword}
-                </span>
-              ))}
-            </div>
+            <BadgeList items={convertedAnalysis.keywords} />
           </div>
         )}
       </div>

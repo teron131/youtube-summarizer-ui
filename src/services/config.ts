@@ -16,7 +16,6 @@ export const RECOMMENDED_SUMMARIZER_MODELS = [
   { value: "openai/gpt-5-mini", label: "GPT-5 Mini", provider: "openai" },
   { value: "openai/gpt-5.1", label: "GPT-5.1", provider: "openai" },
   { value: "x-ai/grok-4.1-fast", label: "Grok 4.1 Fast", provider: "x-ai" },
-  // { value: "x-ai/grok-4", label: "Grok 4", provider: "x-ai" },
   { value: "anthropic/claude-haiku-4.5", label: "Claude Haiku 4.5", provider: "anthropic" },
 ] as const;
 

@@ -25,10 +25,6 @@ export interface VideoProcessingState {
   scrapedTranscript: string | null;
 }
 
-type ProgressStateWithData = StreamingProgressState & {
-  data?: { videoInfo?: VideoInfoResponse; transcript?: string };
-};
-
 const initialState: VideoProcessingState = {
   isLoading: false,
   error: null,
@@ -43,7 +39,7 @@ const initialState: VideoProcessingState = {
 export function useVideoProcessing() {
   const [state, setState] = useState<VideoProcessingState>(initialState);
 
-  const applyProgressUpdate = (progressState: ProgressStateWithData) => {
+  const applyProgressUpdate = (progressState: StreamingProgressState) => {
     setState((prev) => {
       const normalizedStep = normalizeStepName(progressState.step);
       const stepIndex = findStepIndex(normalizedStep);
@@ -90,11 +86,7 @@ export function useVideoProcessing() {
     };
 
     try {
-      const result = await streamAnalysis(
-        url,
-        options || {},
-        handleProgress,
-      );
+      const result = await streamAnalysis(url, options || {}, handleProgress);
 
       if (!result.success) {
         throw result.error || new Error('Processing failed');
@@ -108,8 +100,8 @@ export function useVideoProcessing() {
         currentStage: 'Processing completed',
         isLoading: false,
       }));
-      return result;
 
+      return result;
     } catch (e) {
       const error = e as ApiError;
       setState((prev) => ({ ...prev, isLoading: false, error }));
@@ -117,25 +109,14 @@ export function useVideoProcessing() {
     }
   };
 
+  const updateState = (updates: Partial<VideoProcessingState>) => {
+    setState((prev) => ({ ...prev, ...updates }));
+  };
+
   return {
     ...state,
-    resetState: () => setState(initialState),
-    setLoading: (isLoading: boolean) => setState((prev) => ({ ...prev, isLoading })),
-    setError: (error: ApiError | null) => setState((prev) => ({ ...prev, error })),
-    setCurrentStep: (currentStep: number) => setState((prev) => ({ ...prev, currentStep })),
-    setCurrentStage: (currentStage: string) => setState((prev) => ({ ...prev, currentStage })),
-    setProgressStates: (
-      states: StreamingProgressState[] | ((prev: StreamingProgressState[]) => StreamingProgressState[])
-    ) => setState((prev) => ({
-      ...prev,
-      progressStates: typeof states === 'function' ? states(prev.progressStates) : states,
-    })),
-    setAnalysisResult: (analysisResult: StreamingProcessingResult | null) =>
-      setState((prev) => ({ ...prev, analysisResult })),
-    setScrapedVideoInfo: (scrapedVideoInfo: VideoInfoResponse | null) =>
-      setState((prev) => ({ ...prev, scrapedVideoInfo })),
-    setScrapedTranscript: (scrapedTranscript: string | null) =>
-      setState((prev) => ({ ...prev, scrapedTranscript })),
     processVideo,
+    updateState,
+    resetState: () => setState(initialState),
   };
 }

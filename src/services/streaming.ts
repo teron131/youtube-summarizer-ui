@@ -12,57 +12,75 @@ import {
   StreamingProcessingResult,
   StreamingProgressState,
   SummarizeRequest,
-  VideoInfoResponse
+  VideoInfoResponse,
 } from './types';
+
+type ChunkHandler = (data: StreamingChunk) => StreamingProgressState | null;
+
+const createCompleteHandler = (): ChunkHandler => (data) => {
+  if (!data.type || (data.type !== 'complete' && !data.is_complete)) return null;
+
+  const qualityScore = data.quality?.percentage_score;
+  const message = qualityScore !== undefined
+    ? `Analysis completed successfully with ${qualityScore}% quality score`
+    : 'Analysis completed successfully';
+
+  return {
+    step: 'complete',
+    stepName: 'Analysis Complete',
+    status: 'completed',
+    message,
+    iterationCount: data.iteration_count,
+    qualityScore,
+  };
+};
+
+const createQualityHandler = (): ChunkHandler => (data) => {
+  if (!data.quality?.percentage_score) return null;
+
+  const score = data.quality.percentage_score;
+  const passed = data.quality.is_acceptable;
+
+  return {
+    step: passed ? 'quality_check' : 'refinement',
+    stepName: passed ? 'Quality Check' : 'Refining',
+    status: 'processing',
+    message: passed ? 'Quality check passed' : 'Refining analysis...',
+    qualityScore: score,
+    iterationCount: data.iteration_count,
+  };
+};
+
+const createAnalysisHandler = (): ChunkHandler => (data) => {
+  if (!data.analysis || data.quality) return null;
+
+  return {
+    step: 'analysis_generation',
+    stepName: 'Analysis Generation',
+    status: 'completed',
+    message: 'Analysis generated',
+    iterationCount: data.iteration_count,
+  };
+};
+
+const CHUNK_HANDLERS: ChunkHandler[] = [
+  createCompleteHandler(),
+  createQualityHandler(),
+  createAnalysisHandler(),
+];
 
 function processChunk(
   data: StreamingChunk,
   onProgress?: (state: StreamingProgressState) => void
-) {
-  if (data.type === 'status') {
-    return;
-  }
+): void {
+  if (data.type === 'status') return;
 
-  if (data.type === 'complete' || data.is_complete) {
-    const qualityScore = data.quality?.percentage_score;
-    const msg = qualityScore !== undefined
-      ? `Analysis completed successfully with ${qualityScore}% quality score`
-      : `Analysis completed successfully`;
-
-    onProgress?.({
-      step: 'complete',
-      stepName: 'Analysis Complete',
-      status: 'completed',
-      message: msg,
-      iterationCount: data.iteration_count,
-      qualityScore,
-    });
-    return;
-  }
-
-  if (data.quality?.percentage_score !== undefined) {
-    const score = data.quality.percentage_score;
-    const passed = data.quality.is_acceptable;
-
-    onProgress?.({
-      step: passed ? 'quality_check' : 'refinement',
-      stepName: passed ? 'Quality Check' : 'Refining',
-      status: 'processing',
-      message: passed ? 'Quality check passed' : 'Refining analysis...',
-      qualityScore: score,
-      iterationCount: data.iteration_count,
-    });
-    return;
-  }
-
-  if (data.analysis && !data.quality) {
-    onProgress?.({
-      step: 'analysis_generation',
-      stepName: 'Analysis Generation',
-      status: 'completed',
-      message: 'Analysis generated',
-      iterationCount: data.iteration_count,
-    });
+  for (const handler of CHUNK_HANDLERS) {
+    const state = handler(data);
+    if (state) {
+      onProgress?.(state);
+      return;
+    }
   }
 }
 
@@ -83,7 +101,7 @@ export async function streamAnalysis(
       step: 'scraping',
       stepName: 'Scraping Video',
       status: 'processing',
-      message: 'Extracting video info...'
+      message: 'Extracting video info...',
     });
 
     const scrapResult = await api.scrapVideo({ url });
@@ -108,7 +126,7 @@ export async function streamAnalysis(
       stepName: 'Scraping Video',
       status: 'completed',
       message: `Video scraped: ${videoInfo.title}`,
-      data: { videoInfo, transcript: scrapResult.transcript }
+      data: { videoInfo, transcript: scrapResult.transcript },
     });
 
     // 2. Analysis Phase (Streaming)
@@ -116,7 +134,7 @@ export async function streamAnalysis(
       step: 'analyzing',
       stepName: 'AI Analysis',
       status: 'processing',
-      message: 'Connecting to analysis stream...'
+      message: 'Connecting to analysis stream...',
     });
 
     const requestBody: SummarizeRequest = {
@@ -124,7 +142,7 @@ export async function streamAnalysis(
       content_type: scrapResult.transcript ? 'transcript' : 'url',
       analysis_model: options.analysisModel || 'google/gemini-2.5-pro',
       quality_model: options.qualityModel || 'google/gemini-2.5-flash',
-      target_language: options.targetLanguage === "auto" ? null : options.targetLanguage,
+      target_language: options.targetLanguage === 'auto' ? null : options.targetLanguage,
     };
 
     const response = await fetch(`${api.baseUrl}/stream-summarize`, {
@@ -169,7 +187,7 @@ export async function streamAnalysis(
       }
     }
 
-    const totalTime = ((Date.now() - startTime) / 1000).toFixed(1) + 's';
+    const totalTime = `${((Date.now() - startTime) / 1000).toFixed(1)}s`;
 
     return {
       success: true,
@@ -179,15 +197,14 @@ export async function streamAnalysis(
       quality,
       totalTime,
       iterationCount,
-      chunksProcessed
+      chunksProcessed,
     };
-
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Unknown error';
 
     const apiError: ApiError = {
       message: msg,
-      type: 'processing'
+      type: 'processing',
     };
 
     onProgress?.({
@@ -195,15 +212,15 @@ export async function streamAnalysis(
       stepName: 'Processing',
       status: 'error',
       message: msg,
-      error: apiError
+      error: apiError,
     });
 
     return {
       success: false,
-      totalTime: ((Date.now() - startTime) / 1000).toFixed(1) + 's',
+      totalTime: `${((Date.now() - startTime) / 1000).toFixed(1)}s`,
       iterationCount: 0,
       chunksProcessed: 0,
-      error: apiError
+      error: apiError,
     };
   }
 }

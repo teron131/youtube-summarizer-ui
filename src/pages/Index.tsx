@@ -25,36 +25,28 @@ const Index = () => {
     analysisResult,
     scrapedVideoInfo,
     scrapedTranscript,
-    setError,
-    setCurrentStep,
-    setCurrentStage,
-    setProgressStates,
-    setAnalysisResult,
-    setScrapedVideoInfo,
-    setScrapedTranscript,
-    setLoading,
+    updateState,
     processVideo,
   } = useVideoProcessing();
 
   const loadExample = () => {
     setIsExampleMode(false);
-    setCurrentStage("Loading example...");
-
     const example = loadExampleData();
 
-    setProgressStates(example.progressStates);
-    setScrapedVideoInfo(example.videoInfo);
-    setScrapedTranscript(example.transcript);
-    setAnalysisResult(example.analysisResult);
-    setCurrentStep(4);
-    setCurrentStage("Example ready");
-    setLoading(false);
+    updateState({
+      currentStage: "Example ready",
+      currentStep: 4,
+      progressStates: example.progressStates,
+      scrapedVideoInfo: example.videoInfo,
+      scrapedTranscript: example.transcript,
+      analysisResult: example.analysisResult,
+      isLoading: false,
+    });
   };
 
   const handleVideoSubmit = async (url: string, options?: VideoProcessingOptions) => {
     setIsExampleMode(false);
 
-    // Use example data if URL is empty
     if (!url.trim()) {
       loadExample();
       return;
@@ -69,12 +61,11 @@ const Index = () => {
         hasAnalysis: !!result.analysis,
         hasQuality: !!result.quality,
         analysisChapters: result.analysis?.chapters?.length || 0,
-        qualityScore: result.quality?.percentage_score || 0
+        qualityScore: result.quality?.percentage_score || 0,
       });
     } catch (error) {
       const apiError = handleApiError(error);
-      setError(apiError);
-      setCurrentStage("❌ Processing failed");
+      updateState({ error: apiError, currentStage: "❌ Processing failed" });
 
       toast({
         title: "Processing Failed",
@@ -91,16 +82,15 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-[#0b0b0c]">
-      <HeroSection 
-        onSubmit={handleVideoSubmit} 
-        isLoading={isLoading} 
+      <HeroSection
+        onSubmit={handleVideoSubmit}
+        isLoading={isLoading}
         initialUrl={initialUrl}
       />
 
       <div className="relative">
         <div className="container relative z-10 mx-auto px-6 sm:px-8 pb-16 -mt-12">
           <div className="max-w-8xl w-full mx-auto space-y-10">
-            {/* Video Info */}
             {!isExampleMode && videoInfo && (
               <VideoInfo
                 url={videoInfo.url}
@@ -114,12 +104,10 @@ const Index = () => {
               />
             )}
 
-            {/* Transcript */}
             {!isExampleMode && transcript && (
               <TranscriptPanel transcript={transcript} />
             )}
 
-            {/* AI Analysis */}
             {!isExampleMode && analysisResult?.analysis && (
               <AnalysisPanel
                 analysis={analysisResult.analysis}
@@ -128,7 +116,6 @@ const Index = () => {
               />
             )}
 
-            {/* Loading State */}
             {isLoading && (
               <ProcessingStatus
                 currentStage={currentStage}
@@ -137,7 +124,6 @@ const Index = () => {
               />
             )}
 
-            {/* Error State */}
             {error && !isLoading && (
               <ErrorDisplay
                 error={error}
