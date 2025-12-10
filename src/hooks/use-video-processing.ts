@@ -1,3 +1,7 @@
+/**
+ * Core video processing state management hook with streaming support.
+ */
+
 import { useReducer } from 'react';
 
 import { findStepIndex, normalizeStepName, sortProgressStates } from '@/lib/video-utils';

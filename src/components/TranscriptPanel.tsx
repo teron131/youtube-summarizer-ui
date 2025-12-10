@@ -1,3 +1,7 @@
+/**
+ * Collapsible panel component for displaying and copying video transcript.
+ */
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";

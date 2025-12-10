@@ -1,3 +1,7 @@
+/**
+ * Form component for YouTube URL input and video processing options.
+ */
+
 import { ExampleUrls } from "@/components/ExampleUrls";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";

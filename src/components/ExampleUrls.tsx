@@ -1,3 +1,7 @@
+/**
+ * Component displaying clickable example YouTube URLs for quick testing.
+ */
+
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { EXAMPLE_YOUTUBE_URLS } from "@/lib/url-utils";
 import { ExternalLink, Youtube } from "lucide-react";

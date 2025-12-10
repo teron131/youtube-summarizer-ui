@@ -1,3 +1,7 @@
+/**
+ * Toast notification management hook with state synchronization.
+ */
+
 import { useEffect, useState } from 'react';
 
 import type {

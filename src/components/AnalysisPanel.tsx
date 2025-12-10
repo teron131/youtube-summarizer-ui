@@ -1,3 +1,7 @@
+/**
+ * Component displaying structured AI analysis with summary, takeaways, chapters, and keywords.
+ */
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { BadgeList, BulletList, Checklist, SectionHeader } from "@/components/ui/list-items";

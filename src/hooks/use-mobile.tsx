@@ -1,3 +1,7 @@
+/**
+ * Hook for detecting mobile screen size using responsive breakpoints.
+ */
+
 import { useEffect, useState } from 'react';
 
 const MOBILE_BREAKPOINT = 768;

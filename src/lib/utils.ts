@@ -1,3 +1,7 @@
+/**
+ * General utility functions including Tailwind class merging and Chinese text conversion.
+ */
+
 import { AnalysisData, VideoInfoResponse } from "@/services/types";
 import { clsx, type ClassValue } from "clsx";
 import * as OpenCC from 'opencc-js';

@@ -1,3 +1,7 @@
+/**
+ * Component displaying video metadata including thumbnail, title, author, and statistics.
+ */
+
 import { Card } from "@/components/ui/card";
 import { formatDate, formatDuration } from "@/lib/date-utils";
 import { cleanVideoUrl } from "@/lib/url-utils";

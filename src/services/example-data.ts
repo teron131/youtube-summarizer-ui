@@ -1,3 +1,7 @@
+/**
+ * Example video analysis data for demonstration and fallback purposes.
+ */
+
 import { StreamingProcessingResult } from "./types";
 
 export const exampleData: StreamingProcessingResult = {

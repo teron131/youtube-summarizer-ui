@@ -1,3 +1,7 @@
+/**
+ * Main page component orchestrating the video processing workflow.
+ */
+
 import { AnalysisPanel } from "@/components/AnalysisPanel";
 import { ErrorDisplay } from "@/components/ErrorDisplay";
 import { HeroSection } from "@/components/HeroSection";

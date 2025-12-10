@@ -1,3 +1,7 @@
+/**
+ * Reusable selector component for choosing AI models with icon and label.
+ */
+
 import { ComboboxOption, EditableCombobox } from "@/components/ui/editable-combobox";
 import { LucideIcon } from "lucide-react";
 

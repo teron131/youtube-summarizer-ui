@@ -1,3 +1,7 @@
+/**
+ * 404 error page component for handling non-existent routes.
+ */
+
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";

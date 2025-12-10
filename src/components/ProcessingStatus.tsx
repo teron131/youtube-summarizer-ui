@@ -1,3 +1,7 @@
+/**
+ * Component showing real-time video processing status with progress indicator.
+ */
+
 import { Card } from "@/components/ui/card";
 import { getStageText } from "@/lib/video-utils";
 import { StreamingProgressState } from "@/services/types";

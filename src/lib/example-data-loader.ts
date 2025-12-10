@@ -1,3 +1,7 @@
+/**
+ * Utility for loading example data with realistic progress states.
+ */
+
 import { exampleData } from '@/services/example-data';
 import { StreamingProcessingResult, StreamingProgressState, VideoInfoResponse } from '@/services/types';
 

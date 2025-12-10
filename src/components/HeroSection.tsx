@@ -1,3 +1,7 @@
+/**
+ * Hero section component with branding, features, and main video input form.
+ */
+
 import { VideoUrlForm } from "@/components/VideoUrlForm";
 import { ShieldCheck, Sparkles, Zap } from "lucide-react";
 

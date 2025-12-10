@@ -1,3 +1,7 @@
+/**
+ * Component for configuring analysis model, quality model, and target language options.
+ */
+
 import { ModelSelector } from "@/components/ModelSelector";
 import { ComboboxOption } from "@/components/ui/editable-combobox";
 import { useLanguageSelection, useModelSelection, useUserPreferences } from "@/hooks/use-config";

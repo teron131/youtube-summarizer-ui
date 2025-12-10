@@ -1,3 +1,7 @@
+/**
+ * Component for displaying detailed error information with troubleshooting options.
+ */
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ApiError, StreamingProgressState } from "@/services/types";
