@@ -32,7 +32,7 @@ export function ProcessingStatus({ currentStage, currentStep, progressStates }: 
   const stageText = getStageText(activeAnchor);
 
   return (
-    <Card className="p-8 modern-blur shadow-glass">
+    <Card className="p-8">
       <div className="space-y-8">
         <div className="flex items-center justify-center">
           <div className="relative">

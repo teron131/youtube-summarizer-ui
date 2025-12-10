@@ -30,7 +30,7 @@ export const TranscriptPanel = ({ transcript }: TranscriptPanelProps) => {
   };
 
   return (
-    <Card className="relative rounded-2xl border border-border/60 bg-card/60 shadow-sm overflow-hidden">
+    <Card className="p-0">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CollapsibleTrigger asChild>
           <Button
@@ -61,10 +61,9 @@ export const TranscriptPanel = ({ transcript }: TranscriptPanelProps) => {
                 variant="outline"
                 size="lg"
                 onClick={copyToClipboard}
-                className="gap-3 h-12 px-6 border-primary/30 hover:bg-primary/10 hover:border-primary transition-all duration-300"
+                className="gap-3 h-12 px-4 border-border/60 text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
               >
                 <Copy className="w-5 h-5" />
-                Copy Transcript
               </Button>
             </div>
             

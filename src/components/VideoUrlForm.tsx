@@ -102,11 +102,11 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
   }));
  
   return (
-    <Card className="relative overflow-hidden rounded-[28px] border border-primary/15 bg-gradient-to-b from-background/85 via-background/70 to-background/60 shadow-[0_20px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+    <Card className="rounded-[28px] p-0 border-border/50">
       <div className="space-y-8 p-8 sm:p-10">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Options Section - Grid layout */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 rounded-2xl border border-border/60 bg-muted/30 p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 rounded-2xl border border-border/50 bg-muted/30 p-6">
             <ModelSelector
               label="Summarizer"
               icon={Bot}

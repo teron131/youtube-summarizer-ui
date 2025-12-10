@@ -45,7 +45,7 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
   const cleanedUrl = cleanVideoUrl(url);
 
   return (
-    <Card className="relative overflow-hidden p-8 rounded-2xl border border-border/60 bg-card/60 shadow-sm">
+    <Card className="p-8 shadow-md">
       <div className="flex flex-col sm:flex-row gap-6">
         <div className="flex-shrink-0 relative" style={{ aspectRatio: "16 / 9" }}>
           <img

@@ -65,10 +65,10 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
   };
 
   return (
-    <Card className="relative overflow-hidden border border-border/70 bg-[radial-gradient(circle_at_20%_20%,rgba(255,0,76,0.06),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(255,255,255,0.04),transparent_30%)] shadow-2xl">
+    <Card className="p-0 shadow-md">
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/5 via-transparent to-primary/5" />
 
-      <div className="relative space-y-5 md:space-y-6 p-5 md:p-7 lg:p-8">
+      <div className="relative space-y-5 md:space-y-6 p-6 md:p-8">
         {/* Main Header */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-1">
@@ -84,16 +84,15 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
             variant="outline"
             size="lg"
             onClick={copyToClipboard}
-            className="gap-3 h-11 px-5 border-primary/30 hover:bg-primary/10 hover:border-primary transition-all duration-300"
+            className="gap-3 h-11 px-4 border-border/60 text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
           >
             <Copy className="w-5 h-5" />
-            Copy
           </Button>
         </div>
 
         {/* Summary Section */}
         {convertedAnalysis.summary && (
-          <div className="space-y-3 rounded-2xl border border-border/60 bg-card/60 p-4 md:p-5 shadow-sm">
+          <div className="space-y-3">
             <SectionHeader icon={<Sparkles className="w-4 h-4 md:w-5 md:h-5" />} title="Summary" />
             <p className="text-foreground leading-7 md:leading-8 text-sm md:text-base">
               {convertedAnalysis.summary}
@@ -103,7 +102,7 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
 
         {/* Key Takeaways Section */}
         {convertedAnalysis.takeaways && convertedAnalysis.takeaways.length > 0 && (
-          <div className="space-y-3 rounded-2xl border border-border/60 bg-card/60 p-4 md:p-5 shadow-sm">
+          <div className="space-y-3">
             <SectionHeader icon={<Lightbulb className="w-4 h-4 md:w-5 md:h-5" />} title="Key Takeaways" />
             <ul className="space-y-2 md:space-y-2.5">
               {convertedAnalysis.takeaways.map((takeaway, index) => (
@@ -118,7 +117,7 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
 
         {/* Video Chapters Section */}
         {convertedAnalysis.chapters && convertedAnalysis.chapters.length > 0 && (
-          <div className="space-y-3 rounded-2xl border border-border/60 bg-card/60 p-4 md:p-5 shadow-sm">
+          <div className="space-y-3">
             <SectionHeader icon={<BookOpen className="w-4 h-4 md:w-5 md:h-5" />} title="Video Chapters" />
 
             <div className="space-y-3">
@@ -161,7 +160,7 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
 
         {/* Keywords Section - now from Analysis model */}
         {convertedAnalysis.keywords && convertedAnalysis.keywords.length > 0 && (
-          <div className="space-y-3 rounded-2xl border border-border/60 bg-card/60 p-4 md:p-5 shadow-sm">
+          <div className="space-y-3">
             <SectionHeader icon={<span className="text-sm md:text-base font-bold text-primary">#</span>} title="Keywords" />
             <div className="flex flex-wrap gap-2">
               {convertedAnalysis.keywords.map((keyword, index) => (

@@ -11,7 +11,7 @@ interface ErrorDisplayProps {
 
 export function ErrorDisplay({ error, progressStates, onLoadExample }: ErrorDisplayProps) {
   return (
-    <Card className="p-6 bg-gradient-card border border-destructive shadow-card backdrop-blur-sm">
+    <Card className="p-6 border-destructive/40 shadow-md">
       <div className="flex items-start gap-3">
         <AlertCircle className="w-6 h-6 text-destructive mt-1 flex-shrink-0" />
         <div className="flex-1">

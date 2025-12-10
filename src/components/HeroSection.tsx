@@ -1,4 +1,3 @@
-import heroBackground from "@/assets/youtube-subtle-background.jpg";
 import { VideoUrlForm } from "@/components/VideoUrlForm";
 import { ShieldCheck, Sparkles, Zap } from "lucide-react";
 
@@ -14,20 +13,7 @@ interface HeroSectionProps {
 
 export function HeroSection({ onSubmit, isLoading, initialUrl }: HeroSectionProps) {
   return (
-    <section className="relative overflow-hidden bg-gradient-hero">
-      {/* Background */}
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-10"
-        style={{ backgroundImage: `url(${heroBackground})` }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-background/40 to-background" />
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute -top-32 -right-24 h-72 w-72 rounded-full bg-primary/20 blur-3xl animate-pulse" />
-        <div className="absolute -bottom-32 -left-20 h-96 w-96 rounded-full bg-primary/10 blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
-        <div className="absolute inset-0 opacity-[0.07] bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.35),transparent_30%),radial-gradient(circle_at_80%_0%,rgba(255,0,76,0.35),transparent_25%),radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.12),transparent_35%)]" />
-      </div>
-
-      {/* Content */}
+    <section className="relative overflow-hidden bg-transparent">
       <div className="relative container mx-auto px-4 pt-14 pb-20 lg:pb-28">
         <div className="flex flex-col items-center gap-10">
           <div className="space-y-8 w-full max-w-4xl">
@@ -53,7 +39,7 @@ export function HeroSection({ onSubmit, isLoading, initialUrl }: HeroSectionProp
               ].map((item) => (
                 <div
                   key={item.label}
-                  className="rounded-2xl border border-primary/15 bg-background/60 px-6 py-4 shadow-lg hover:border-primary/30 transition-colors duration-300"
+                  className="rounded-2xl border border-border/50 bg-background/60 px-6 py-4 shadow-lg hover:border-primary/30 transition-colors duration-300"
                 >
                   <div className="flex items-center gap-2 text-primary">
                     {item.icon}
