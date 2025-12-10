@@ -66,7 +66,6 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo }: AnalysisPanelPro
 
   return (
     <Card className="relative overflow-hidden border border-border/70 bg-[radial-gradient(circle_at_20%_20%,rgba(255,0,76,0.06),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(255,255,255,0.04),transparent_30%)] shadow-2xl">
-      <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-primary via-primary/70 to-red-500" />
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/5 via-transparent to-primary/5" />
 
       <div className="relative space-y-5 md:space-y-6 p-5 md:p-7 lg:p-8">

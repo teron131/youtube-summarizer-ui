@@ -103,8 +103,6 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
  
   return (
     <Card className="relative overflow-hidden rounded-[28px] border border-primary/15 bg-gradient-to-b from-background/85 via-background/70 to-background/60 shadow-[0_20px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl">
-      <div className="absolute inset-x-0 top-0 h-[3px] bg-primary/50" />
-
       <div className="space-y-8 p-8 sm:p-10">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Options Section - Grid layout */}

@@ -31,7 +31,6 @@ export const TranscriptPanel = ({ transcript }: TranscriptPanelProps) => {
 
   return (
     <Card className="relative rounded-2xl border border-border/60 bg-card/60 shadow-sm overflow-hidden">
-      <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-primary via-primary/70 to-red-500" />
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CollapsibleTrigger asChild>
           <Button

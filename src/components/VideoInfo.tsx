@@ -46,8 +46,6 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
 
   return (
     <Card className="relative overflow-hidden p-8 rounded-2xl border border-border/60 bg-card/60 shadow-sm">
-      <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-primary via-primary/70 to-red-500" />
-
       <div className="flex flex-col sm:flex-row gap-6">
         <div className="flex-shrink-0 relative" style={{ aspectRatio: "16 / 9" }}>
           <img
