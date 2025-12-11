@@ -133,7 +133,7 @@ export const TranscriptPanel = ({ transcript }: TranscriptPanelProps) => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   type="text"
-                  placeholder="Search transcript..."
+                  placeholder="Search"
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
                   onKeyDown={handleKeyDown}

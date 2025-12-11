@@ -202,7 +202,7 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo, onRegenerate, isRe
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder="Search analysis..."
+                placeholder="Search"
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -266,9 +266,9 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo, onRegenerate, isRe
               <SectionHeader icon={<Lightbulb className="w-4 h-4 md:w-5 md:h-5" />} title="Key Takeaways" />
               <ul className="space-y-2.5">
                 {convertedAnalysis.takeaways.map((item, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <div className="mt-1.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-3 w-3">
+                  <li key={index} className="flex items-start gap-2 md:gap-3">
+                    <div className="mt-1.5 flex h-4 w-4 md:h-5 md:w-5 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-2.5 w-2.5 md:h-3 md:w-3">
                         <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
                       </svg>
                     </div>
@@ -287,46 +287,32 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo, onRegenerate, isRe
             <div className="space-y-3">
               <SectionHeader icon={<BookOpen className="w-4 h-4 md:w-5 md:h-5" />} title="Video Chapters" />
 
-              <div className="space-y-3">
-                {convertedAnalysis.chapters.map((chapter, index) => {
-                  const isLast = index === convertedAnalysis.chapters.length - 1;
-                  return (
-                    <div key={index} className="grid grid-cols-[auto_1fr] gap-3">
-                      <div className="relative flex flex-col items-center">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary font-semibold">
-                          {index + 1}
-                        </div>
-                        <div
-                          className={`mt-0 w-px bg-gradient-to-b from-primary/60 via-primary/50 to-transparent ${
-                            isLast ? "h-[98%]" : "h-full"
-                          }`}
-                        />
-                      </div>
+              <div className="space-y-4">
+                {convertedAnalysis.chapters.map((chapter, index) => (
+                  <div key={index} className="space-y-1.5">
+                    <h5 className="text-base md:text-lg font-semibold text-primary">
+                      <span className="inline-flex items-center justify-center h-5 w-5 md:h-6 md:w-6 rounded-full bg-primary/10 text-primary text-xs md:text-sm mr-2">
+                        {index + 1}
+                      </span>
+                      <span dangerouslySetInnerHTML={{ __html: highlightText(chapter.header) }} />
+                    </h5>
+                    <div
+                      className="text-foreground leading-7 md:leading-8 text-sm md:text-base"
+                      dangerouslySetInnerHTML={{ __html: highlightText(chapter.summary) }}
+                    />
 
-                      <div className="space-y-1.5">
-                        <h5
-                          className="text-base md:text-lg font-semibold text-primary"
-                          dangerouslySetInnerHTML={{ __html: highlightText(chapter.header) }}
-                        />
-                        <div
-                          className="text-foreground leading-7 md:leading-8 text-sm md:text-base"
-                          dangerouslySetInnerHTML={{ __html: highlightText(chapter.summary) }}
-                        />
-
-                        {chapter.key_points && chapter.key_points.length > 0 && (
-                          <ul className="ml-4 mt-3 space-y-2">
-                            {chapter.key_points.map((point, idx) => (
-                              <li key={idx} className="flex items-start gap-2 text-foreground/90 text-sm md:text-base">
-                                <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-primary/60" />
-                                <span dangerouslySetInnerHTML={{ __html: highlightText(point) }} />
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
+                    {chapter.key_points && chapter.key_points.length > 0 && (
+                      <ul className="mt-3 space-y-2">
+                        {chapter.key_points.map((point, idx) => (
+                          <li key={idx} className="flex items-start gap-2 md:gap-2 text-foreground/90 text-sm md:text-base">
+                            <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-primary/60" />
+                            <span dangerouslySetInnerHTML={{ __html: highlightText(point) }} />
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
           )}
