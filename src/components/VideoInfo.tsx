@@ -46,8 +46,9 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
   const cleanedUrl = cleanVideoUrl(url);
 
   return (
-    <Card className="p-8 shadow-md">
-      <div className="flex flex-col sm:flex-row gap-6">
+    <Card className="p-6 md:p-8 shadow-md relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/5 via-transparent to-transparent" />
+      <div className="flex flex-col sm:flex-row gap-6 relative">
         <div className="flex-shrink-0 w-full sm:w-64 md:w-80">
           <div className="relative rounded-xl border border-border/60 shadow-lg overflow-hidden">
             <img

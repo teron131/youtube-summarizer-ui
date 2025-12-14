@@ -32,8 +32,9 @@ export function ProcessingStatus({ currentStage, currentStep, progressStates }: 
   const stageText = getStageText(activeAnchor);
 
   return (
-    <Card className="p-8">
-      <div className="space-y-8">
+    <Card className="p-6 md:p-8 shadow-md relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/5 via-transparent to-transparent" />
+      <div className="space-y-6 relative">
         <div className="flex items-center justify-center">
           <div className="relative">
             <div className="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center">

@@ -73,8 +73,9 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
   };
 
   return (
-    <Card className="rounded-[28px] p-0 border-border/50">
-      <div className="space-y-8 p-8 sm:p-10">
+    <Card className="shadow-md border-border/50 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/5 via-transparent to-transparent" />
+      <div className="space-y-6 p-6 md:p-8 relative">
         <form onSubmit={handleSubmit} className="space-y-6">
           <VideoProcessingOptions />
 

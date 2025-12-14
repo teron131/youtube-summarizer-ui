@@ -102,12 +102,13 @@ export const TranscriptPanel = ({ transcript }: TranscriptPanelProps) => {
   }, [currentMatchIndex, searchQuery]);
 
   return (
-    <Card className="p-0">
-      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+    <Card className="p-0 shadow-md relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/5 via-transparent to-transparent" />
+      <Collapsible open={isOpen} onOpenChange={setIsOpen} className="relative">
         <CollapsibleTrigger asChild>
           <Button
             variant="ghost"
-            className="w-full p-8 h-auto justify-between hover:bg-transparent transition-all duration-300"
+            className="w-full p-6 md:p-8 h-auto justify-between hover:bg-transparent transition-all duration-300"
           >
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center">
@@ -126,7 +127,7 @@ export const TranscriptPanel = ({ transcript }: TranscriptPanelProps) => {
           </Button>
         </CollapsibleTrigger>
         
-        <CollapsibleContent className="px-8 pb-8">
+        <CollapsibleContent className="px-6 md:px-8 pb-6 md:pb-8">
           <div className="space-y-6">
             <div className="flex gap-3 items-center">
               <div className="relative flex-1">
@@ -199,7 +200,7 @@ export const TranscriptPanel = ({ transcript }: TranscriptPanelProps) => {
               className="glass-effect rounded-2xl p-6 max-h-96 overflow-y-auto border border-primary/10"
             >
               <div
-                className="text-foreground leading-relaxed whitespace-pre-wrap font-mono text-sm"
+                className="text-foreground leading-relaxed whitespace-pre-wrap text-sm"
                 dangerouslySetInnerHTML={{ __html: highlightText(transcript, searchQuery) }}
               />
             </div>

@@ -16,9 +16,9 @@ interface HeroSectionProps {
 }
 
 const FEATURES = [
-  { icon: <Zap className="h-4 w-4" />, label: "Fast Processing", value: "< 1 min completion" },
-  { icon: <ShieldCheck className="h-4 w-4" />, label: "Structured Analysis", value: "Save time on long videos" },
-  { icon: <Sparkles className="h-4 w-4" />, label: "Model Neutral", value: "OpenRouter models" },
+  { Icon: Zap, label: "Fast Processing", value: "< 1 min completion" },
+  { Icon: ShieldCheck, label: "Structured Analysis", value: "Save time on long videos" },
+  { Icon: Sparkles, label: "Model Neutral", value: "OpenRouter models" },
 ];
 
 export function HeroSection({ onSubmit, isLoading, initialUrl }: HeroSectionProps) {
@@ -35,23 +35,24 @@ export function HeroSection({ onSubmit, isLoading, initialUrl }: HeroSectionProp
             <div className="space-y-4 fade-in-up stagger-1">
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight text-foreground">
                 YouTube Video
-                <span className="block bg-gradient-to-r from-primary via-primary/80 to-white bg-clip-text text-transparent animate-glow">
+                <span className="block bg-gradient-to-r from-primary via-primary/80 to-white bg-clip-text text-transparent animate-glow pb-2">
                   Structured Analysis
                 </span>
               </h1>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 fade-in-up stagger-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 rounded-2xl border border-border/50 bg-muted/30 p-4 md:p-6 fade-in-up stagger-2">
               {FEATURES.map((item) => (
-                <div
-                  key={item.label}
-                  className="rounded-2xl border border-border/50 bg-background/60 px-6 py-4 shadow-lg hover:border-primary/30 transition-colors duration-300"
-                >
-                  <div className="flex items-center gap-2 text-primary">
-                    {item.icon}
-                    <span className="text-xs uppercase tracking-wide">{item.label}</span>
+                <div key={item.label} className="flex flex-col gap-2 group relative">
+                  <div className="flex items-center gap-2 relative">
+                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                      <item.Icon className="w-3 h-3 text-white" />
+                    </div>
+                    <span className="text-sm font-bold text-primary uppercase tracking-wide">{item.label}</span>
                   </div>
-                  <p className="mt-2 text-sm font-semibold text-foreground">{item.value}</p>
+                  <div className="h-10 flex items-center px-3 rounded-md bg-background/50 border border-border/50 text-sm font-medium text-foreground">
+                    {item.value}
+                  </div>
                 </div>
               ))}
             </div>
