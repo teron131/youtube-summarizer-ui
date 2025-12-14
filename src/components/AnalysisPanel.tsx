@@ -144,7 +144,7 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo, onRegenerate, isRe
 
   return (
     <Card className="p-0 shadow-md">
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/5 via-transparent to-primary/5" />
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/5 via-transparent to-transparent" />
 
       <div className="relative space-y-5 md:space-y-6 p-6 md:p-8">
         {/* Main Header */}

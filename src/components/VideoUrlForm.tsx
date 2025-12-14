@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { VideoProcessingOptions } from "@/components/VideoProcessingOptions";
 import { useUserPreferences } from "@/hooks/use-config";
 import { isFormValid, prepareProcessingOptions, validateYouTubeUrl } from "@/lib/form-validation";
-import { AlertCircle, ExternalLink, Loader2, Play } from "lucide-react";
+import { AlertCircle, Loader2, Play } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface VideoUrlFormProps {
@@ -124,25 +124,6 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
           </Button>
         </form>
 
-        {!showExamples && (
-          <div className="rounded-2xl border border-border/60 bg-muted/20 p-4 space-y-3">
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-sm text-muted-foreground">Supported YouTube URL formats</p>
-              <span className="text-xs rounded-full bg-primary/10 px-3 py-1 text-primary">Drop an empty link to preview</span>
-            </div>
-
-            <div className="grid gap-2 text-xs text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <ExternalLink className="w-3 h-3" />
-                <code>https://youtube.com/watch?v=VIDEO_ID</code>
-              </div>
-              <div className="flex items-center gap-2">
-                <ExternalLink className="w-3 h-3" />
-                <code>https://youtu.be/VIDEO_ID</code>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </Card>
   );
