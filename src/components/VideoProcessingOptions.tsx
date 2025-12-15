@@ -24,7 +24,7 @@ export function VideoProcessingOptions() {
   });
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 rounded-xl border border-border bg-secondary/50 p-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 rounded-2xl border border-border/50 bg-muted/30 p-6">
       <ModelSelector
         label="Summarizer"
         icon={Bot}

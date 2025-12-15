@@ -143,17 +143,19 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo, onRegenerate, isRe
   }, [currentMatchIndex, searchQuery]);
 
   return (
-    <Card className="p-0">
-      <div className="space-y-6 md:space-y-8 p-6 md:p-8">
+    <Card className="p-0 shadow-md">
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/5 via-transparent to-transparent" />
+
+      <div className="relative space-y-5 md:space-y-6 p-6 md:p-8">
         {/* Main Header */}
         <div className="space-y-3">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="space-y-1">
-              <div className="inline-flex items-center gap-2 rounded-full bg-primary/15 border border-primary/30 px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
                 <ListChecks className="h-4 w-4" />
                 AI Analysis
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-foreground">Structured Analysis</h3>
+              <h3 className="text-2xl md:text-3xl font-bold text-foreground">Structured Analysis</h3>
               <p className="text-sm text-muted-foreground">Save time on long videos, and keywords in one view.</p>
             </div>
 
@@ -166,7 +168,7 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo, onRegenerate, isRe
                       size="lg"
                       onClick={handleRegenerate}
                       disabled={isRegenerating}
-                      className="gap-3 h-12 px-4 border-border/60 text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="gap-3 h-11 px-4 border-border/60 text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <RefreshCw className={`w-5 h-5 ${isRegenerating ? 'animate-spin' : ''}`} />
                     </Button>
@@ -182,7 +184,7 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo, onRegenerate, isRe
                     variant="outline"
                     size="lg"
                     onClick={copyToClipboard}
-                    className="gap-3 h-12 px-4 border-border/60 text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
+                    className="gap-3 h-11 px-4 border-border/60 text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
                   >
                     <Copy className="w-5 h-5" />
                   </Button>
@@ -204,7 +206,7 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo, onRegenerate, isRe
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="pl-10 pr-24 h-12 border-border/60 focus:border-primary/50"
+                className="pl-10 pr-24 h-11 border-border/60 focus:border-primary/50"
               />
               {searchQuery && (
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
@@ -229,7 +231,7 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo, onRegenerate, isRe
                   variant="outline"
                   size="lg"
                   onClick={() => navigateMatches('prev')}
-                  className="gap-3 h-12 px-4 border-border/60 text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
+                  className="gap-3 h-11 px-4 border-border/60 text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
                 >
                   <ChevronUp className="w-5 h-5" />
                 </Button>
@@ -237,7 +239,7 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo, onRegenerate, isRe
                   variant="outline"
                   size="lg"
                   onClick={() => navigateMatches('next')}
-                  className="gap-3 h-12 px-4 border-border/60 text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
+                  className="gap-3 h-11 px-4 border-border/60 text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
                 >
                   <ChevronDown className="w-5 h-5" />
                 </Button>
@@ -246,10 +248,10 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo, onRegenerate, isRe
           </div>
         </div>
 
-        <div ref={contentRef} className="space-y-8 md:space-y-10 mt-8 md:mt-10">
+        <div ref={contentRef}>
           {/* Summary Section */}
           {convertedAnalysis.summary && (
-            <div className="space-y-4">
+            <div className="space-y-3">
               <SectionHeader icon={<Sparkles className="w-4 h-4 md:w-5 md:h-5" />} title="Summary" />
               <div
                 className="text-foreground leading-7 md:leading-8 text-sm md:text-base"
@@ -260,7 +262,7 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo, onRegenerate, isRe
 
           {/* Key Takeaways Section */}
           {convertedAnalysis.takeaways && convertedAnalysis.takeaways.length > 0 && (
-            <div className="space-y-4">
+            <div className="space-y-3">
               <SectionHeader icon={<Lightbulb className="w-4 h-4 md:w-5 md:h-5" />} title="Key Takeaways" />
               <ul className="space-y-2.5">
                 {convertedAnalysis.takeaways.map((item, index) => (
@@ -282,12 +284,12 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo, onRegenerate, isRe
 
           {/* Video Chapters Section */}
           {convertedAnalysis.chapters && convertedAnalysis.chapters.length > 0 && (
-            <div className="space-y-4">
+            <div className="space-y-3">
               <SectionHeader icon={<BookOpen className="w-4 h-4 md:w-5 md:h-5" />} title="Video Chapters" />
 
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {convertedAnalysis.chapters.map((chapter, index) => (
-                  <div key={index} className="space-y-2">
+                  <div key={index} className="space-y-1.5">
                     <h5 className="text-base md:text-lg font-semibold text-primary">
                       <span className="inline-flex items-center justify-center h-5 w-5 md:h-6 md:w-6 rounded-full bg-primary/10 text-primary text-xs md:text-sm mr-2">
                         {index + 1}
@@ -302,12 +304,9 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo, onRegenerate, isRe
                     {chapter.key_points && chapter.key_points.length > 0 && (
                       <ul className="mt-3 space-y-2">
                         {chapter.key_points.map((point, idx) => (
-                          <li key={idx} className="flex items-start gap-2 md:gap-2">
-                            <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/60" />
-                            <span
-                              className="text-foreground leading-7 md:leading-8 text-sm md:text-base"
-                              dangerouslySetInnerHTML={{ __html: highlightText(point) }}
-                            />
+                          <li key={idx} className="flex items-start gap-2 md:gap-2 text-foreground/90 text-sm md:text-base">
+                            <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-primary/60" />
+                            <span dangerouslySetInnerHTML={{ __html: highlightText(point) }} />
                           </li>
                         ))}
                       </ul>
@@ -320,7 +319,7 @@ export const AnalysisPanel = ({ analysis, quality, videoInfo, onRegenerate, isRe
 
           {/* Keywords Section */}
           {convertedAnalysis.keywords && convertedAnalysis.keywords.length > 0 && (
-            <div className="space-y-4">
+            <div className="space-y-3">
               <SectionHeader icon={<span className="text-sm md:text-base font-bold text-primary">#</span>} title="Keywords" />
               <div className="flex flex-wrap gap-2">
                 {convertedAnalysis.keywords.map((keyword, index) => (

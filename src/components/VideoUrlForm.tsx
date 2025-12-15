@@ -73,8 +73,8 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
   };
 
   return (
-    <Card className="border-border/40 bg-card/90 backdrop-blur-sm shadow-2xl shadow-black/50">
-      <div className="space-y-6 p-6 md:p-8">
+    <Card className="rounded-[28px] p-0 border-border/50">
+      <div className="space-y-8 p-8 sm:p-10">
         <form onSubmit={handleSubmit} className="space-y-6">
           <VideoProcessingOptions />
 
@@ -84,10 +84,10 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
               placeholder="https://youtube.com/watch?v=dQw4w9WgXcQ"
               value={url}
               onChange={handleUrlChange}
-              className={`h-14 rounded-xl border-2 bg-input/50 px-5 text-base shadow-inner transition-all duration-200 placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/20 ${
+              className={`h-16 rounded-2xl border-2 bg-card/70 px-6 text-lg shadow-inner transition-all duration-300 placeholder:text-muted-foreground/80 focus:border-primary focus:ring-primary ${
                 validationError
-                  ? "border-destructive focus:ring-destructive/20"
-                  : "border-border hover:border-muted-foreground/40"
+                  ? "border-destructive focus:ring-destructive"
+                  : "border-border/60 hover:border-primary/40"
               }`}
               disabled={isLoading}
             />
@@ -105,21 +105,25 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
           <Button
             type="submit"
             disabled={isLoading || !isFormValid(url)}
-            className="group relative flex h-14 w-full items-center justify-center gap-3 overflow-hidden rounded-xl bg-primary text-base font-bold text-white shadow-lg shadow-primary/40 transition-all duration-200 hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/50 focus-visible:ring-2 focus-visible:ring-primary/50 disabled:opacity-50 disabled:shadow-none"
+            className="group relative flex h-16 w-full items-center justify-center gap-3 overflow-hidden rounded-2xl bg-primary/80 text-lg font-semibold text-white shadow-2xl transition-transform duration-300 hover:scale-[1.01] hover:bg-primary/60 focus-visible:ring-2 focus-visible:ring-primary/80 disabled:scale-100 disabled:opacity-60"
           >
+            <div className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-20 bg-white/10" />
             {isLoading ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Processing video...</span>
+                <Loader2 className="w-6 h-6 animate-spin flex-shrink-0" />
+                <span className="font-semibold text-sm sm:text-lg break-words">Processing video...</span>
               </>
             ) : (
               <>
-                <Play className="w-5 h-5 fill-current" />
-                <span>{url.trim().length === 0 ? "See example" : "Summarize video"}</span>
+                <Play className="w-6 h-6 flex-shrink-0" />
+                <span className="font-semibold text-sm sm:text-lg break-words">
+                  {url.trim().length === 0 ? "See example" : "Summarize video"}
+                </span>
               </>
             )}
           </Button>
         </form>
+
       </div>
     </Card>
   );

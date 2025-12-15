@@ -86,7 +86,7 @@ const Index = () => {
   const transcript = analysisResult?.transcript || scrapedTranscript;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#0b0b0c]">
       <HeroSection
         onSubmit={handleVideoSubmit}
         isLoading={isLoading}

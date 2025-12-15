@@ -31,9 +31,8 @@ export function ErrorDisplay({ error, progressStates, onLoadExample }: ErrorDisp
   const hasGeminiIssue = error.message.includes('GEMINI_API_KEY');
 
   return (
-    <Card className="p-6 md:p-8 border-destructive/40 shadow-md relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/5 via-transparent to-transparent" />
-      <div className="flex items-start gap-4 relative">
+    <Card className="p-6 border-destructive/40 shadow-md">
+      <div className="flex items-start gap-3">
         <AlertCircle className="w-6 h-6 text-destructive mt-1 flex-shrink-0" />
         <div className="flex-1">
           <h3 className="text-lg font-semibold text-destructive mb-2">{error.message}</h3>
@@ -57,7 +56,7 @@ export function ErrorDisplay({ error, progressStates, onLoadExample }: ErrorDisp
           )}
 
           {progressStates.length > 0 && (
-            <div className="mt-6 space-y-2">
+            <div className="mt-4 space-y-2">
               <h4 className="font-semibold text-base">Progress Details:</h4>
               <div className="bg-muted/30 rounded-lg p-4 max-h-48 overflow-y-auto">
                 {progressStates.map((state, index) => (
@@ -88,7 +87,7 @@ export function ErrorDisplay({ error, progressStates, onLoadExample }: ErrorDisp
             </div>
           )}
 
-          <div className="mt-6 flex gap-3">
+          <div className="mt-4 flex gap-3">
             <Button onClick={onLoadExample} className="bg-primary text-white">
               Load example data
             </Button>
