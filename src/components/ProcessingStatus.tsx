@@ -32,15 +32,14 @@ export function ProcessingStatus({ currentStage, currentStep, progressStates }: 
   const stageText = getStageText(activeAnchor);
 
   return (
-    <Card className="p-6 md:p-8 shadow-md relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/5 via-transparent to-transparent" />
-      <div className="space-y-6 relative">
+    <Card className="p-6 md:p-8">
+      <div className="space-y-6">
         <div className="flex items-center justify-center">
           <div className="relative">
-            <div className="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center">
+            <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/40">
               <Loader2 className="w-10 h-10 text-white animate-spin" />
             </div>
-            <div className="absolute inset-0 w-20 h-20 bg-primary/30 rounded-full animate-ping" />
+            <div className="absolute inset-0 w-20 h-20 bg-primary/40 rounded-full animate-ping" />
           </div>
         </div>
 
@@ -49,14 +48,14 @@ export function ProcessingStatus({ currentStage, currentStep, progressStates }: 
           <p className="text-lg text-muted-foreground">{currentStage}</p>
 
           <div className="space-y-3 mt-8">
-            <div className="relative h-2 rounded-full timeline-track">
+            <div className="relative h-2 rounded-full bg-secondary">
               <div
-                className="timeline-fill transition-all duration-500 ease-out"
+                className="h-full rounded-full bg-primary shadow-lg shadow-primary/50 transition-all duration-500 ease-out"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-              <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              <span className="inline-block w-2 h-2 rounded-full bg-primary animate-pulse" />
               <span>Now: <span className="text-foreground font-semibold">{stageText}</span></span>
             </div>
           </div>
