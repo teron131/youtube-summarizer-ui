@@ -46,22 +46,21 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
   const cleanedUrl = cleanVideoUrl(url);
 
   return (
-    <Card className="p-6 md:p-8 shadow-md relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/5 via-transparent to-transparent" />
-      <div className="flex flex-col sm:flex-row gap-6 relative">
+    <Card className="p-6 md:p-8">
+      <div className="flex flex-col sm:flex-row gap-6">
         <div className="flex-shrink-0 w-full sm:w-64 md:w-80">
-          <div className="relative rounded-xl border border-border/60 shadow-lg overflow-hidden">
+          <div className="relative rounded-lg border border-border overflow-hidden shadow-lg">
             <img
               src={thumbnail || "/placeholder.svg"}
               alt={title || "Video thumbnail"}
               className="w-full h-auto object-contain block"
             />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
           </div>
         </div>
         
         <div className="flex-1 space-y-4">
-          <h3 className="text-2xl font-bold text-foreground line-clamp-2 leading-tight">
+          <h3 className="text-xl md:text-2xl font-bold text-foreground line-clamp-2 leading-tight">
             {convertedInfo.title || "Title not available"}
           </h3>
           {cleanedUrl && (
@@ -75,7 +74,7 @@ export const VideoInfo = ({ title, thumbnail, author, duration, view_count, like
             </a>
           )}
           
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-3 text-muted-foreground">
             <InfoItem icon={<User className="w-4 h-4 text-primary" />} value={convertedInfo.author || "Author not available"} />
 
             {displayDuration && (
