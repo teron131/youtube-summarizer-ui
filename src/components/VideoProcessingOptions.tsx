@@ -4,9 +4,10 @@
 
 import { ModelSelector } from "@/components/ModelSelector";
 import { ComboboxOption } from "@/components/ui/editable-combobox";
+import { Switch } from "@/components/ui/switch";
 import { useLanguageSelection, useModelSelection, useUserPreferences } from "@/hooks/use-config";
 import { getProviderLogo } from "@/lib/provider-logos";
-import { Bot, Languages, Sparkles } from "lucide-react";
+import { Bot, Languages, Sparkles, Zap } from "lucide-react";
 
 export function VideoProcessingOptions() {
   const { languages } = useLanguageSelection();
@@ -24,7 +25,7 @@ export function VideoProcessingOptions() {
   });
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 rounded-2xl border border-border/50 bg-muted/30 p-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 rounded-2xl border border-border/50 bg-muted/30 p-4 md:p-6">
       <ModelSelector
         label="Summarizer"
         icon={Bot}
@@ -51,6 +52,22 @@ export function VideoProcessingOptions() {
         options={languages.map(toOption)}
         placeholder="Select language..."
       />
+
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+            <Zap className="w-3 h-3 text-white" />
+          </div>
+          <span className="text-sm font-bold text-primary uppercase tracking-wide">QUALITY CHECK</span>
+        </div>
+        <div className="flex h-10 w-full items-center rounded-md border border-red-500/30 bg-red-800 px-3 hover:bg-red-800">
+          <Switch
+            checked={!preferences.fastMode}
+            onCheckedChange={(checked) => updatePreferences({ fastMode: !checked })}
+            className="data-[state=checked]:bg-white data-[state=unchecked]:bg-red-950/50 [&>span]:data-[state=checked]:bg-red-600"
+          />
+        </div>
+      </div>
     </div>
   );
 }

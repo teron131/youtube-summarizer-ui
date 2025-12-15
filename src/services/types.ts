@@ -25,6 +25,7 @@ export interface SummarizeRequest {
   analysis_model?: string;
   quality_model?: string;
   target_language?: string | null;
+  fast_mode?: boolean;
 }
 
 // Response Types

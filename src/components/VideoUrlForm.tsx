@@ -48,6 +48,7 @@ export const VideoUrlForm = ({ onSubmit, isLoading, initialUrl }: VideoUrlFormPr
       preferences.targetLanguage,
       preferences.analysisModel,
       preferences.qualityModel,
+      preferences.fastMode,
     );
 
     if (!trimmedUrl) {

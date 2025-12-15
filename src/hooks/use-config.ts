@@ -116,6 +116,7 @@ interface UserPreferences {
   analysisModel: string;
   qualityModel: string;
   targetLanguage: string;
+  fastMode: boolean;
 }
 
 const COOKIE_NAME = 'youtube-summarizer-prefs';
@@ -124,6 +125,7 @@ const DEFAULT_USER_PREFERENCES: UserPreferences = {
   analysisModel: DEFAULT_ANALYSIS_MODEL,
   qualityModel: DEFAULT_QUALITY_MODEL,
   targetLanguage: DEFAULT_TARGET_LANGUAGE || 'auto',
+  fastMode: false,
 };
 
 function validatePreferences(
@@ -140,6 +142,7 @@ function validatePreferences(
     targetLanguage: prefs.targetLanguage && isValidLanguage(prefs.targetLanguage)
       ? prefs.targetLanguage
       : defaults.targetLanguage,
+    fastMode: prefs.fastMode ?? defaults.fastMode,
   };
 }
 

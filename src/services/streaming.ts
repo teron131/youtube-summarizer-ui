@@ -120,6 +120,7 @@ export async function streamAnalysis(
     analysisModel?: string;
     qualityModel?: string;
     targetLanguage?: string | null;
+    fastMode?: boolean;
   },
   onProgress?: (state: StreamingProgressState) => void,
 ): Promise<StreamingProcessingResult> {
@@ -145,6 +146,7 @@ export async function streamAnalysis(
       analysis_model: options.analysisModel || 'google/gemini-2.5-pro',
       quality_model: options.qualityModel || 'google/gemini-2.5-flash',
       target_language: options.targetLanguage === 'auto' ? null : options.targetLanguage,
+      fast_mode: options.fastMode || false,
     };
 
     const response = await fetch(`${api.baseUrl}/stream-summarize`, {
