@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YouTube Summarizer</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #0b0b0d;
+        --fg: #ffffff;
+        --muted: rgba(255, 255, 255, 0.7);
+        --border: rgba(255, 255, 255, 0.12);
+        --btn: rgba(255, 255, 255, 0.12);
+        --btnHover: rgba(255, 255, 255, 0.18);
+      }
+
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg: #ffffff;
+          --fg: #111827;
+          --muted: rgba(17, 24, 39, 0.7);
+          --border: rgba(17, 24, 39, 0.14);
+          --btn: rgba(17, 24, 39, 0.08);
+          --btnHover: rgba(17, 24, 39, 0.12);
+        }
+      }
+
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font: 13px/1.35 system-ui, -apple-system, Segoe UI, Roboto, Helvetica,
+          Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      }
+
+      .shell {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 10px 10px 8px 10px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      header .title {
+        font-weight: 600;
+        letter-spacing: 0.2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      header .actions {
+        display: flex;
+        gap: 8px;
+        flex: 0 0 auto;
+      }
+
+      button {
+        appearance: none;
+        border: 1px solid var(--border);
+        background: var(--btn);
+        color: var(--fg);
+        padding: 6px 10px;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: var(--btnHover);
+      }
+
+      .hint {
+        padding: 10px;
+        color: var(--muted);
+        border-bottom: 1px solid var(--border);
+      }
+
+      iframe {
+        flex: 1 1 auto;
+        width: 100%;
+        border: 0;
+        background: var(--bg);
+      }
+
+      .hidden {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <div class="title" id="title">YouTube Summarizer</div>
+        <div class="actions">
+          <button id="openTab" type="button">Open tab</button>
+          <button id="reload" type="button">Reload</button>
+        </div>
+      </header>
+      <div class="hint hidden" id="hint">
+        If the embedded app is blank, it may be blocked from being framed. Use
+        “Open tab”.
+      </div>
+      <iframe id="app" title="YouTube Summarizer"></iframe>
+    </div>
+    <script src="sidepanel.js"></script>
+  </body>
+</html>

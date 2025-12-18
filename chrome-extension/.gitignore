@@ -1,5 +1,6 @@
 # Build artifacts
 *.zip
+app/
 
 # Development
 .DS_Store
@@ -8,4 +9,3 @@ Thumbs.db
 # Backup files
 *.bak
 *~
-

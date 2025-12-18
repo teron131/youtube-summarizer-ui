@@ -5,6 +5,7 @@ import { defineConfig } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  base: mode === 'extension' ? './' : '/',
   server: {
     host: "::",
     port: 5173,
@@ -26,7 +27,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    outDir: 'dist',
+    outDir: mode === 'extension' ? 'chrome-extension/app' : 'dist',
     sourcemap: mode === 'development',
     rollupOptions: {
       output: {

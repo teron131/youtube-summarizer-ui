@@ -74,8 +74,13 @@ function createSummarizeButton() {
     log('Button clicked, video ID:', videoId);
     
     if (videoId) {
-      const targetUrl = `${SUMMARIZER_URL}?v=${videoId}`;
-      window.open(targetUrl, '_blank', 'noopener,noreferrer');
+      // Prefer opening the extension side panel; fallback to a new tab if it fails.
+      chrome.runtime.sendMessage({ type: 'OPEN_SIDEPANEL', videoId }, () => {
+        if (chrome.runtime.lastError) {
+          const targetUrl = `${SUMMARIZER_URL}?v=${videoId}`;
+          window.open(targetUrl, '_blank', 'noopener,noreferrer');
+        }
+      });
     }
   });
 
@@ -157,4 +162,3 @@ if (document.readyState === 'loading') {
 } else {
   init();
 }
-

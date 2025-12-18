@@ -3,10 +3,21 @@
   "name": "YouTube Summarizer",
   "version": "1.0.0",
   "description": "Send YouTube videos to your summarizer app with toolbar button or YouTube UI button",
-  "permissions": ["activeTab"],
-  "host_permissions": ["*://*.youtube.com/*", "*://*.youtu.be/*"],
+  "permissions": ["activeTab", "sidePanel"],
+  "host_permissions": [
+    "*://*.youtube.com/*",
+    "*://*.youtu.be/*",
+    "http://localhost:8080/*",
+    "http://127.0.0.1:8080/*"
+  ],
   "background": {
     "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; frame-src 'self'; connect-src http://localhost:8080 http://127.0.0.1:8080"
   },
   "action": {
     "default_icon": {
@@ -33,4 +44,3 @@
     "128": "icon-128.png"
   }
 }
-

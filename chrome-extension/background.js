@@ -21,30 +21,68 @@ function isValidYouTubeVideoUrl(url) {
   return extractVideoId(url) !== null;
 }
 
+function buildSidePanelPath(videoId) {
+  return videoId ? `sidepanel.html?v=${encodeURIComponent(videoId)}` : 'sidepanel.html';
+}
+
+async function setSidePanelForTab(tabId, url) {
+  try {
+    const videoId = extractVideoId(url);
+    await chrome.sidePanel.setOptions({
+      tabId,
+      enabled: Boolean(videoId),
+      path: buildSidePanelPath(videoId),
+    });
+  } catch {
+    // Ignore; side panel API may be unavailable in older Chromium builds.
+  }
+}
+
+async function openSidePanelForTab(tabId, url) {
+  const videoId = extractVideoId(url);
+  try {
+    await chrome.sidePanel.setOptions({
+      tabId,
+      enabled: Boolean(videoId),
+      path: buildSidePanelPath(videoId),
+    });
+
+    if (videoId) {
+      await chrome.sidePanel.open({ tabId });
+    }
+  } catch {
+    // Ignore; side panel API may be unavailable in older Chromium builds.
+  }
+}
+
 // Listen for tab updates to show/hide the extension icon
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete' && tab.url) {
     if (isValidYouTubeVideoUrl(tab.url)) {
       chrome.action.enable(tabId);
+      setSidePanelForTab(tabId, tab.url);
     } else {
       chrome.action.disable(tabId);
+      setSidePanelForTab(tabId, '');
     }
   }
 });
 
 // Listen for extension icon clicks
 chrome.action.onClicked.addListener((tab) => {
-  if (!tab.url) return;
-  
-  const videoId = extractVideoId(tab.url);
-  if (videoId) {
-    const targetUrl = `${SUMMARIZER_URL}?v=${videoId}`;
-    chrome.tabs.create({ url: targetUrl });
-  }
+  if (!tab.id || !tab.url) return;
+  openSidePanelForTab(tab.id, tab.url);
+});
+
+chrome.runtime.onMessage.addListener((message, sender) => {
+  if (!message || message.type !== 'OPEN_SIDEPANEL') return;
+  const tabId = sender?.tab?.id;
+  const url = sender?.tab?.url;
+  if (!tabId || !url) return;
+  openSidePanelForTab(tabId, url);
 });
 
 // Initialize on install - disable by default
 chrome.runtime.onInstalled.addListener(() => {
   chrome.action.disable();
 });
-

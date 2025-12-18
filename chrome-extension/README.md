@@ -1,36 +1,37 @@
 # YouTube Summarizer Chrome Extension
 
 Extension to send YouTube videos to your summarizer app with **two ways to use it**:
-1. **Toolbar button** - Click extension icon in Chrome toolbar
-2. **YouTube UI button** - "Summarize" button directly on YouTube video pages
+1. **Side panel** - Open the summarizer inside Chrome’s side panel
+2. **YouTube UI button** - "Summarize" button directly on YouTube video pages (opens side panel)
 
 ## Installation
 
 1. Open Chrome and navigate to `chrome://extensions/`
 2. Enable **Developer mode** (toggle in top-right corner)
 3. Click **Load unpacked**
-4. Select the `chrome-extension/` directory
-5. The extension will be active on YouTube pages
+4. Download the latest `youtube-summarizer-extension.zip` from this repo’s GitHub Releases and unzip it
+5. Click **Load unpacked** and select the unzipped folder (it contains `manifest.json`)
+6. The extension will be active on YouTube pages
 
 ## Features
 
 ### 🎯 Two Ways to Summarize
 
-#### Option 1: Toolbar Button (Page Action)
+#### Option 1: Side Panel (Recommended)
 1. Navigate to a YouTube video
 2. Extension icon in toolbar becomes enabled (colored)
 3. Click the toolbar icon
-4. New tab opens with the summarizer app
+4. Side panel opens with the summarizer app
 
 #### Option 2: YouTube UI Button (Recommended)
 1. Navigate to a YouTube video
 2. Look for the **"Summarize"** button left of the like/dislike buttons
 3. Click the "Summarize" button
-4. New tab opens with the summarizer app
+4. Side panel opens with the summarizer app
 
 Both methods:
 - Extract the video ID from the URL
-- Open the app with `?v=VIDEO_ID` parameter
+- Open the app with `?v=VIDEO_ID` parameter (inside the side panel)
 - Work with both light and dark YouTube themes
 
 ## Testing
@@ -50,15 +51,16 @@ Both methods:
 
 - **Icon always grayed out:** Check permissions in `chrome://extensions/`
 - **Click does nothing:** Check browser console for errors
-- **Railway app doesn't load:** Verify the URL format in background.js
+- **Side panel blank:** Re-open the side panel and check the extension page console for errors
+- **Backend not reachable:** The extension is built with a fixed backend URL; download the correct release build (or ask the maintainer to rebuild with the right `VITE_API_BASE_URL`)
 - **Video ID not extracted:** Check that you're on a valid YouTube video page (not Shorts/Home)
 
 ## How It Works
 
-### Toolbar Button (background.js)
+### Side Panel (background.js + sidepanel.html)
 1. Listens for tab navigation to YouTube pages
 2. Enables/disables toolbar icon based on URL validity
-3. On click, extracts video ID and opens app
+3. On click, extracts video ID and opens Chrome’s side panel for that tab
 
 ### YouTube UI Button (content.js)
 1. Content script injects "Summarize" button into YouTube's DOM
@@ -68,15 +70,17 @@ Both methods:
 
 ### Both Methods
 1. Extract video ID from URL (supports `watch?v=` and `youtu.be/` formats)
-2. Open Railway app: `https://youtube-summarizer-ui-teron131.up.railway.app?v=VIDEO_ID`
+2. Load the locally-built app inside the extension at `chrome-extension://.../app/index.html?v=VIDEO_ID`
 3. Frontend reconstructs as: `https://youtu.be/VIDEO_ID`
 4. Clean URL is passed to the summarizer backend
 
 ## Files
 
 - `manifest.json` - Extension configuration with content scripts
-- `background.js` - Service worker for toolbar button (page action)
-- `content.js` - Content script for YouTube UI button injection
+- `background.js` - Service worker for enabling + opening the side panel
+- `sidepanel.html` - Side panel wrapper UI
+- `sidepanel.js` - Side panel logic (loads the app + fallback to open tab)
+- `content.js` - Content script for YouTube UI button injection (opens side panel)
 - `content.css` - Styling for injected button (light/dark modes)
 - `icon-*.png` - Extension icons (16x16, 48x48, 128x128)
 - `youtube-icon-transparent.svg` - Source SVG icon
@@ -103,3 +107,13 @@ convert -background none youtube-icon-transparent.svg -resize 48x48 icon-48.png
 convert -background none youtube-icon-transparent.svg -resize 128x128 icon-128.png
 ```
 
+## Sharing With Non-Technical Users
+
+Download `youtube-summarizer-extension.zip` from GitHub Releases and follow the Installation steps above.
+
+If you want true one-click installs (no Developer mode), publish to the Chrome Web Store.
+
+## Maintainers: Building Releases
+
+- Workflow: `.github/workflows/extension-release.yml` (runs on GitHub Release publish)
+- Configure backend URL: set repository variable `VITE_API_BASE_URL` (or use workflow dispatch input)
