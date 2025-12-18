@@ -11,18 +11,18 @@
 // ================================
 
 export const RECOMMENDED_SUMMARIZER_MODELS = [
-  { value: "google/gemini-3-flash-preview", label: "Gemini 3 Flash", provider: "google" },
-  { value: "google/gemini-3-pro-preview", label: "Gemini 3 Pro", provider: "google" },
-  { value: "openai/gpt-5-mini", label: "GPT-5 Mini", provider: "openai" },
-  { value: "openai/gpt-5.2", label: "GPT-5.2", provider: "openai" },
-  { value: "x-ai/grok-4.1-fast", label: "Grok 4.1 Fast", provider: "x-ai" },
+  { value: "google/gemini-3-flash-preview", label: "Gemini 3 Flash" },
+  { value: "google/gemini-3-pro-preview", label: "Gemini 3 Pro" },
+  { value: "openai/gpt-5-mini", label: "GPT-5 Mini" },
+  { value: "openai/gpt-5.2", label: "GPT-5.2" },
+  { value: "x-ai/grok-4.1-fast", label: "Grok 4.1 Fast" },
 ] as const;
 
 export const RECOMMENDED_REFINER_MODELS = [
-  { value: "google/gemini-2.5-flash-lite-preview-09-2025", label: "Gemini 2.5 Flash Lite", provider: "google" },
-  { value: "openai/gpt-oss-120b", label: "gpt-oss-120b", provider: "openai" },
-  { value: "openai/gpt-5-nano", label: "GPT-5 Nano", provider: "openai" },
-  { value: "x-ai/grok-4.1-fast", label: "Grok 4.1 Fast", provider: "x-ai" },
+  { value: "google/gemini-2.5-flash-lite-preview-09-2025", label: "Gemini 2.5 Flash Lite" },
+  { value: "openai/gpt-oss-120b", label: "gpt-oss-120b" },
+  { value: "openai/gpt-5-nano", label: "GPT-5 Nano" },
+  { value: "x-ai/grok-4.1-fast", label: "Grok 4.1 Fast" },
 ] as const;
 
 export const AVAILABLE_MODELS = [
@@ -98,7 +98,7 @@ export type LanguageKey = keyof typeof SUPPORTED_LANGUAGES;
 export type AvailableModel = {
   key: string;
   label: string;
-  provider: string;
+  provider?: string;
   recommended?: boolean;
 };
 
@@ -113,13 +113,21 @@ export type SupportedLanguage = {
 // ================================
 
 const convertToAvailableModel = (
-  model: { value: string; label: string; provider: string },
+  model: { value: string; label: string },
 ): AvailableModel => ({
   key: model.value,
   label: model.label,
-  provider: model.provider,
+  provider: inferProviderFromModelKey(model.value),
   recommended: true,
 });
+
+const KNOWN_PROVIDERS = new Set(["google", "anthropic", "openai", "x-ai"]);
+
+function inferProviderFromModelKey(modelKey: string): string | undefined {
+  const provider = modelKey.split("/")[0];
+  if (!provider) return undefined;
+  return KNOWN_PROVIDERS.has(provider) ? provider : undefined;
+}
 
 export const AVAILABLE_SUMMARIZER_MODELS_LIST: AvailableModel[] =
   RECOMMENDED_SUMMARIZER_MODELS.map(convertToAvailableModel);

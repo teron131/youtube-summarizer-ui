@@ -14,15 +14,18 @@ export function VideoProcessingOptions() {
   const { summarizerModels, refinerModels } = useModelSelection();
   const { preferences, updatePreferences } = useUserPreferences();
 
-  const toOption = (m: { key: string; label: string; provider?: string; flag?: string }): ComboboxOption => ({
-    value: m.key,
-    label: m.label,
-    icon: m.provider ? (
-      <img src={getProviderLogo(m.provider) as string} alt={m.provider} className="w-full h-full object-contain" />
-    ) : m.flag ? (
-      <span className="text-sm">{m.flag}</span>
-    ) : undefined,
-  });
+  const toOption = (m: { key: string; label: string; provider?: string; flag?: string }): ComboboxOption => {
+    const logo = m.provider ? getProviderLogo(m.provider) : null;
+    return {
+      value: m.key,
+      label: m.label,
+      icon: logo ? (
+        <img src={logo} alt={m.provider} className="w-full h-full object-contain" />
+      ) : m.flag ? (
+        <span className="text-sm">{m.flag}</span>
+      ) : undefined,
+    };
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 rounded-2xl border border-border/50 bg-muted/30 p-4 md:p-6">
