@@ -2,11 +2,9 @@
 
 ![YouTube Summarizer UI](ui.png)
 
+Static demo: https://teron131.github.io/youtube-summarizer-ui
+
 A modern, full-stack application that transforms YouTube videos into concise, AI-powered summaries with transcripts. Built with React, TypeScript, Tailwind CSS, and FastAPI.
-
-## 🔗 Demo
-
-https://teron131.github.io/youtube-summarizer-ui
 
 ## 🚀 Features
 
