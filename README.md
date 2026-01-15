@@ -1,31 +1,88 @@
-# YouTube Summarizer UI
+# YouTube Summarizer
 
 ![YouTube Summarizer UI](ui.png)
 
 Static demo: https://teron131.github.io/youtube-summarizer-ui
 Backend: https://github.com/teron131/youtube-summarizer
 
-A modern full-stack application that solves the difficulty of accessing YouTube content and generating customized, detailed summaries.
+A modern full-stack application that solves the difficulty of accessing YouTube content and generating customized, detailed summaries using a robust multi-tier processing architecture.
 
 > **Note:** This problem is now deprecating.
 
-## 🚀 Features
+## 🌟 Key Features
 
-- **YouTube Intelligence**: Automated metadata and transcript extraction for any video.
-- **AI Analysis**: High-quality summarization with multi-model support and quality self-checking.
-- **Transcriptions**: Automated speech-to-text for videos without existing captions.
-- **Real-time Experience**: Live processing logs and a responsive, modern interface.
-- **Reliability**: Comprehensive error handling and cross-platform support.
+- **🎯 Master Orchestrator**: Single `/api/generate` endpoint managing the entire pipeline.
+- **🔄 Multi-Tier Processing**: Primary scraper → Fallback (yt-dlp + AI transcription) → LangGraph AI.
+- **🎤 Smart Transcription**: Prioritizes direct transcript extraction, falls back to automated speech-to-text.
+- **🤖 AI Summarization**: LangGraph-powered self-checking workflow with Gemini/OpenRouter support.
+- **🛡️ Robust Operations**: Detailed logging, real-time progress, and graceful degradation.
+- **⚡ Performance**: Optimized for asynchronous processing with real-time feedback.
+
+## 📊 Transcript Extraction Comparison
+
+The system evaluates multiple transcription methods based on robustness and speed to ensure maximum reliability.
+
+| Method | Type | Robustness | Speed | Notes |
+|--------|------|------------|-------|-------|
+| **Premium API** | **Direct** | ⭐⭐⭐⭐⭐ | ⚡ Fast | **Primary**. Extracts official/auto-captions directly. |
+| **yt-dlp + Fallback AI** | **Fallback** | ⭐⭐⭐ | 🐢 Slower | **Reliable Fallback**. Audio-based; prone to IP blocks/bot detection. |
+| **Native AI Access** | **Direct** | ⭐⭐ | ⚡ Fast | **Not Used**. Unreliable transcript retrieval during development. |
+
+## 🏗️ Technical Architecture
+
+### 📊 Overall System Workflow
+The system uses a 3-tier architecture to ensure analysis quality and system resilience.
+
+```mermaid
+graph TD
+    A[YouTube URL] --> B[Validate URL]
+    B --> C[Premium Scraper<br/>📋 Extract Video Data]
+    C --> D[Get Transcript<br/>📝 Direct from YouTube]
+    D --> E{Transcript Available?}
+    E -->|Yes| F[LangGraph AI Workflow<br/>🔄 Self-Checking Analysis]
+    E -->|No| G[Download Audio<br/>🎵 yt-dlp]
+    G --> H[Transcribe Audio<br/>🎤 Fallback AI]
+    H --> F
+    F --> I[Return Complete Results]
+    
+    style C fill:#1E88E5,color:#fff
+    style G fill:#F9A825,color:#000
+    style H fill:#F9A825,color:#000
+    style F fill:#2E7D32,color:#fff
+```
+
+### 🔄 LangGraph AI Workflow Detail
+An iterative refinement loop ensures analysis meets a high quality threshold (90%+).
+
+```mermaid
+graph TD
+    START([Start]) --> ROUTER[Routing Logic<br/>🎯 Route by Input Type]
+    ROUTER -->|URL| GEMINI[Native AI Analysis]
+    ROUTER -->|Text| LANGCHAIN[LangChain Analysis]
+    GEMINI --> G_QUAL[Quality Assessment]
+    LANGCHAIN --> L_QUAL[Quality Assessment]
+    G_QUAL --> G_COND{Score ≥ 90%?}
+    L_QUAL --> L_COND{Score ≥ 90%?}
+    G_COND -->|Yes| END([Final Result])
+    L_COND -->|Yes| END
+    G_COND -->|No| GEMINI
+    L_COND -->|No| LANGCHAIN
+    
+    style GEMINI fill:#8E24AA,color:#fff
+    style LANGCHAIN fill:#8E24AA,color:#fff
+    style G_QUAL fill:#D84315,color:#fff
+    style L_QUAL fill:#D84315,color:#fff
+```
 
 ## 📋 Prerequisites
 
 - **Node.js 18+**
 - **Python 3.8+**
 - **API Keys** (at least one required):
-  - **ScrapeCreators API key** ([Get here](https://scrapecreators.com/)) - For video scraping
-  - **OpenRouter API key** ([Get here](https://openrouter.ai/)) - For AI models (Grok, Claude, etc.)
-  - **OR** Google Gemini API key ([Get here](https://ai.google.dev/)) - Alternative for AI analysis
-  - FAL AI API key ([Get here](https://fal.ai/)) - Optional, for audio transcription fallback
+  - **ScrapeCreators API key** - For video scraping
+  - **OpenRouter API key** - For AI models (Grok, Claude, etc.)
+  - **OR** Google Gemini API key - Alternative for AI analysis
+  - **FAL AI API key** - Optional, for audio transcription fallback
 
 ## 🚀 Quick Start
 
@@ -52,20 +109,7 @@ Copy the example environment file and add your API keys:
 cp youtube-summarizer/.env_example youtube-summarizer/.env
 ```
 
-Edit `youtube-summarizer/.env` with your API keys:
-
-```env
-# Required
-SCRAPECREATORS_API_KEY=your_scrapecreators_api_key_here
-
-# AI Models (at least one required)
-OPENROUTER_API_KEY=your_openrouter_api_key_here
-# OR
-GEMINI_API_KEY=your_gemini_api_key_here
-
-# Optional
-FAL_KEY=your_fal_api_key_here
-```
+Edit `youtube-summarizer/.env` with your API keys.
 
 ### 3. Run the Application
 
@@ -75,11 +119,6 @@ Run both frontend and backend simultaneously:
 ```bash
 ./start.sh
 ```
-
-This starts:
-- Backend API at `http://localhost:8001`
-- Frontend UI at `http://localhost:5173`
-- API Docs at `http://localhost:8001/docs`
 
 #### Option B: Individual Services
 
@@ -94,26 +133,19 @@ uv run python -m uvicorn app:app --host 0.0.0.0 --port 8001 --reload
 bun run dev
 ```
 
-#### Option C: Stop All Services
-```bash
-./stop.sh
-```
-
 ### 4. Usage
 
-1. Open `http://localhost:5173` in your browser
-2. Paste a YouTube URL (e.g., `https://youtube.com/watch?v=VIDEO_ID`)
-3. Click "Summarize Video"
-4. Watch real-time processing logs
-5. Review the generated transcript and AI summary
+1. Open `http://localhost:5173` in your browser.
+2. Paste a YouTube URL.
+3. Click "Summarize Video".
+4. Watch real-time processing logs.
+5. Review the generated transcript and AI summary.
 
 ## 🚀 Railway Deployment
 
 1. **Frontend**: Deploy from root directory.
 2. **Backend**: Deploy from `youtube-summarizer/` directory.
-3. **Environment Variables**: Set the following in your deployment dashboard:
-   - `GEMINI_API_KEY=your_actual_key`
-   - `FAL_KEY=your_actual_key`
+3. **Environment Variables**: Set the required API keys in your deployment dashboard.
 4. **Access**: Your app will be available at the provided domain.
 
 ## 🔧 Development
@@ -132,4 +164,3 @@ bun run lint           # Lint code
 - `https://youtube.com/watch?v=VIDEO_ID`
 - `https://youtu.be/VIDEO_ID`
 - `https://youtube.com/embed/VIDEO_ID`
-
