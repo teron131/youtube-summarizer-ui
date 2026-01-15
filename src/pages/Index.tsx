@@ -13,7 +13,7 @@ import { useVideoProcessing, VideoProcessingOptions } from "@/hooks/use-video-pr
 import { loadExampleData } from "@/lib/example-data-loader";
 import { getVideoIdFromParams } from "@/lib/video-utils";
 import { handleApiError } from "@/services/api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Index = () => {
   const [initialUrl] = useState<string>(getVideoIdFromParams());
@@ -21,6 +21,7 @@ const Index = () => {
   const [lastProcessedUrl, setLastProcessedUrl] = useState<string>("");
   const [lastOptions, setLastOptions] = useState<VideoProcessingOptions>();
   const { toast } = useToast();
+  const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true";
 
   const {
     isLoading,
@@ -50,7 +51,22 @@ const Index = () => {
     });
   };
 
+  useEffect(() => {
+    if (isDemoMode) {
+      loadExample();
+    }
+  }, [isDemoMode]);
+
   const handleVideoSubmit = async (url: string, options?: VideoProcessingOptions) => {
+    if (isDemoMode) {
+      toast({
+        title: "Demo Mode",
+        description: "This static demo shows example data without calling the API.",
+      });
+      loadExample();
+      return;
+    }
+
     setIsExampleMode(false);
 
     if (!url.trim()) {
