@@ -4,6 +4,10 @@
 
 A modern, full-stack application that transforms YouTube videos into concise, AI-powered summaries with transcripts. Built with React, TypeScript, Tailwind CSS, and FastAPI.
 
+## 🔗 Demo
+
+https://teron131.github.io/youtube-summarizer-ui
+
 ## 🚀 Features
 
 - **YouTube Video Processing**: Extract video information and transcripts using ScrapeCreators API

@@ -17,7 +17,6 @@ import { useEffect, useState } from "react";
 
 const Index = () => {
   const [initialUrl] = useState<string>(getVideoIdFromParams());
-  const [isExampleMode, setIsExampleMode] = useState(false);
   const [lastProcessedUrl, setLastProcessedUrl] = useState<string>("");
   const [lastOptions, setLastOptions] = useState<VideoProcessingOptions>();
   const { toast } = useToast();
@@ -37,7 +36,6 @@ const Index = () => {
   } = useVideoProcessing();
 
   const loadExample = () => {
-    setIsExampleMode(false);
     const example = loadExampleData();
 
     updateState({
@@ -66,8 +64,6 @@ const Index = () => {
       loadExample();
       return;
     }
-
-    setIsExampleMode(false);
 
     if (!url.trim()) {
       loadExample();
@@ -112,7 +108,7 @@ const Index = () => {
       <div className="relative">
         <div className="container relative z-10 mx-auto px-6 sm:px-8 pb-16 -mt-12">
           <div className="max-w-8xl w-full mx-auto space-y-10">
-            {!isExampleMode && videoInfo && (
+            {videoInfo && (
               <VideoInfo
                 url={videoInfo.url}
                 title={videoInfo.title}
@@ -125,11 +121,11 @@ const Index = () => {
               />
             )}
 
-            {!isExampleMode && transcript && (
+            {transcript && (
               <TranscriptPanel transcript={transcript} />
             )}
 
-            {!isExampleMode && analysisResult?.analysis && (
+            {analysisResult?.analysis && (
               <AnalysisPanel
                 analysis={analysisResult.analysis}
                 quality={analysisResult.quality}

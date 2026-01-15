@@ -19,6 +19,7 @@ function isExtensionRuntime() {
 
 const App = () => {
   const useHashRouter = isExtensionRuntime() || import.meta.env.VITE_ROUTER_MODE === "hash";
+  const Router = useHashRouter ? HashRouter : BrowserRouter;
 
   const routes = (
     <Routes>
@@ -33,25 +34,14 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        {useHashRouter ? (
-          <HashRouter
-            future={{
-              v7_startTransition: true,
-              v7_relativeSplatPath: true,
-            }}
-          >
-            {routes}
-          </HashRouter>
-        ) : (
-          <BrowserRouter
-            future={{
-              v7_startTransition: true,
-              v7_relativeSplatPath: true,
-            }}
-          >
-            {routes}
-          </BrowserRouter>
-        )}
+        <Router
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          {routes}
+        </Router>
       </TooltipProvider>
     </QueryClientProvider>
   );
