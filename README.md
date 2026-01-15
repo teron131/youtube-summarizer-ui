@@ -5,7 +5,9 @@
 Static demo: https://teron131.github.io/youtube-summarizer-ui
 Backend: https://github.com/teron131/youtube-summarizer
 
-A modern full-stack application that transforms YouTube videos into concise AI summaries and transcripts.
+A modern full-stack application that solves the difficulty of accessing YouTube content and generating customized, detailed summaries.
+
+> **Note:** This problem is now deprecating.
 
 ## 🚀 Features
 
