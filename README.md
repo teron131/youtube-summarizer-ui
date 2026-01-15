@@ -2,8 +2,9 @@
 
 ![YouTube Summarizer UI](ui.png)
 
-Static demo: https://teron131.github.io/youtube-summarizer-ui
-Backend: https://github.com/teron131/youtube-summarizer
+**Static Demo**: https://teron131.github.io/youtube-summarizer-ui
+
+**Backend**: https://github.com/teron131/youtube-summarizer
 
 A modern full-stack application that solves the difficulty of accessing YouTube content and generating customized, detailed summaries using a robust multi-tier processing architecture.
 
